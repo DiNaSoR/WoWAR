@@ -3,7 +3,7 @@
 ## Version: 10.2.0.01
 ## Notes: AddOn displays the translated quest informations in Arabic.
 ## Author: Platine & WoWAR team
-## E-mail: info@wowtr.com.tr
+## E-mail: Dragonarab@gmail.com
 ## WWW: https://www.wowinarabic.com
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
