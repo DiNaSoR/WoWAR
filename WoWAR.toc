@@ -1,0 +1,40 @@
+﻿## Interface: 100205
+## Title: WoWAR |cff8080ff10.2.0.01|r
+## Version: 10.2.0.01
+## Notes: AddOn displays the translated quest informations in Arabic.
+## Author: Platine & WoWAR team
+## E-mail: info@wowtr.com.tr
+## WWW: https://www.wowinarabic.com
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## IconTexture: Interface\AddOns\WoWinArabic\Fonts\images\wia.blp
+## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, WoWTR_minimapDB
+
+Libs\LibStub\LibStub.lua
+Libs\AceAddon-3.0\AceAddon-3.0.lua
+Libs\AceConsole-3.0\AceConsole-3.0.lua
+Libs\AceDB-3.0\AceDB-3.0.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+
+Translations\QuestData_AR.lua
+Translations\Gossip_AR.lua
+Translations\TlumaczOnline_AR.lua
+Translations\Bubbles_AR.lua
+Translations\Subtitles_AR.lua
+Translations\TutorialsData7_AR.lua
+Translations\Books_AR.lua
+Translations\Tooltips_AR.lua
+
+WoW_Arabic_Reshaper.lua
+WoW_Localization_AR.lua
+WoW_Quests.lua
+WoW_Bubbles.lua
+WoW_MovieSubtitles.lua
+WoW_Tutorials.lua
+WoW_Books.lua
+WoW_Tooltips.lua
+
+WoWAR.lua
+WoW_Config.lua
