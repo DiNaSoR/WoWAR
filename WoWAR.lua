@@ -1,4 +1,4 @@
-﻿-- Addon: WoWAR (version: 10.2.0.01) 2024.01.22
+﻿-- Addon: WoWAR (version: 10.2.5.01) 2024.01.22
 -- Description: The AddOn displays the translated text information in Arabic
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
