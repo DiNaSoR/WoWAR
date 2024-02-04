@@ -911,6 +911,14 @@ function QTR_ObjectiveTracker_Check()
       ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 16);
       ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 16);
       if (WoWTR_Localization.lang == 'AR') then
+         --Added New Translation Campaign and Scenario for Arabic only
+         ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetFont(WOWTR_Font2, 16);
+         ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetFont(WOWTR_Font2, 16);
+         ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.campaignquests));
+         ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.scenariodung));
+         --Make Center
+         ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetJustifyH("CENTER");
+         ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("CENTER");
          ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("CENTER");
       end
       ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExtendedUnitInfo ?
@@ -933,7 +941,7 @@ function QTR_ObjectiveTracker_Check()
                qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
             end
             block.currentLine.Text:SetText(QTR_ReverseIfAR(qtr_obj));    -- może: QTR_ExtendedUnitInfo ?
-            block.currentLine.Text:SetFont(WOWTR_Font2, 11);
+            block.currentLine.Text:SetFont(WOWTR_Font2, 13);
             QTR_ResizeBlock(block.currentLine.Text);
          end
          for index = 1, #objectives do
@@ -943,7 +951,7 @@ function QTR_ObjectiveTracker_Check()
                   qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
                end
                objectives[index].Text:SetText(QTR_ReverseIfAR(qtr_obj)); -- może: QTR_ExtendedUnitInfo ?
-               objectives[index].Text:SetFont(WOWTR_Font2, 11);
+               objectives[index].Text:SetFont(WOWTR_Font2, 13);
                QTR_ResizeBlock(objectives[index].Text);
             end
          end
@@ -2030,19 +2038,19 @@ end;
 
 function QTR_Immersion()   -- wywoływanie tłumaczenia z opóźnieniem 0.2 sek
    ImmersionContentFrame.ObjectivesText:SetFont(WOWTR_Font2, 14);
-   ImmersionContentFrame.ObjectivesText:SetText(QTR_ExtendedUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,true,ImmersionContentFrame.ObjectivesText));
+   ImmersionContentFrame.ObjectivesText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,true,ImmersionContentFrame.ObjectivesText,WOWTR_Font2));
    ImmersionFrame.TalkBox.NameFrame.Name:SetFont(WOWTR_Font1, 20);
    ImmersionFrame.TalkBox.NameFrame.Name:SetText(QTR_ReverseIfAR(QTR_quest_LG[QTR_quest_ID].title));
    ImmersionFrame.TalkBox.TextFrame.Text:SetFont(WOWTR_Font2, 14);
    if (QTR_quest_EN[QTR_quest_ID].completion and (strlen(QTR_quest_LG[QTR_quest_ID].completion)>1)) then   -- mamy zdarzenie COMPLETION
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    elseif (QTR_quest_EN[QTR_quest_ID].progress and (strlen(QTR_quest_LG[QTR_quest_ID].progress)>1)) then   -- mamy zdarzenie PROGRESS
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_LG[QTR_quest_ID].progress,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].progress,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    elseif (QTR_quest_EN[QTR_quest_ID].details and (strlen(QTR_quest_LG[QTR_quest_ID].details)>1)) then     -- mamy zdarzenie DETAILS
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    end
    QTR_Immersion_Static();        -- inne statyczne dane
-end
+ end
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -2108,11 +2116,11 @@ function QTR_Immersion_OFF()   -- wywoływanie oryginału
    ImmersionFrame.TalkBox.NameFrame.Name:SetText(QTR_quest_EN[QTR_quest_ID].title);
    ImmersionFrame.TalkBox.TextFrame.Text:SetFont(Original_Font2, 14);
    if (QTR_quest_EN[QTR_quest_ID].completion and (strlen(QTR_quest_EN[QTR_quest_ID].completion)>0)) then   -- przywróć oryginalny tekst
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_EN[QTR_quest_ID].completion,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_EN[QTR_quest_ID].completion,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    elseif (QTR_quest_EN[QTR_quest_ID].progress and (strlen(QTR_quest_EN[QTR_quest_ID].progress)>0)) then
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_EN[QTR_quest_ID].progress,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_EN[QTR_quest_ID].progress,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    else
-      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExtendedUnitInfo(QTR_quest_EN[QTR_quest_ID].details,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
+      ImmersionFrame.TalkBox.TextFrame.Text:SetText(QTR_ExpandUnitInfo(QTR_quest_EN[QTR_quest_ID].details,false,ImmersionFrame.TalkBox.TextFrame.Text,WOWTR_Font2));
    end
    QTR_Immersion_OFF_Static();       -- inne statyczne dane
 end

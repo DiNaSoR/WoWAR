@@ -24,6 +24,8 @@ WoWTR_Localization = {
    addressBlik = "",                                                 -- telephon number for BLIK payment
    gossipText = "نص الشائعات",                                       -- gossip text
    quests = "المهام",                                                -- Quests
+   campaignquests = "الحملات",                                       -- Campaign Quests
+   scenariodung = "الدهليز",                                         -- Scenario/Dungeon
    objectives = "أهداف",                                             -- Objectives
    rewards = "مكافئات",                                              -- Rewards
    storyLineProgress = "مراحل تقدم القصة",                           -- StoryLine Progress
@@ -244,7 +246,7 @@ WoWTR_Config_Interface = {
    saveUntranslatedTooltipsDESC = "عند التفعيل, سيتم حفظ التلميحات غير المترجمة",
    
    titleTab9 = "حول",
-   generalText = "\n\n r|aul.RAWoW804CAEffc|/selbairaVdevaS/]XXX[/tnuoccA/FTW/liater/tfarcraW fo dlroW \n\n r| مسار ملف الحفظ :804CAEffc| \n\n\n\n للمساهمة في تطوير قاعدة البيانات العربية لدينا.\n\n لدعمنا, يمكنك حفظ النصوص غير المترجمة ثم مشاركة ملف الحفظ معنا عبر قناة الديسكورد الخاصة بنا .\n\n نوفر دعما للترجمة في المهام والحوارات والترجمات يمكنك تغيير مختلف الخيارات من قائمة إعدادات الإضافة. \n\n  واو بالعربي تتمنى لك قضاء وقت ممتع نعمل جاهدا لتوفير إمكانية الوصول إلى محتوى اللعبة بلغتك. ...\n",
+   generalText = "\n\nواو بالعربي تتمنى لك قضاء وقت ممتع نعمل جاهدا لتوفير إمكانية الوصول إلى محتوى اللعبة بلغتك. ...\n\nنوفر دعما للترجمة في المهام والحوارات والترجمات يمكنك تغيير مختلف الخيارات من قائمة إعدادات الإضافة. \n\n  لدعمنا, يمكنك حفظ النصوص غير المترجمة ثم مشاركة ملف الحفظ معنا عبر قناة الديسكورد الخاصة بنا .\n\n للمساهمة في تطوير قاعدة البيانات العربية لدينا.\n\n\n\n r| مسار ملف الحفظ :804CAEffc| \n\n r|aul.RAWoW804CAEffc|/selbairaVdevaS/]XXX[/tnuoccA/FTW/liater/tfarcraW fo dlroW",
    welcomeText = "",
    welcomeButton = "موافق - تم القراءة",
    showWelcome = "عرض لوحة الترحيب",
