@@ -9,7 +9,6 @@
 -- This variable controls whether or not to show the debug form.
 -------------------------------------------------------------------------------------------------------
 local debug_show_form = 0;
-
 -------------------------------------------------------------------------------------------------------
 -- AS_Reshaping_Rules is a table that contains reshaping rules for Arabic characters.
 -- Each key-value pair in the table represents a specific Arabic character and its reshaping rules.
