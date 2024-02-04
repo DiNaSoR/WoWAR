@@ -1,13 +1,13 @@
 ﻿## Interface: 100205
 ## Title: WoWAR |cff8080ff10.2.0.01|r
-## Version: 10.2.0.01
+## Version: 0.0.1
 ## Notes: AddOn displays the translated quest informations in Arabic.
 ## Author: Platine & WoWAR team
-## E-mail: info@wowtr.com.tr
+## E-mail: Dragonarab@gmail.com
 ## WWW: https://www.wowinarabic.com
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## IconTexture: Interface\AddOns\WoWinArabic\Fonts\images\wia.blp
+## IconTexture: Interface\AddOns\WoWAR\Fonts\images\wia.blp
 ## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, WoWTR_minimapDB
 
 Libs\LibStub\LibStub.lua
