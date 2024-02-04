@@ -316,21 +316,6 @@ function AS_UTF8sub(s, i, j)
 end
 
 -------------------------------------------------------------------------------------------------------
--- Helper function to check if a character is Arabic
--- Function: isArabicChar
--- Description: Checks if a given character is an Arabic character.
--- Parameters:
---   - char (string): The character to be checked.
--- Returns:
---   - boolean: True if the character is an Arabic character, false otherwise.
--------------------------------------------------------------------------------------------------------
-function isArabicChar(char)
-   local arabicCharRange = {0x0600, 0x06FF};
-   local byte = string.byte(char);
-   return (byte >= arabicCharRange[1] and byte <= arabicCharRange[2]);
-end
-
--------------------------------------------------------------------------------------------------------
 -- Reverses the order of UTF-8 letters with ReShaping
 -- Function: AS_UTF8reverse
 -- Description: Reverses the order of characters in a UTF-8 encoded string, while applying Arabic reshaping rules.

@@ -1,8 +1,8 @@
 ﻿## Interface: 100205
-## Title: WoWAR |cff8080ff10.2.0.01|r
+## Title: WoWAR |cff8080ff0.0.1|r
 ## Version: 0.0.1
-## Notes: AddOn displays the translated quest informations in Arabic.
-## Author: Platine & WoWAR team
+## Notes: World of Warcraft in Arabic.
+## Author: Platine & Dragonarab
 ## E-mail: Dragonarab@gmail.com
 ## WWW: https://www.wowinarabic.com
 ## DefaultState: Enabled
