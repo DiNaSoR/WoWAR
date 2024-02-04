@@ -1,4 +1,4 @@
-﻿-- Addon: WoWAR (version: 10.2.5.01) 2024.01.22
+-- Addon: WoWAR (version: 10.2.0.01) 2024.02.05
 -- Description: The AddOn displays the translated text information in Arabic
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -453,7 +453,7 @@ function WOWTR_onEvent(self, event, name, ...)
          if (not WOWTR_wait(1,QTR_Storyline_Quest)) then
          -- opóźnienie 1 sek
          end
-      end	-- QuestFrame is Visible
+      end   -- QuestFrame is Visible
       if (not WOWTR_wait(1,QTR_ObjectiveTracker_Check)) then
          -- opóźnienie 1 sek
       end

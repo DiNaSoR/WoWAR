@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------
--- Arabic Reshaper for WoWinArabic addons (2024.02.03)
+-- Arabic Reshaper for WoWinArabic addons (2024.01.22)
 -- Author: Platine (email: platine.wow@gmail.com)
 -- Contributor: DragonArab - Developed letter reshaping tables and ligatures (http://WoWinArabic.com)
 -- Based on: UTF8 library by Kyle Smith
@@ -441,7 +441,7 @@ function AS_UTF8reverse(s)
             end
          end
 
-         if char0 == "\216\161" then    -- Hamza character
+         if (char0 == "\216\161") then  -- Hamza character
             if nextletter == 0 then     -- No more characters after Hamza
                position = 0             -- Isolated form
             elseif nextletter == 1 then -- If next character is a space

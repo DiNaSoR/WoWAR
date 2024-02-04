@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Movies (version: 10.C14) 2024.01.22
+-- Addon: WoWTR-Movies (version: 10.C14) 2024.01.22
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
