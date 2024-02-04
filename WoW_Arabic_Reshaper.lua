@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------
--- Arabic Reshaper for WoWinArabic addons (2024.01.22)
+-- Arabic Reshaper for WoWinArabic addons (2024.02.04)
 -- Author: Platine (email: platine.wow@gmail.com)
 -- Contributor: DragonArab - Developed letter reshaping tables and ligatures (http://WoWinArabic.com)
 -- Based on: UTF8 library by Kyle Smith
