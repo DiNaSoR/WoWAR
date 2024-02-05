@@ -1,4 +1,4 @@
--- Addon: WoWTR_Config (version: 10.Z22) 2024.01.22
+﻿-- Addon: WoWTR_Config (version: 10.Z23) 2024.02.05
 -- Opis: The AddOn displays the translated text information in chosen language
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -1410,9 +1410,9 @@ WOWTR_Panel4Header2:SetJustifyH("LEFT");
 WOWTR_Panel4Header2:SetJustifyV("TOP");
 WOWTR_Panel4Header2:ClearAllPoints();
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_Panel4Header2:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 580, -110);
+   WOWTR_Panel4Header2:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 580, -100);
 else
-   WOWTR_Panel4Header2:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 20, -110);
+   WOWTR_Panel4Header2:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 20, -100);
 end
 WOWTR_Panel4Header2:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.savingUntranslatedTutorials));   -- Saving untranslated tutorials
 WOWTR_Panel4Header2:SetFont(WOWTR_Font2, 15);
@@ -1443,6 +1443,73 @@ WOWTR_CheckButton42:SetScript("OnLeave", function(self)
    GameTooltip:Hide()   -- Hide the tooltip
    end);
 
+if (#WOWTR_Fonts > 1) then
+   local WOWTR_Panel4Header2f = WOWTR_OptionPanel4:CreateFontString(nil, "ARTWORK");
+   WOWTR_Panel4Header2f:SetFontObject(GameFontNormal);
+   WOWTR_Panel4Header2f:SetJustifyH("LEFT"); 
+   WOWTR_Panel4Header2f:SetJustifyV("TOP");
+   WOWTR_Panel4Header2f:ClearAllPoints();
+   if (WoWTR_Localization.lang == 'AR') then
+      WOWTR_Panel4Header2f:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 545, -170);
+   else
+      WOWTR_Panel4Header2f:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 20, -170);
+   end
+   WOWTR_Panel4Header2f:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.fontSelectingFontHeader));   -- Select a font header
+   WOWTR_Panel4Header2f:SetFont(WOWTR_Font2, 15);
+
+   local WOWTR_Panel4Header2g = WOWTR_OptionPanel4:CreateFontString(nil, "ARTWORK");
+   WOWTR_Panel4Header2g:SetFontObject(GameFontNormal);
+   WOWTR_Panel4Header2g:SetJustifyH("LEFT"); 
+   WOWTR_Panel4Header2g:SetJustifyV("TOP");
+   WOWTR_Panel4Header2g:ClearAllPoints();
+   if (WoWTR_Localization.lang == 'AR') then
+      WOWTR_Panel4Header2g:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 300, -170);
+   else
+      WOWTR_Panel4Header2g:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 290, -170);
+   end
+   WOWTR_Panel4Header2g:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.fontCurrentFont));   -- Current font:
+   WOWTR_Panel4Header2g:SetFont(WOWTR_Font2, 15);
+
+   local WOWTR_Panel4Header2h = WOWTR_OptionPanel4:CreateFontString(nil, "ARTWORK");
+   WOWTR_Panel4Header2h:SetFontObject(GameFontWhite);
+   WOWTR_Panel4Header2h:SetJustifyH("LEFT"); 
+   WOWTR_Panel4Header2h:SetJustifyV("TOP");
+   WOWTR_Panel4Header2h:ClearAllPoints();
+   if (WoWTR_Localization.lang == 'AR') then
+      WOWTR_Panel4Header2h:SetPoint("TOPLEFT", WOWTR_Panel4Header2g, "TOPLEFT", 0, -30);
+   else
+      WOWTR_Panel4Header2h:SetPoint("TOPLEFT", WOWTR_Panel4Header2g, "TOPLEFT", 0, -30);
+   end
+   WOWTR_Panel4Header2h:SetText(QTR_PS["FontFile"]);   -- current font file
+   WOWTR_Panel4Header2h:SetFont(WOWTR_Font2, 13);
+
+   local WOWTR_Panel4SelectF = CreateFrame("Frame", "WOWTR_Panel4SelectF", WOWTR_OptionPanel4, "UIDropDownMenuTemplate");
+   WOWTR_Panel4SelectF:ClearAllPoints();
+   if (WoWTR_Localization.lang == 'AR') then
+      WOWTR_Panel4SelectF:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 460, -195);
+   else
+      WOWTR_Panel4SelectF:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 0, -195);
+   end
+   UIDropDownMenu_SetWidth(WOWTR_Panel4SelectF, 170);
+   UIDropDownMenu_SetText(WOWTR_Panel4SelectF, WoWTR_Config_Interface.fontSelectFontFile);        -- Select a font file
+   UIDropDownMenu_Initialize(WOWTR_Panel4SelectF, function(self, level, _)
+      for i, font in ipairs(WOWTR_Fonts) do
+         local info = UIDropDownMenu_CreateInfo();
+         info.text = font;
+--      info.text:SetFont(WOWTR_Font2, 13);
+         info.value = font;
+         info.func = function(self, arg1, arg2, checked)    -- function is called when option is clicked
+            QTR_PS["FontFile"] = self.value;
+            WOWTR_Panel4Header2h:SetText(self.value);       -- Selected font
+            WOWTR_Font2 = WoWTR_Localization.mainFolder.."\\Fonts\\"..self.value;
+            WOWTR_Panel4Header2h:SetFont(WOWTR_Font2, 13);
+            WOWTR_ReloadButtonUI:Show();
+            end;
+         UIDropDownMenu_AddButton(info);
+      end
+   end);
+end   -- if
+   
 local WOWTR_Panel4Separator = WOWTR_OptionPanel4:CreateFontString(nil, "ARTWORK");
 WOWTR_Panel4Separator:SetFontObject(GameFontWhite);
 WOWTR_Panel4Separator:SetJustifyH("LEFT"); 

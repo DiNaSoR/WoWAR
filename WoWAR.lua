@@ -148,6 +148,11 @@ function WOWTR_CheckVars()
    if (not QTR_PS["storyline"] ) then
       QTR_PS["storyline"] = "1";   
    end
+   -- current font file
+   if (not QTR_PS["FontFile"] ) then
+      QTR_PS["FontFile"] = WOWTR_Fonts[1];   
+   end
+   WOWTR_Font2 = WoWTR_Localization.mainFolder.."\\Fonts\\"..QTR_PS["FontFile"];
 
    if (not QTR_PS.firstTimeLoaded) then   -- Automatic log cleaning (reset saved texts)
       QTR_PS.firstTimeLoaded = true;

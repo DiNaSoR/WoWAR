@@ -1,4 +1,4 @@
--- Addon: WoWAR (version: 10.L10) 2024.01.30
+-- Addon: WoWAR (version: 10.L11) 2024.02.05
 -- Description: Texts in the selected localization language
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -24,8 +24,6 @@ WoWTR_Localization = {
    addressBlik = "",                                                 -- telephon number for BLIK payment
    gossipText = "نص الشائعات",                                       -- gossip text
    quests = "المهام",                                                -- Quests
-   campaignquests = "الحملات",                                       -- Campaign Quests
-   scenariodung = "الدهليز",                                         -- Scenario/Dungeon
    objectives = "أهداف",                                             -- Objectives
    rewards = "مكافئات",                                              -- Rewards
    storyLineProgress = "مراحل تقدم القصة",                           -- StoryLine Progress
@@ -181,7 +179,9 @@ WoWTR_Config_Interface = {
    savingUntranslatedTutorials = "خيارات الحفظ",
    saveUntranslatedTutorials = "حفظ المدرس التعليمية غير المترجمة",
    saveUntranslatedTutorialsDESC = "عند التفعيل, سيتم حفظ الدروس التعليمية غير المترجمة",
-   fontSelectionHeader = "اختيار خط النصوص الرئيسية للترجمة",
+   fontSelectingFontHeader = "تحديد الخط الإضافي",                                      -- Selecting the add-on font
+   fontSelectFontFile = "Select a font file",                                          -- Select a font file
+   fontCurrentFont = "الخط الحالي:",                                                   -- Current font:
    
    translationUI = "ترجمة واجهة المستخدم - IU",
    savingTranslationUI = "خيارات حفظ واجهة المستخدم",
@@ -343,8 +343,5 @@ end
 ---------------------------------------------------------------------------------------------------------
 WOWTR_Font1 = WoWTR_Localization.mainFolder.."\\Fonts\\font1.ttf";
 WOWTR_Font2 = WoWTR_Localization.mainFolder.."\\Fonts\\font2.ttf";
-WOWTR_Fonts = { };
-WOWTR_Fonts[1] = {name = "font2", file = WoWTR_Localization.mainFolder.."\\Fonts\\font2.ttf" };
-WOWTR_Fonts[2] = {name = "expressway", file = WoWTR_Localization.mainFolder.."\\Fonts\\Expressway.ttf" };
-WOWTR_Fonts[3] = {name = "naowh", file = WoWTR_Localization.mainFolder.."\\Fonts\\naowh.ttf" };
+WOWTR_Fonts = {"font2.ttf"};
 WOWTR_version = GetAddOnMetadata(WoWTR_Localization.addonName, "Version");
