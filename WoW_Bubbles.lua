@@ -69,10 +69,14 @@ function BB_bubblizeText()
                               else
                                  region:SetFont(WOWTR_Font2, _size1);             -- ustaw turecką czcionkę oraz niezmienioną wielkość (13)
                               end
-                              if (region:GetWidth()>100) then
+                              if (region:GetWidth() < 100) then
+                                 region:SetWidth(100);
+                              end
+              print(region:GetWidth())
+                              if (region:GetWidth()>200) then
                                  region:SetText(QTR_ExpandUnitInfo(iArray[2],false,region,WOWTR_Font2,-50));         -- wpisz tu nasze tłumaczenie
                               else
-                                 region:SetText(QTR_ExpandUnitInfo(iArray[2],false,region,WOWTR_Font2));             -- wpisz tu nasze tłumaczenie
+                                 region:SetText(QTR_ReverseIfAR(iArray[2]));             -- wpisz tu nasze krótkie tłumaczenie
                               end
                               region:SetJustifyH("CENTER");
 --                              print(oldTextWidth, region:GetStringWidth());
@@ -103,7 +107,7 @@ function BB_bubblizeText()
                end
                WOWBB1:Show();
                if (WoWTR_Localization.lang == 'AR') then
-                  _G["WOWBB1TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,WOWBB1,WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
+                  _G["WOWBB1TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,_G["WOWBB1TextLeft1"],WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
 --                  WOWBB1:Show();
                end
                WOWBB1.header:SetText(iArray[4]..":");
@@ -123,7 +127,7 @@ function BB_bubblizeText()
                end
                WOWBB2:Show();
                if (WoWTR_Localization.lang == 'AR') then
-                  _G["WOWBB2TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,WOWBB2,WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
+                  _G["WOWBB2TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,_G["WOWBB1TextLeft1"],WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
 --                  WOWBB2:Show();
                end
                WOWBB2.header:SetText(iArray[4]..":");
@@ -143,7 +147,7 @@ function BB_bubblizeText()
                end
                WOWBB3:Show();
                if (WoWTR_Localization.lang == 'AR') then
-                  _G["WOWBB3TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,WOWBB3,WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
+                  _G["WOWBB3TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,_G["WOWBB1TextLeft1"],WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
 --                  WOWBB3:Show();
                end
                WOWBB3.header:SetText(iArray[4]..":");
@@ -163,7 +167,7 @@ function BB_bubblizeText()
                end
                WOWBB4:Show();
                if (WoWTR_Localization.lang == 'AR') then
-                  _G["WOWBB4TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,WOWBB4,WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
+                  _G["WOWBB4TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,_G["WOWBB1TextLeft1"],WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
 --                  WOWBB4:Show();
                end
                WOWBB4.header:SetText(iArray[4]..":");
@@ -183,7 +187,7 @@ function BB_bubblizeText()
                end
                WOWBB5:Show();
                if (WoWTR_Localization.lang == 'AR') then
-                  _G["WOWBB5TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,WOWBB5,WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
+                  _G["WOWBB5TextLeft1"]:SetText(QTR_ExpandUnitInfo(iArray[2],false,_G["WOWBB1TextLeft1"],WOWTR_Font2));     -- jeszcze raz ustaw tekst w szerokości ramki
 --                  WOWBB5:Show();
                end
                WOWBB5.header:SetText(iArray[4]..":");
