@@ -157,6 +157,7 @@ WoWTR_Config_Interface = {
    fontsizeBubbles = "اختر حجم الخط",
    fontsizeBubblesDESC = "يمكنك اختيار حجم يتراوح بين 10 و20",
    sampleText = "نموذج نص حجم الخط",
+   timerDisplay = "وقت عرض الترجمة",
 
    titleTab3 = "الترجمات",
    generalMainHeaderMF = "ترجمات الأفلام والعروض السينمائية - seltitbuS",

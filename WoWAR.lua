@@ -203,6 +203,9 @@ function WOWTR_CheckVars()
    if (not BB_PM["dungeonF5"] ) then   -- pozycja pionowa okna 5
       BB_PM["dungeonF5"] = 270;
    end
+   if (not BB_PM["timeDisplay"] ) then   -- czas wyświetlania tłumaczenia w naszej ramce w lochach
+      BB_PM["timeDisplay"] = "5";
+   end
    WOWBB1.vertical = BB_PM["dungeonF1"];
    WOWBB2.vertical = BB_PM["dungeonF2"];
    WOWBB3.vertical = BB_PM["dungeonF3"];

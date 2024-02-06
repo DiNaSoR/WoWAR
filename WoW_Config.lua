@@ -81,6 +81,12 @@ function WOWTR_SetCheckButtonState()
    local fontsize4 = tonumber(QTR_PS["fontsize"]);      -- gossip font size
    WOWTR_Opis4:SetFont(WOWTR_Font2, fontsize4);
  
+   WOWTR_slider1:SetValue(tonumber(BB_PM["fontsize"]));
+   WOWTR_slider2:SetValue(tonumber(BT_PM["fontsize"]));
+   WOWTR_slider3:SetValue(tonumber(ST_PM["timer"]));
+   WOWTR_slider4:SetValue(tonumber(QTR_PS["fontsize"]));
+   WOWTR_slider5:SetValue(tonumber(BB_PM["timeDisplay"]));
+   
    if (WOWTR_ConfigFirstTime) then      -- The options window was launched for the first time - show all tabs so that the texts are fully displayed
       WOWTR_ConfigFirstTime = false;
       if (not WOWTR_wait(0.5, WOWTR_ChangePanel1)) then
@@ -1067,6 +1073,29 @@ WOWTR_CheckButton2d2:SetScript("OnEnter", function(self)
 WOWTR_CheckButton2d2:SetScript("OnLeave", function(self)
    GameTooltip:Hide()   -- Hide the tooltip
    end);
+ 
+local WOWTR_slider5 = CreateFrame("Slider", "WOWTR_slider5", WOWTR_OptionPanel2, "OptionsSliderTemplate");
+WOWTR_slider5:SetPoint("TOPLEFT", WOWTR_CheckButton2d2, "BOTTOMLEFT", 20, -30);
+WOWTR_slider5:SetMinMaxValues(3, 10);
+WOWTR_slider5.minValue, WOWTR_slider5.maxValue = WOWTR_slider5:GetMinMaxValues();
+WOWTR_slider5.Low:SetText(WOWTR_slider5.minValue);
+WOWTR_slider5.High:SetText(WOWTR_slider5.maxValue);
+getglobal(WOWTR_slider5:GetName() .. 'Text'):SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.timerDisplay));
+getglobal(WOWTR_slider5:GetName() .. 'Text'):SetFont(WOWTR_Font2, 11);
+WOWTR_slider5:SetValue(tonumber(BB_PM["timeDisplay"]));
+WOWTR_slider5:SetValueStep(1);
+WOWTR_slider5:SetScript("OnValueChanged", function(self,event,arg1) 
+                                      BB_PM["timeDisplay"]=string.format("%d",event); 
+                                      WOWTR_sliderVal5:SetText(BB_PM["timeDisplay"]);
+                                      end);
+WOWTR_sliderVal5 = WOWTR_OptionPanel2:CreateFontString(nil, "ARTWORK");
+WOWTR_sliderVal5:SetFontObject(GameFontNormal);
+WOWTR_sliderVal5:SetJustifyH("CENTER");
+WOWTR_sliderVal5:SetJustifyV("TOP");
+WOWTR_sliderVal5:ClearAllPoints();
+WOWTR_sliderVal5:SetPoint("CENTER", WOWTR_slider5, "CENTER", 0, -12);
+WOWTR_sliderVal5:SetText(BB_PM["timeDisplay"]);   
+WOWTR_sliderVal5:SetFont(WOWTR_Font2, 13);
  
 local WOWTR_Panel2Header2 = WOWTR_OptionPanel2:CreateFontString(nil, "ARTWORK");
 WOWTR_Panel2Header2:SetFontObject(GameFontNormal);

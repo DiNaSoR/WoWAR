@@ -113,7 +113,7 @@ function BB_bubblizeText()
                WOWBB1.header:SetText(iArray[4]..":");
                WOWBB1.header:ClearAllPoints();
                WOWBB1.header:SetPoint("CENTER", 0, WOWBB1:GetHeight()/2+6);
-               C_Timer.After(5, function() WOWBB1:Hide(); end);
+               C_Timer.After(tonumber(BB_PM["timeDisplay"]), function() WOWBB1:Hide(); end);
             elseif (not WOWBB2:IsVisible()) then
                WOWBB2:SetOwner(UIParent, "ANCHOR_NONE" );
                WOWBB2:ClearAllPoints();
@@ -133,7 +133,7 @@ function BB_bubblizeText()
                WOWBB2.header:SetText(iArray[4]..":");
                WOWBB2.header:ClearAllPoints();
                WOWBB2.header:SetPoint("CENTER", 0, WOWBB2:GetHeight()/2+6);
-               C_Timer.After(5, function() WOWBB2:Hide(); end);
+               C_Timer.After(tonumber(BB_PM["timeDisplay"]), function() WOWBB2:Hide(); end);
             elseif (not WOWBB3:IsVisible()) then
                WOWBB3:SetOwner(UIParent, "ANCHOR_NONE" );
                WOWBB3:ClearAllPoints();
@@ -153,7 +153,7 @@ function BB_bubblizeText()
                WOWBB3.header:SetText(iArray[4]..":");
                WOWBB3.header:ClearAllPoints();
                WOWBB3.header:SetPoint("CENTER", 0, WOWBB3:GetHeight()/2+6);
-               C_Timer.After(5, function() WOWBB3:Hide(); end);
+               C_Timer.After(tonumber(BB_PM["timeDisplay"]), function() WOWBB3:Hide(); end);
             elseif (not WOWBB4:IsVisible()) then
                WOWBB4:SetOwner(UIParent, "ANCHOR_NONE" );
                WOWBB4:ClearAllPoints();
@@ -173,7 +173,7 @@ function BB_bubblizeText()
                WOWBB4.header:SetText(iArray[4]..":");
                WOWBB4.header:ClearAllPoints();
                WOWBB4.header:SetPoint("CENTER", 0, WOWBB4:GetHeight()/2+6);
-               C_Timer.After(5, function() WOWBB4:Hide(); end);
+               C_Timer.After(tonumber(BB_PM["timeDisplay"]), function() WOWBB4:Hide(); end);
             elseif (not WOWBB5:IsVisible()) then
                WOWBB5:SetOwner(UIParent, "ANCHOR_NONE" );
                WOWBB5:ClearAllPoints();
@@ -193,7 +193,7 @@ function BB_bubblizeText()
                WOWBB5.header:SetText(iArray[4]..":");
                WOWBB5.header:ClearAllPoints();
                WOWBB5.header:SetPoint("CENTER", 0, WOWBB5:GetHeight()/2+6);
-               C_Timer.After(5, function() WOWBB5:Hide(); end);
+               C_Timer.After(tonumber(BB_PM["timeDisplay"]), function() WOWBB5:Hide(); end);
             end
             tremove(BB_BubblesArray, idx);               -- usuń zapamiętane dane z tablicy
          end
