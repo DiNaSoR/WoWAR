@@ -2246,7 +2246,7 @@ WOWTR_CheckButton65.Text:SetFont(WOWTR_Font2, 15);
 WOWTR_CheckButton65:SetScript("OnEnter", function(self)
    GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
    GameTooltip:ClearLines();
-   GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.showTooltipIDQTR_ReverseIfAR).." ", false);                -- red color, no wrap
+   GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.showTooltipID).." ", false);                -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.showTooltipIDDESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
