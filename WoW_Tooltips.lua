@@ -105,7 +105,7 @@ function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1)     -- obj=o
          local ST_Hash = StringHash(ST_UsunZbedneZnaki(txt));
          if (ST_TooltipsHS[ST_Hash]) then
             local a1, a2, a3 = obj:GetFont();
-            obj:SetText(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]).." ");     -- hard space at the end of translation
+            obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");     -- hard space at the end of translation
             if (font1) then
                obj:SetFont(font1, a2);
             else
@@ -143,7 +143,7 @@ function ST_CheckAndReplaceTranslationTextUI(obj, sav, prefix, font1)     -- obj
                local pos_end = string.find(txt, "?");
                if (pos_end) then
                   local new_item = string.sub(txt, #destroyText + 2, pos_end - 1);
-                  new_trans = string.gsub(new_trans, "$I", new_item);                     -- change name of item in the place of code $I in translation
+                  new_trans = string.gsub(new_trans, "$I", new_item);                   -- change name of item in the place of code $I in translation
                end
             end
             obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, new_trans)).." ");     -- hard space at the end of translation
@@ -163,14 +163,22 @@ end
 
 -- Przygotowuje tłumaczenie właściwe: zamienia $x w tłumaczeniu na odpowiednie liczby z oryginału
 function ST_TranslatePrepare(ST_origin, ST_tlumacz)
-   local tlumaczenie = string.gsub(ST_tlumacz,"$b","$B");
-   tlumaczenie = string.gsub(tlumaczenie,"$B","\n");
-   tlumaczenie = string.gsub(tlumaczenie,"$n","$N");
-   tlumaczenie = string.gsub(tlumaczenie,"$N",WOWTR_player_name);
+   local tlumaczenie;
+   if (WoWTR_Localization.lang == 'AR') then
+      tlumaczenie = ST_tlumacz;
+   else
+      tlumaczenie = string.gsub(ST_tlumacz,"$b","$B");
+      tlumaczenie = string.gsub(ST_tlumacz,"$B"," NEW_LINE ");
+      tlumaczenie = string.gsub(tlumaczenie,"$n","$N");
+      tlumaczenie = string.gsub(tlumaczenie,"$N"," YOUR_NAME ");
+      tlumaczenie = string.gsub(tlumaczenie,"  "," ");
+   end
+   tlumaczenie = string.gsub(tlumaczenie,"NEW_LINE","\n");
+   tlumaczenie = string.gsub(tlumaczenie,"YOUR_NAME",WOWTR_player_name);
    if (not ST_miasto) then
       ST_miasto = WoWTR_Localization.your_home;
    end
-   tlumaczenie = string.gsub(tlumaczenie, "$L", ST_miasto);          -- miasto lokalizacji do Kamienia Powrotu
+   tlumaczenie = string.gsub(tlumaczenie, "$L", QTR_ReverseIfAR(ST_miasto));    -- miasto lokalizacji do Kamienia Powrotu
    local wartab = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};         -- max. 20 liczb całkowitych w tekście
    local arg0 = 0;
    ST_origin = string.gsub(ST_origin,"(%d),(%d)","%1%2");            -- usuń przecinek tysięczny przy liczbach
@@ -183,68 +191,68 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
       elseif (math.floor(w)>999) then
          wartab[arg0] = tostring(math.floor(w)):reverse():gsub("(%d%d%d)", "%1."):gsub("(%-?)$", "%1"):reverse();   -- tu mamy kolejne cyfry z oryginału
       else   
-         wartab[arg0] = math.floor(w);
+         wartab[arg0] = tostring(math.floor(w));
       end
    end;
    if (arg0>19) then
-      tlumaczenie=string.gsub(tlumaczenie, "$20", wartab[20]);
+      tlumaczenie=string.gsub(tlumaczenie, "$20", QTR_ReverseIfAR(wartab[20]));
    end
    if (arg0>18) then
-      tlumaczenie=string.gsub(tlumaczenie, "$19", wartab[19]);
+      tlumaczenie=string.gsub(tlumaczenie, "$19", QTR_ReverseIfAR(wartab[19]));
    end
    if (arg0>17) then
-      tlumaczenie=string.gsub(tlumaczenie, "$18", wartab[18]);
+      tlumaczenie=string.gsub(tlumaczenie, "$18", QTR_ReverseIfAR(wartab[18]));
    end
    if (arg0>16) then
-      tlumaczenie=string.gsub(tlumaczenie, "$17", wartab[17]);
+      tlumaczenie=string.gsub(tlumaczenie, "$17", QTR_ReverseIfAR(wartab[17]));
    end
    if (arg0>15) then
-      tlumaczenie=string.gsub(tlumaczenie, "$16", wartab[16]);
+      tlumaczenie=string.gsub(tlumaczenie, "$16", QTR_ReverseIfAR(wartab[16]));
    end
    if (arg0>14) then
-      tlumaczenie=string.gsub(tlumaczenie, "$15", wartab[15]);
+      tlumaczenie=string.gsub(tlumaczenie, "$15", QTR_ReverseIfAR(wartab[15]));
    end
    if (arg0>13) then
-      tlumaczenie=string.gsub(tlumaczenie, "$14", wartab[14]);
+      tlumaczenie=string.gsub(tlumaczenie, "$14", QTR_ReverseIfAR(wartab[14]));
    end
    if (arg0>12) then
-      tlumaczenie=string.gsub(tlumaczenie, "$13", wartab[13]);
+      tlumaczenie=string.gsub(tlumaczenie, "$13", QTR_ReverseIfAR(wartab[13]));
    end
    if (arg0>11) then
-      tlumaczenie=string.gsub(tlumaczenie, "$12", wartab[12]);
+      tlumaczenie=string.gsub(tlumaczenie, "$12", QTR_ReverseIfAR(wartab[12]));
    end
    if (arg0>10) then
-      tlumaczenie=string.gsub(tlumaczenie, "$11", wartab[11]);
+      tlumaczenie=string.gsub(tlumaczenie, "$11", QTR_ReverseIfAR(wartab[11]));
    end
    if (arg0>9) then
-      tlumaczenie=string.gsub(tlumaczenie, "$10", wartab[10]);
+      tlumaczenie=string.gsub(tlumaczenie, "$10", QTR_ReverseIfAR(wartab[10]));
    end
    if (arg0>8) then
-      tlumaczenie=string.gsub(tlumaczenie, "$9", wartab[9]);
+      tlumaczenie=string.gsub(tlumaczenie, "$9", QTR_ReverseIfAR(wartab[9]));
    end
    if (arg0>7) then
-      tlumaczenie=string.gsub(tlumaczenie, "$8", wartab[8]);
+      tlumaczenie=string.gsub(tlumaczenie, "$8", QTR_ReverseIfAR(wartab[8]));
    end
    if (arg0>6) then
-      tlumaczenie=string.gsub(tlumaczenie, "$7", wartab[7]);
+      tlumaczenie=string.gsub(tlumaczenie, "$7", QTR_ReverseIfAR(wartab[7]));
    end
    if (arg0>5) then
-      tlumaczenie=string.gsub(tlumaczenie, "$6", wartab[6]);
+      tlumaczenie=string.gsub(tlumaczenie, "$6", QTR_ReverseIfAR(wartab[6]));
    end
    if (arg0>4) then
-      tlumaczenie=string.gsub(tlumaczenie, "$5", wartab[5]);
+      tlumaczenie=string.gsub(tlumaczenie, "$5", QTR_ReverseIfAR(wartab[5]));
    end
    if (arg0>3) then
-      tlumaczenie=string.gsub(tlumaczenie, "$4", wartab[4]);
+      tlumaczenie=string.gsub(tlumaczenie, "$4", QTR_ReverseIfAR(wartab[4]));
    end
    if (arg0>2) then
-      tlumaczenie=string.gsub(tlumaczenie, "$3", wartab[3]);
+      tlumaczenie=string.gsub(tlumaczenie, "$3", QTR_ReverseIfAR(wartab[3]));
    end
    if (arg0>1) then
-      tlumaczenie=string.gsub(tlumaczenie, "$2", wartab[2]);
+      tlumaczenie=string.gsub(tlumaczenie, "$2", QTR_ReverseIfAR(wartab[2]));
    end
    if (arg0>0) then
-      tlumaczenie=string.gsub(tlumaczenie, "$1", wartab[1]);
+      tlumaczenie=string.gsub(tlumaczenie, "$1", QTR_ReverseIfAR(wartab[1]));
    end
 
    tlumaczenie = string.gsub(tlumaczenie, "$o", "$O");
@@ -270,7 +278,7 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
                if (QTR_PS["ownname"] == "1") then        -- forma polska
                   QTR_forma = string.sub(tlumaczenie,nr_2+1,nr_3-1);
                else                                      -- forma angielska
-                  QTR_forma = string.sub(tlumaczenie,nr_1+1,nr_2-1);
+                  QTR_forma = QTR_ReverseIfAR(string.sub(tlumaczenie,nr_1+1,nr_2-1));
                end
                tlumaczenie = string.sub(tlumaczenie,1,nr_poz-1) .. QTR_forma .. string.sub(tlumaczenie,nr_3+1);
             end   
@@ -385,7 +393,7 @@ function ST_ElvSpellBookTooltipOnShow()
          if (ST_TooltipsHS[ST_hash]) then        -- mamy przetłumaczony ten Hash
             ST_tlumaczenie = ST_TooltipsHS[ST_hash];
             ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
-            ST_MyGameTooltip:AddLine(ST_tlumaczenie, leftColR, leftColG, leftColB, true);
+            ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true);
             numLines = ST_MyGameTooltip:NumLines();           -- aktualna liczba linii
             _font1, _size1, _1 = _G["ElvUISpellBookTooltipTextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
             _G["ST_MyGameTooltipTextLeft"..numLines]:SetFont(WOWTR_Font2, 11);        -- ustawiamy własną czcionkę 
@@ -433,7 +441,7 @@ function ST_BuffOrDebuff()
          ST_MyGameTooltip:ClearAllPoints();
          ST_MyGameTooltip:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", 0, 0);    -- pod przyciskiem od prawej strony
          ST_MyGameTooltip:ClearLines();
-         ST_MyGameTooltip:AddLine(ST_tlumaczenie, leftColR, leftColG, leftColB, true);
+         ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true);
          _G["ST_MyGameTooltipTextLeft1"]:SetFont(WOWTR_Font2, 12);      -- wielkość 12
          if (ST_PM["showHS"]=="1") then            -- czy Hash ?
             ST_MyGameTooltip:AddLine(" ",0,0,0);   -- dodaj odstęp przed linią z Hash
@@ -575,9 +583,9 @@ function ST_GameTooltipOnShow()
                if (ST_TooltipsHS[ST_hash]) then        -- mamy przetłumaczony ten Hash
                   ST_tlumaczenie = ST_TooltipsHS[ST_hash];
                   ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
-                  _G["GameTooltipTextLeft"..i]:SetText(ST_tlumaczenie.." ");      -- dodajemy twardą spacje na końcu
                   _font1, _size1, _1 = _G["GameTooltipTextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
                   _G["GameTooltipTextLeft"..i]:SetFont(WOWTR_Font2, _size1);      -- ustawiamy czcionkę turecką
+                  _G["GameTooltipTextLeft"..i]:SetText(QTR_ExpandUnitInfo(ST_tlumaczenie,false,_G["GameTooltipTextLeft"..i],WOWTR_Font2).." ");      -- dodajemy twardą spacje na końcu
                   _G["GameTooltipTextLeft"..i].wrap = true;
                   if (GameTooltip.processingInfo and GameTooltip.processingInfo.tooltipData.id and (GameTooltip.processingInfo.tooltipData.id == 6948)) then   -- wyjątek na Kamień Powrotu
                      break;
@@ -747,9 +755,9 @@ function ST_CurrentEquipped(obj)
                   if (ST_TooltipsHS[ST_hash]) then        -- mamy przetłumaczony ten Hash
                      ST_tlumaczenie = ST_TooltipsHS[ST_hash];
                      ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
-                     _G[obj:GetName().."TextLeft"..i]:SetText(ST_tlumaczenie.." ");      -- dodajemy twardą spacje na końcu
                      _font1, _size1, _1 = _G[obj:GetName().."TextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
                      _G[obj:GetName().."TextLeft"..i]:SetFont(WOWTR_Font2, _size1);      -- ustawiamy czcionkę turecką
+                     _G[obj:GetName().."TextLeft"..i]:SetText(QTR_ExpandUnitInfo(ST_tlumaczenie,false,_G["GameTooltipTextLeft"..i],WOWTR_Font2).." ");      -- dodajemy twardą spacje na końcu
                   else
                      ST_nh = 1;              -- nowy Hash
                      table.insert(ST_orygText,ST_leftText);
@@ -856,8 +864,8 @@ function ST_updateSpecContentsHook()
             ST_tlumaczenie = ST_TooltipsHS[ST_hash];
             ST_tlumaczenie = ST_TranslatePrepare(description, ST_tlumaczenie);
             local _font1, _size1, _1 = specContentFrame.Description:GetFont();    -- odczytaj aktualną czcionkę i rozmiar
-            specContentFrame.Description:SetText(ST_tlumaczenie);
             specContentFrame.Description:SetFont(WOWTR_Font2, _size1);
+            specContentFrame.Description:SetText(QTR_ExpandUnitInfo(ST_tlumaczenie,false,specContentFrame.Description,WOWTR_Font2));
          elseif (ST_PM["saveNW"]=="1") then          -- jest zezwolenie na zapis
             ST_origin = string.gsub(description,"(%d),(%d)","%1%2");      -- usuń przecinek między cyframi (odstęp tysięczny)
             ST_origin = string.gsub(ST_origin,"\r","");

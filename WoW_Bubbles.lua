@@ -72,7 +72,6 @@ function BB_bubblizeText()
                               if (region:GetWidth() < 100) then
                                  region:SetWidth(100);
                               end
-              print(region:GetWidth())
                               if (region:GetWidth()>200) then
                                  region:SetText(QTR_ExpandUnitInfo(iArray[2],false,region,WOWTR_Font2,-50));         -- wpisz tu nasze tłumaczenie
                               else

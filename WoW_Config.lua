@@ -191,7 +191,7 @@ local WOWTR_OptionsHeaderText = WOWTR_Options:CreateFontString(nil, "OVERLAY", "
 WOWTR_OptionsHeaderText:SetFont(WOWTR_Font2, 18);
 WOWTR_OptionsHeaderText:SetWidth(600);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 123, 10);
+   WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 80, 10);
    WOWTR_OptionsHeaderText:SetText(AS_UTF8reverse(WoWTR_Localization.optionTitleAR));
 else
    WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 0, 0);
@@ -1605,6 +1605,10 @@ WOWTR_CheckButton43:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI1).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI1DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1630,6 +1634,10 @@ WOWTR_CheckButton45:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI2).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI2DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1655,6 +1663,10 @@ WOWTR_CheckButton46:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI3).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI3DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1680,6 +1692,10 @@ WOWTR_CheckButton50:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI7).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI7DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1706,6 +1722,10 @@ WOWTR_CheckButton47:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI4).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI4DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1731,6 +1751,10 @@ WOWTR_CheckButton48:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI5).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI5DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1756,6 +1780,10 @@ WOWTR_CheckButton49:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI6).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI6DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
@@ -1781,6 +1809,10 @@ WOWTR_CheckButton40:SetScript("OnEnter", function(self)
    GameTooltip:ClearLines();
    GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.displayTranslationUI8).." ", false);               -- red color, no wrap
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   getglobal("GameTooltipTextLeft1"):SetWidth(150);
+   if (WoWTR_Localization.lang == 'AR') then
+      getglobal("GameTooltipTextLeft1"):SetJustifyH("RIGHT");
+   end
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.displayTranslationUI8DESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
    GameTooltip:Show()   -- Show the tooltip
