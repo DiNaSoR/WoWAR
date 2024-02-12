@@ -1,4 +1,4 @@
--- Addon: WoWTR-Books (version: 10.E6) 2024.01.22
+-- Addon: WoWTR-Books (version: 10.E7) 2024.02.12
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -40,7 +40,7 @@ function BookTranslator_ShowTranslation()
                if ((BT_PM["title"] == "1") and (BT_Books[BT_bookID]["Title"]~='')) then            -- wyświetlaj tłumaczenie tytułu
                   BT_tytul_tr=BT_Books[BT_bookID]["Title"];
                   ItemTextFrameTitleText:SetText(QTR_ReverseIfAR(BT_tytul_tr));
-                  ItemTextFrameTitleText:SetFont(WOWTR_Font2, 13);
+                  ItemTextFrameTitleText:SetFont(WOWTR_Font2, 11);
                end
                BT_tekst_tr=string.gsub(BT_Books[BT_bookID][BT_nr_str],"$b","$B");
                BT_tekst_tr=string.gsub(BT_tekst_tr,"$B", "\n");

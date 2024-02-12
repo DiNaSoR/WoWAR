@@ -308,7 +308,9 @@ function BB_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)     -- wywo�
          end
          if (BB_PM["chat-tr"] == "1") then                -- wyświetlaj tłumaczenie w linii czatu
             local _fontC, _sizeC, _C = DEFAULT_CHAT_FRAME:GetFont();   -- odczytaj aktualną czcionkę, rozmiar i typ
-            DEFAULT_CHAT_FRAME:SetFont(WOWTR_Font2, _sizeC, _C);       -- załaduj narodową czcionkę
+            if (WoWTR_Localization.lang ~= 'TR') then
+               DEFAULT_CHAT_FRAME:SetFont(WOWTR_Font2, _sizeC, _C);       -- załaduj narodową czcionkę
+            end
             if (nr_poz>0) then           -- mamy formę opisową dymku %s np. NPC_name wpada w szał!
                if (nr_poz==1) then
                   newMessage = name_NPC..strsub(newMessage, 3);

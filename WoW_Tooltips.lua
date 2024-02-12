@@ -255,36 +255,38 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
       tlumaczenie=string.gsub(tlumaczenie, "$1", QTR_ReverseIfAR(wartab[1]));
    end
 
-   tlumaczenie = string.gsub(tlumaczenie, "$o", "$O");
-   local nr_1, nr_2, nr_3 = 0;
-   local QTR_forma = "";
-   local nr_poz = string.find(tlumaczenie, "$O");    -- gdy nie znalazł, jest: nil
-   while (nr_poz and nr_poz>0) do
-      nr_1 = nr_poz + 1;   
-      while (string.sub(tlumaczenie, nr_1, nr_1) ~= "(") do
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(tlumaczenie, nr_1, nr_1) == "(") then
-         nr_2 =  nr_1 + 1;
-         while (string.sub(tlumaczenie, nr_2, nr_2) ~= ";") do
-            nr_2 = nr_2 + 1;
+   if (WoWTR_Localization.lang ~= 'AR') then
+      tlumaczenie = string.gsub(tlumaczenie, "$o", "$O");
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz = string.find(tlumaczenie, "$O");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz>0) do
+         nr_1 = nr_poz + 1;   
+         while (string.sub(tlumaczenie, nr_1, nr_1) ~= "(") do
+            nr_1 = nr_1 + 1;
          end
-         if (string.sub(tlumaczenie, nr_2, nr_2) == ";") then
-            nr_3 = nr_2 + 1;
-            while (string.sub(tlumaczenie, nr_3, nr_3) ~= ")") do
-               nr_3 = nr_3 + 1;
+         if (string.sub(tlumaczenie, nr_1, nr_1) == "(") then
+            nr_2 =  nr_1 + 1;
+            while (string.sub(tlumaczenie, nr_2, nr_2) ~= ";") do
+               nr_2 = nr_2 + 1;
             end
-            if (string.sub(tlumaczenie, nr_3, nr_3) == ")") then
-               if (QTR_PS["ownname"] == "1") then        -- forma polska
-                  QTR_forma = string.sub(tlumaczenie,nr_2+1,nr_3-1);
-               else                                      -- forma angielska
-                  QTR_forma = QTR_ReverseIfAR(string.sub(tlumaczenie,nr_1+1,nr_2-1));
+            if (string.sub(tlumaczenie, nr_2, nr_2) == ";") then
+               nr_3 = nr_2 + 1;
+               while (string.sub(tlumaczenie, nr_3, nr_3) ~= ")") do
+                  nr_3 = nr_3 + 1;
                end
-               tlumaczenie = string.sub(tlumaczenie,1,nr_poz-1) .. QTR_forma .. string.sub(tlumaczenie,nr_3+1);
-            end   
+               if (string.sub(tlumaczenie, nr_3, nr_3) == ")") then
+                  if (QTR_PS["ownname"] == "1") then        -- forma polska
+                     QTR_forma = string.sub(tlumaczenie,nr_2+1,nr_3-1);
+                  else                                      -- forma angielska
+                     QTR_forma = QTR_ReverseIfAR(string.sub(tlumaczenie,nr_1+1,nr_2-1));
+                  end
+                  tlumaczenie = string.sub(tlumaczenie,1,nr_poz-1) .. QTR_forma .. string.sub(tlumaczenie,nr_3+1);
+               end   
+            end
          end
+         nr_poz = string.find(tlumaczenie, "$O");
       end
-      nr_poz = string.find(tlumaczenie, "$O");
    end
 
    return tlumaczenie;
