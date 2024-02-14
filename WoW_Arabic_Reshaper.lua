@@ -58,7 +58,7 @@ AS_Reshaping_Rules = {
    ["\217\132\216\163"] = { isolated = "\239\187\183", initial = "\239\187\183", middle = "\239\187\184", final = "\239\187\184" }, -- LAM WITH ALEF WITH HAMZA ABOVE
    ["\217\132\216\165"] = { isolated = "\239\187\185", initial = "\239\187\185", middle = "\239\187\186", final = "\239\187\186" }, -- LAM WITH ALEF WITH HAMZA BELOW
    ["\216\161"] = { isolated = "\216\161", initial = "\216\161", middle = "\216\161", final = "\216\161" },                         -- HAMZA
-};};
+};
 
 -------------------------------------------------------------------------------------------------------
 -- Arabic ligature
@@ -340,7 +340,7 @@ function AS_UTF8reverse(s)
       local charbytes1, charbytes2, charbytes3;
       local position = -1;             -- not specified
       local nextletter = 0;
-      local spaces = 'abcdefghijklmnopqrstuvwxyz<>( )?$#%؟!,.;:،|"'; -- letters that we treat as a space
+      local spaces = '<>( )?$#%؟!,.;:،|"'; -- letters that we treat as a space
 
       while (pos <= bytes) do
          charbytes1 = AS_UTF8charbytes(s, pos);        -- count of bytes (liczba bajtów znaku)
