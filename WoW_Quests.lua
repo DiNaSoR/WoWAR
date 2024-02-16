@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A36) 2024.02.12
+-- Addon: WoW_Quests (version: 10.A37) 2024.02.16
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -243,6 +243,12 @@ function QTR_Gossip_Show()
          local Hash = StringHash(Czysty_Text);
          QTR_curr_hash = Hash;
          QTR_GS[Hash] = Greeting_Text;                      -- zapis oryginalnego tekstu
+         if ( GS_Gossip[Hash] == nil ) then                 -- może to być nazwa zadania z dopiskiem (low level)
+            Origin_Text = string.gsub(Origin_Text, ' (low level)', '');
+            Czysty_Text = string.gsub(Czysty_Text, ' (low level)', '');
+            Hash = StringHash(Czysty_Text);
+            QTR_curr_hash = Hash;
+         end
          if ( GS_Gossip[Hash] ) then   -- istnieje tłumaczenie tekstu GOSSIP tego NPC
             local Greeting_TR = GS_Gossip[Hash];
             if (string.sub(Nazwa_NPC,1,17) == "Bronze Timekeeper") then       -- wyścigi na smokach - wyjątej z sekundami: $1.$2 oraz $3.$4
