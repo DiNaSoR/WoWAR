@@ -105,11 +105,12 @@ function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1)     -- obj=o
          local ST_Hash = StringHash(ST_UsunZbedneZnaki(txt));
          if (ST_TooltipsHS[ST_Hash]) then
             local a1, a2, a3 = obj:GetFont();
-            obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");     -- hard space at the end of translation
             if (font1) then
                obj:SetFont(font1, a2);
+               obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,font1).." ");     -- hard space at the end of translation
             else
                obj:SetFont(WOWTR_Font2, a2);
+               obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,WOWTR_Font2).." ");     -- hard space at the end of translation
             end
          elseif (sav and (ST_PM["saveNW"]=="1")) then
             ST_PH[ST_Hash] = prefix.."@"..ST_PrzedZapisem(txt);
@@ -893,14 +894,31 @@ end
 -------------------------------------------------------------------------------------------------------
 
 function ST_updateSpellBookFrame()
-    local ST_titleTextFontString = SpellBookFrame:GetTitleText();
-    ST_titleTextFontString:SetText(ST_SetText(ST_titleTextFontString:GetText()));
+   local ST_titleTextFontString = SpellBookFrame:GetTitleText();
+   ST_titleTextFontString:SetText(ST_SetText(ST_titleTextFontString:GetText()));
 
-    SpellBookFrameTabButton1:SetText(ST_SetText(SpellBookFrameTabButton1:GetText()));
-    SpellBookFrameTabButton2:SetText(ST_SetText(SpellBookFrameTabButton2:GetText()));
-    if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
-        SpellBookFrameTabButton3:SetText(ST_SetText(SpellBookFrameTabButton3:GetText()));
-    end
+   local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
+   local fo = SpellBookFrameTabButton1:CreateFontString();
+   fo:SetFont(WOWTR_Font2, 13);
+   fo:SetText(text1);
+   SpellBookFrameTabButton1:SetFontString(fo);
+   SpellBookFrameTabButton1:SetText(text1);
+   
+   local text2 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
+   local fo = SpellBookFrameTabButton2:CreateFontString();
+   fo:SetFont(WOWTR_Font2, 13);
+   fo:SetText(text2);
+   SpellBookFrameTabButton2:SetFontString(fo);
+   SpellBookFrameTabButton2:SetText(text2);
+   
+   if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
+      local text3 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
+      local fo = SpellBookFrameTabButton3:CreateFontString();
+      fo:SetFont(WOWTR_Font2, 13);
+      fo:SetText(text3);
+      SpellBookFrameTabButton2:SetFontString(fo);
+      SpellBookFrameTabButton3:SetText(text3);
+   end
    
    local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
    ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other");
