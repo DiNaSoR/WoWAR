@@ -775,7 +775,7 @@ function isImmersion()
          QTR_ToggleButton4 = CreateFrame("Button",nil, ImmersionFrame.TalkBox, "UIPanelButtonTemplate");
          QTR_ToggleButton4:SetWidth(150);
          QTR_ToggleButton4:SetHeight(20);
-         QTR_ToggleButton4:SetText(QTR_ReverseIfAR(WoWTR_Localization.choiceQuestFirst));  -- może: QTR_ExpandUnitInfo ?
+         QTR_ToggleButton4:SetText(QTR_ReverseIfAR(WoWTR_Localization.choiceQuestFirst));  -- może: QTR_ExtendedUnitInfo ?
          QTR_ToggleButton4:ClearAllPoints();
          QTR_ToggleButton4:SetPoint("TOPLEFT", ImmersionFrame.TalkBox, "TOPRIGHT", -200, -116);
          QTR_ToggleButton4:SetScript("OnClick", QTR_ON_OFF);
@@ -804,7 +804,7 @@ function isStoryline()
          QTR_ToggleButton5 = CreateFrame("Button",nil, Storyline_NPCFrameChat, "UIPanelButtonTemplate");
          QTR_ToggleButton5:SetWidth(150);
          QTR_ToggleButton5:SetHeight(20);
-         QTR_ToggleButton5:SetText(QTR_ReverseIfAR(WoWTR_Localization.choiceQuestFirst));  -- może: QTR_ExpanddUnitInfo ?
+         QTR_ToggleButton5:SetText(QTR_ReverseIfAR(WoWTR_Localization.choiceQuestFirst));  -- może: QTR_ExtendedUnitInfo ?
          QTR_ToggleButton5:ClearAllPoints();
          QTR_ToggleButton5:SetPoint("BOTTOMLEFT", Storyline_NPCFrameChat, "BOTTOMLEFT", 244, -16);
          QTR_ToggleButton5:SetScript("OnClick", QTR_ON_OFF);
@@ -858,17 +858,17 @@ end
 
 objectiveSpecials = {
    ClickComplete = function(fontString)
-      fontString:SetText("("..QTR_ReverseIfAR(WoWTR_Localization.clickToComplete)..")");   -- (click to complete),  może: QTR_ExpanddUnitInfo ?
+      fontString:SetText("("..QTR_ReverseIfAR(WoWTR_Localization.clickToComplete)..")");   -- (click to complete),  może: QTR_ExtendedUnitInfo ?
       fontString:SetFont(WOWTR_Font2, 13);   
    end,
  
    Failed = function(fontString)
-      fontString:SetText(QTR_ReverseIfAR(WoWTR_Localization.failed));                      -- failed,  może: QTR_ExpanddUnitInfo ?
+      fontString:SetText(QTR_ReverseIfAR(WoWTR_Localization.failed));                      -- failed,  może: QTR_ExtendedUnitInfo ?
    end,
  
    QuestComplete = function(fontString, questID)
       if ((fontString:GetText() == QUEST_WATCH_QUEST_READY) or (fontString:GetText() == "Ready for turn-in")) then
-         fontString:SetText(QTR_ReverseIfAR(WoWTR_Localization.readyForTurnIn));           -- Ready for turn-in,  może: QTR_ExpanddUnitInfo ?
+         fontString:SetText(QTR_ReverseIfAR(WoWTR_Localization.readyForTurnIn));           -- Ready for turn-in,  może: QTR_ExtendedUnitInfo ?
       else
          if (QTR_quest_EN[questID] and QTR_quest_EN[questID].objectives) then
             local obj = QTR_quest_EN[questID].objectives;
@@ -876,7 +876,7 @@ objectiveSpecials = {
             if (QTR_QuestData[tostring(questID)] and (fontString:GetText() == obj1)) then
                obj = QTR_ExpandUnitInfo(QTR_QuestData[tostring(questID)]["Objectives"],true,fontString,WOWTR_Font2);
                obj1= strsplit("\n\n", obj);
-               fontString:SetText(QTR_ReverseIfAR(obj1));      -- może: QTR_ExpanddUnitInfo ?
+               fontString:SetText(QTR_ReverseIfAR(obj1));      -- może: QTR_ExtendedUnitInfo ?
                fontString:SetFont(WOWTR_Font2, 12);
                QTR_ResizeBlock(fontString);
             elseif (string.find(fontString:GetText()," ") == nil) then   -- nie jest to przetłumaczony tekst
@@ -884,7 +884,7 @@ objectiveSpecials = {
                for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                   qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
                end
-               fontString:SetText(QTR_ReverseIfAR(qtr_obj).." ");         -- może: QTR_ExpandUnitInfo ?
+               fontString:SetText(QTR_ReverseIfAR(qtr_obj).." ");         -- może: QTR_ExtendedUnitInfo ?
                fontString:SetFont(WOWTR_Font2, 12);
                QTR_ResizeBlock(fontString);
             end
@@ -893,7 +893,7 @@ objectiveSpecials = {
             for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
             end
-            fontString:SetText(QTR_ReverseIfAR(qtr_obj).." ");            -- może: QTR_ExpandUnitInfo ?
+            fontString:SetText(QTR_ReverseIfAR(qtr_obj).." ");            -- może: QTR_ExtendedUnitInfo ?
             fontString:SetFont(WOWTR_Font2, 12);
             QTR_ResizeBlock(fontString);
          end
@@ -914,13 +914,8 @@ objectiveSpecials = {
 function QTR_ObjectiveTracker_Check()
    if ( QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate and QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
       ObjectiveTrackerFrame.HeaderMenu.Title:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
-      if (WoWTR_Localization.lang == 'AR') then
-         ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 16);
-         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 16);
-      else
-         ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 18);
-         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 18);
-      end
+      ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 16);
+      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 16);
       if (WoWTR_Localization.lang == 'AR') then
          --Added New Translation Campaign and Scenario for Arabic only
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetFont(WOWTR_Font2, 16);
@@ -932,7 +927,7 @@ function QTR_ObjectiveTracker_Check()
          ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("CENTER");
          ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("CENTER");
       end
-      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
+      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExtendedUnitInfo ?
       for questID, block in pairs(QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate) do
          local str_ID = tostring(questID);
          if (str_ID and QTR_PS["transtitle"]=="1" and QTR_QuestData[str_ID] and block.HeaderText) then  -- tłumaczenie tytułu
@@ -955,7 +950,7 @@ function QTR_ObjectiveTracker_Check()
             for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
             end
-            block.currentLine.Text:SetText(QTR_ReverseIfAR(qtr_obj));    -- może: QTR_ExpandUnitInfo ?
+            block.currentLine.Text:SetText(QTR_ReverseIfAR(qtr_obj));    -- może: QTR_ExtendedUnitInfo ?
             if (WoWTR_Localization.lang == 'AR') then
                block.currentLine.Text:SetFont(WOWTR_Font2, 13);
             else
@@ -969,7 +964,7 @@ function QTR_ObjectiveTracker_Check()
                for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                   qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
                end
-               objectives[index].Text:SetText(QTR_ReverseIfAR(qtr_obj)); -- może: QTR_ExpandUnitInfo ?
+               objectives[index].Text:SetText(QTR_ReverseIfAR(qtr_obj)); -- może: QTR_ExtendedUnitInfo ?
                if (WoWTR_Localization.lang == 'AR') then
                   objectives[index].Text:SetFont(WOWTR_Font2, 13);
                else
@@ -1024,8 +1019,9 @@ function QTR_QuestLogQuests_Update()
       for button in QuestScrollFrame.titleFramePool:EnumerateActive() do
          local str_ID = tostring(button.questID);
          if (QTR_PS["transtitle"]=="1" and QTR_QuestData[str_ID]) then           -- tłumaczenie tytułu
+            local _font1, _size1, _3 = button.Text:GetFont();                      -- odczytaj aktualną czcionkę i rozmiar
             button.Text:SetText(QTR_ReverseIfAR(QTR_QuestData[str_ID]["Title"]));    -- może: QTR_ExpandUnitInfo ?
-            button.Text:SetFont(WOWTR_Font2, 12);
+            button.Text:SetFont(WOWTR_Font2, _size1);
          end
       end
       for frame in QuestScrollFrame.objectiveFramePool:EnumerateActive() do
@@ -1035,12 +1031,14 @@ function QTR_QuestLogQuests_Update()
             for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
             end
+            local _font1, _size1, _3 = frame.Text:GetFont();                      -- odczytaj aktualną czcionkę i rozmiar
             frame.Text:SetText(QTR_ReverseIfAR(qtr_obj));
-            frame.Text:SetFont(WOWTR_Font2, 12);
+            frame.Text:SetFont(WOWTR_Font2, _size1);
          else
             if ((qtr_obj == QUEST_WATCH_QUEST_READY) or (qtr_obj == "Ready for turn-in")) then
                frame.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.readyForTurnIn));       -- Ready for turn-in
             else
+               local _font1, _size1, _3 = frame.Text:GetFont();                      -- odczytaj aktualną czcionkę i rozmiar
                if (QTR_quest_EN[frame.questID] and QTR_quest_EN[frame.questID].objectives) then
                   local obj = QTR_quest_EN[frame.questID].objectives;
                   local obj1= strsplit("\n\n", obj);
@@ -1048,20 +1046,20 @@ function QTR_QuestLogQuests_Update()
                      obj = QTR_ExpandUnitInfo(QTR_QuestData[str_ID]["Objectives"],true,frame.Text,WOWTR_Font2);
                      obj1= strsplit("\n\n", obj);
                      frame.Text:SetText(QTR_ReverseIfAR(obj1));      
-                     frame.Text:SetFont(WOWTR_Font2, 12);
+                     frame.Text:SetFont(WOWTR_Font2, _size1);
                   else
                      for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                        qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
                     end
                      frame.Text:SetText(QTR_ReverseIfAR(qtr_obj));
-                     frame.Text:SetFont(WOWTR_Font2, 12);
+                     frame.Text:SetFont(WOWTR_Font2, _size1);
                   end
                else
                   for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                      qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
                   end
-                  frame.Text:SetText(QTR_ReverseIfAR(qtr_obj));    -- może: QTR_ExpandUnitInfo ?
-                  frame.Text:SetFont(WOWTR_Font2, 12);
+                  frame.Text:SetText(QTR_ReverseIfAR(qtr_obj));    -- może: QTR_ExtendedUnitInfo ?
+                  frame.Text:SetFont(WOWTR_Font2, _size1);
                end
             end
          end
@@ -1367,7 +1365,7 @@ end
 function QTR_Translate_On(typ)
    QTR_display_constants(1);
    if (QuestNPCModelText:IsVisible() and (QTR_ModelTextHash>0)) then         -- jest wyświetlony tekst QuestNPCModelText
-      QuestNPCModelText:SetText(QTR_ExpandUnitInfo(QTR_ModelText_PL,false,QuestNPCModelText).." ");   -- na końcu dodajemy "twardą" spację
+      QuestNPCModelText:SetText(QTR_ExtendedUnitInfo(QTR_ModelText_PL,false,QuestNPCModelText).." ");   -- na końcu dodajemy "twardą" spację
       QuestNPCModelText:SetFont(WOWTR_Font2, 13);
    end
    
