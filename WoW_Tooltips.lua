@@ -107,6 +107,7 @@ function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1, onlyReverse,
             local a1, a2, a3 = obj:GetFont();
             if (not ST_corr) then
                ST_corr = 0;
+            end
             if (font1) then
                obj:SetFont(font1, a2);
                if (onlyReverse) then
