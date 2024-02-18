@@ -68,7 +68,7 @@ function TT_onTutorialShow()          -- główna funkcja wywoływana, gdy pojaw
                   id = StringHash(txt);
                   if (Tut_Data7[id]) then         -- jest tureckie tłumaczenie w bazie tłumaczeń
                      local _font5, _size5, _35 = _G[obj].Text:GetFont();
-                     _G[obj].Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                     _G[obj].Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
                      _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
                   elseif (TT_PS["save"] == "1") then
                      TT_TUTORIALS[tostring(id)] = txt;
@@ -91,7 +91,7 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -106,7 +106,7 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -121,7 +121,7 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then         -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].Text:GetFont();
-            _G[obj].Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[id])).." ");                 -- podmieniamy tekst na nasze tłumaczenie
+            _G[obj].Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");                 -- podmieniamy tekst na nasze tłumaczenie
             _G[obj].Text:SetFont(WOWTR_Font2, _size5);
 --            _G[obj].Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -136,7 +136,7 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[id])).." ");   -- podmieniamy tekst na nasze tłumaczenie
+            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");   -- podmieniamy tekst na nasze tłumaczenie
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -200,7 +200,7 @@ function TT_onChoiceShow()
       local hash = StringHash(txt);
       if (Tut_Data7[hash]) then                  -- jest tureckie tłumaczenie w bazie tłumaczeń
          local _font6, _size6, _36 = PlayerChoiceFrame.Title.Text:GetFont();
-         PlayerChoiceFrame.Title.Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+         PlayerChoiceFrame.Title.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie
          PlayerChoiceFrame.Title.Text:SetFont(WOWTR_Font2, _size6);     -- na końcu dodajemu twardą spację jako znacznik tekstu tureckiego
       elseif (TT_PS["save"] == "1") then
          TT_TUTORIALS[tostring(hash)] = txt;
@@ -215,7 +215,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -229,7 +229,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -247,7 +247,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -261,7 +261,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash]))).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -279,7 +279,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -293,7 +293,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -322,7 +322,7 @@ function TT_onChoiceShow()
                   hash= StringHash(txt);
                   if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                      local _font7, _size7, _37 = obj:GetFont();
-                     obj:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+                     obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                      obj:SetFont(WOWTR_Font2, _size7);
                   elseif (TT_PS["save"] == "1") then
                      TT_TUTORIALS[tostring(hash)] = txt;
@@ -332,75 +332,6 @@ function TT_onChoiceShow()
          end
       end
    end
-end
-
--------------------------------------------------------------------------------------------------------
-
-function TT_Spr_Gender(msg)
-   local nr_1, nr_2, nr_3 = 0;
-   local TT_forma = "";
-   
-   msg = string.gsub(msg,"$g","$G");
-   local nr_poz = string.find(msg, "$G");    -- gdy nie znalazł, jest: nil; liczy od 1
-   while (nr_poz and nr_poz>0) do
-      nr_1 = nr_poz + 1;   
-      while (string.sub(msg, nr_1, nr_1) ~= "(") do   -- szukaj nawiasu otwierającego
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(msg, nr_1, nr_1) == "(") then
-         nr_2 =  nr_1 + 1;
-         while (string.sub(msg, nr_2, nr_2) ~= ";") do   -- szukaj średnika oddzielającego
-            nr_2 = nr_2 + 1;
-         end
-         if (string.sub(msg, nr_2, nr_2) == ";") then
-            nr_3 = nr_2 + 1;
-            while (string.sub(msg, nr_3, nr_3) ~= ")") do   -- szykaj nawiasu zamykającego
-               nr_3 = nr_3 + 1;
-            end
-            if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (WOWTR_player_sex==3) then        -- forma żeńska
-                  TT_forma = string.sub(msg,nr_2+1,nr_3-1);
-               else                        -- forma męska
-                  TT_forma = string.sub(msg,nr_1+1,nr_2-1);
-               end
-               msg = string.sub(msg,1,nr_poz-1) .. TT_forma .. string.sub(msg,nr_3+1);
-            end   
-         end
-      end
-      nr_poz = string.find(msg, "$G");
-   end
-
-   msg = string.gsub(msg,"$o","$O");
-   local nr_poz = string.find(msg, "$O");    -- gdy nie znalazł, jest: nil; liczy od 1
-   while (nr_poz and nr_poz>0) do
-      nr_1 = nr_poz + 1;   
-      while (string.sub(msg, nr_1, nr_1) ~= "(") do
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(msg, nr_1, nr_1) == "(") then
-         nr_2 =  nr_1 + 1;
-         while (string.sub(msg, nr_2, nr_2) ~= ";") do
-            nr_2 = nr_2 + 1;
-         end
-         if (string.sub(msg, nr_2, nr_2) == ";") then
-            nr_3 = nr_2 + 1;
-            while (string.sub(msg, nr_3, nr_3) ~= ")") do
-               nr_3 = nr_3 + 1;
-            end
-            if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (QTR_PS["ownname"] == "1") then        -- forma polska
-                  QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
-               else                                      -- forma angielska
-                  QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
-               end
-               msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
-            end   
-         end
-      end
-      nr_poz = string.find(msg, "$O");
-   end
-
-   return msg;
 end
 
 -------------------------------------------------------------------------------------------------------
@@ -458,7 +389,7 @@ if ((GetLocale()=="enUS") or (GetLocale()=="enGB")) then
                   local hash= StringHash(txt);
                   if (Tut_Data7[hash]) then                  -- jest tłumacznie tego tekstu
                      local _font8, _size8, _38 = frame.Text:GetFont();
-                     frame.Text:SetText(QTR_ReverseIfAR(TT_Spr_Gender(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                     frame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie
                      frame.Text:SetFont(WOWTR_Font2, _size8);        -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
                   elseif (TT_PS["save"] == "1") then
                      TT_TUTORIALS[tostring(hash)] = txt;
