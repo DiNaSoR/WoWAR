@@ -2348,7 +2348,9 @@ function WOW_ZmienKody(message, target)
    if (WoWTR_Localization.lang == 'AR') then
       msg = string.gsub(msg, "|r", "r|");
       msg = string.gsub(msg, "|FFFFFFFFc", "FFFFFFFFc|");
+      msg = string.gsub(msg, "|ffffffffc", "ffffffffc|");
       msg = string.gsub(msg, "|FFFF00FFc", "FF00FFFFc|");
+      msg = string.gsub(msg, "|D81E0EFFc", "D81E0EFFc|");
    else
       msg = string.gsub(msg, "$b", "$B");
       msg = string.gsub(msg, "$n", "$N");
