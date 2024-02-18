@@ -98,26 +98,28 @@ end
 
 -------------------------------------------------------------------------------------------------------
 
-function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1, onlyReverse)     -- obj=object with stingtext,  sav=permission to save untranstaled tekst (true/false)
+function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1, onlyReverse, ST_corr)     -- obj=object with stingtext,  sav=permission to save untranstaled tekst (true/false)
    if (obj and obj.GetText) then                                        -- prefix=text to save group,  font1=if present:SetFont to given font file,  onlyReverse=use only Reverse function
-      local txt = obj:GetText();                                        -- Font Files: WOWTR_Font1, Original_Font1, Original_Font2
+      local txt = obj:GetText();                                        -- Font Files: WOWTR_Font1, Original_Font1, Original_Font2     ST_corr=changing the width of the object to the translation text 
       if (txt and string.find(txt," ")==nil) then
          local ST_Hash = StringHash(ST_UsunZbedneZnaki(txt));
          if (ST_TooltipsHS[ST_Hash]) then
             local a1, a2, a3 = obj:GetFont();
+            if (not ST_corr) then
+               ST_corr = 0;
             if (font1) then
                obj:SetFont(font1, a2);
                if (onlyReverse) then
                   obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");        -- hard space at the end of translation
                else
-                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,font1).." ");        -- hard space at the end of translation
+                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,font1,ST_corr).." ");        -- hard space at the end of translation
                end
             else
                obj:SetFont(WOWTR_Font2, a2);
                if (onlyReverse) then
                   obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");        -- hard space at the end of translation
                else
-                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,WOWTR_Font2).." ");  -- hard space at the end of translation
+                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,WOWTR_Font2,ST_corr).." ");  -- hard space at the end of translation
                end
             end
          elseif (sav and (ST_PM["saveNW"]=="1")) then
@@ -940,13 +942,13 @@ function ST_updateSpellBookFrame()
    ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other");
 
    local SecondaryProfession1Text = SecondaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other");
+   ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other", false, false, -2);
 
    local SecondaryProfession2Text = SecondaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other");
+   ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -2);
 
    local SecondaryProfession3Text = SecondaryProfession3.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other");
+   ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -2);
 
    local SBPageText = SpellBookPageText;
    ST_CheckAndReplaceTranslationText(SBPageText, true, "ui");
@@ -1401,7 +1403,7 @@ end
 function ST_WorldMapFunc()
 --print("WorldMap");
    local wmframe01 = WorldMapFrameTitleText;
-   ST_CheckAndReplaceTranslationText(wmframe01, true, "ui", nil, 1);
+   ST_CheckAndReplaceTranslationText(wmframe01, true, "ui", false, 1);
 
    local wmframe02 = WorldMapFrameHomeButtonText;
    ST_CheckAndReplaceTranslationText(wmframe02, true, "ui");
