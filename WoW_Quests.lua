@@ -2466,11 +2466,15 @@ function WOW_ZmienKody(message, target)
                else                        -- forma męska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
-               msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               if (nr_poz>1) then
+                  msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               else
+                  msg = QTR_forma .. string.sub(msg,nr_3+1);
+               end
             end   
          end
       end
-      nr_poz = string.find(msg, "YOUR_GENDER");
+      nr_poz, nr_poz2 = string.find(msg, "YOUR_GENDER");
    end
 
 -- obsługa kodu NPC_GENDER(x;y)
@@ -2499,11 +2503,15 @@ function WOW_ZmienKody(message, target)
                else                        -- forma męska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
-               msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               if (nr_poz>1) then
+                  msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               else
+                  msg = QTR_forma .. string.sub(msg,nr_3+1);
+               end
             end   
          end
       end
-      nr_poz = string.find(msg, "NPC_GENDER");
+      nr_poz, nr_poz2 = string.find(msg, "NPC_GENDER");
    end
    
 -- obsługa kodu OWN_NAME(EN;PL)
@@ -2526,16 +2534,20 @@ function WOW_ZmienKody(message, target)
                nr_3 = nr_3 + 1;
             end
             if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (QTR_PS["ownname"] == "1") then        -- forma polska
+               if (QTR_PS["ownname"] == "1") then        -- forma polska, czeska, ukraińska, węgierska, włoska, turecka, arabska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
                else                                      -- forma angielska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
-               msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               if (nr_poz>1) then
+                  msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+               else
+                  msg = QTR_forma .. string.sub(msg,nr_3+1);
+               end
             end   
          end
       end
-      nr_poz = string.find(msg, "OWN_NAME");
+      nr_poz, nr_poz2 = string.find(msg, "OWN_NAME");
    end
    
    return msg;
