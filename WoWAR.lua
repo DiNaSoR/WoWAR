@@ -412,7 +412,11 @@ function WOWTR_onEvent(self, event, name, ...)
       WOWTR_ToggleButtonS:SetHeight(22);
       WOWTR_ToggleButtonS:SetFrameStrata("HIGH")
       if (ST_PM["spell"] == "1") then
-         WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_trDESC);
+         local fo = WOWTR_ToggleButtonS:CreateFontString();
+         fo:SetFont(WOWTR_Font2, 14);
+         fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
+         WOWTR_ToggleButtonS:SetFontString(fo);
+         WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
       else
          WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_enDESC);
       end

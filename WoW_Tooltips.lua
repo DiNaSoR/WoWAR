@@ -896,10 +896,10 @@ end
 function ST_updateSpellBookFrame()
    local ST_titleTextFontString = SpellBookFrame:GetTitleText();
    local text0 = QTR_ReverseIfAR(ST_titleTextFontString:GetText());
-   local fo = ST_titleTextFontString:CreateFontString();
-   fo:SetFont(WOWTR_Font2, 13);
-   fo:SetText(text0);
-   ST_titleTextFontString:SetFontString(fo);
+--   local fo = ST_titleTextFontString:CreateFontString();
+--   fo:SetFont(WOWTR_Font2, 13);
+--   fo:SetText(text0);
+--   ST_titleTextFontString:SetFontString(fo);
    ST_titleTextFontString:SetText(ST_SetText(text0));
 
    local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));

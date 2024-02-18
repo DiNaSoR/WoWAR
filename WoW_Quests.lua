@@ -2344,11 +2344,12 @@ end
 -------------------------------------------------------------------------------------------------------------------
 
 function WOW_ZmienKody(message, target)
-   if (target == "") then                             -- może być zmienna $target w tłumaczeniu
-      target = WOWTR_player_name;
-   end
    msg = message;
-   if (WoWTR_Localization.lang ~= 'AR') then
+   if (WoWTR_Localization.lang == 'AR') then
+      msg = string.gsub(msg, "|r", "r|");
+      msg = string.gsub(msg, "|FFFFFFFFc", "FFFFFFFFc|");
+      msg = string.gsub(msg, "|FFFF00FFc", "FF00FFFFc|");
+   else
       msg = string.gsub(msg, "$b", "$B");
       msg = string.gsub(msg, "$n", "$N");
       msg = string.gsub(msg, "$r", "$R");
