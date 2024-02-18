@@ -2351,6 +2351,8 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|ffffffffc", "ffffffffc|");
       msg = string.gsub(msg, "|FFFF00FFc", "FF00FFFFc|");
       msg = string.gsub(msg, "|D81E0EFFc", "D81E0EFFc|");
+      msg = string.gsub(msg, "|888888ffc", "888888ffc|");
+      msg = string.gsub(msg, "|cffffffff", "ffffffffc|");
    else
       msg = string.gsub(msg, "$b", "$B");
       msg = string.gsub(msg, "$n", "$N");

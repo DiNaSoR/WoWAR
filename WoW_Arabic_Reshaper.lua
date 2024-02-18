@@ -340,7 +340,7 @@ function AS_UTF8reverse(s)
       local charbytes1, charbytes2, charbytes3;
       local position = -1;             -- not specified
       local nextletter = 0;
-      local spaces = '<>( )?$#%؟!,.;:،|"-'; -- letters that we treat as a space
+      local spaces = '~`^&*[]+/%<>( )?$#%؟!,.;:،|"-'; -- letters that we treat as a space
 
       while (pos <= bytes) do
          charbytes1 = AS_UTF8charbytes(s, pos);        -- count of bytes (liczba bajtów znaku)

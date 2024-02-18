@@ -186,7 +186,11 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
       tlumaczenie = string.gsub(tlumaczenie,"  "," ");
    end
    tlumaczenie = string.gsub(tlumaczenie,"NEW_LINE","\n");
+   tlumaczenie = string.gsub(tlumaczenie,"$B","\n");
+   tlumaczenie = string.gsub(tlumaczenie,"$b","\n");
    tlumaczenie = string.gsub(tlumaczenie,"YOUR_NAME",WOWTR_player_name);
+   tlumaczenie = string.gsub(tlumaczenie,"$N",WOWTR_player_name);
+   tlumaczenie = string.gsub(tlumaczenie,"$n",WOWTR_player_name);
    if (not ST_miasto) then
       ST_miasto = WoWTR_Localization.your_home;
    end
