@@ -1,4 +1,4 @@
--- Addon: WoWTR-Tooltips (version: 10.S44) 2024.01.22
+-- Addon: WoWTR-Tooltips (version: 10.S45) 2024.02.18
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -98,8 +98,8 @@ end
 
 -------------------------------------------------------------------------------------------------------
 
-function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1)     -- obj=object with stingtext,  sav=permission to save untranstaled tekst (true/false)
-   if (obj and obj.GetText) then                                        -- prefix=text to save group,  font1=if present:SetFont to given font file
+function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1, onlyReverse)     -- obj=object with stingtext,  sav=permission to save untranstaled tekst (true/false)
+   if (obj and obj.GetText) then                                        -- prefix=text to save group,  font1=if present:SetFont to given font file,  onlyReverse=use only Reverse function
       local txt = obj:GetText();                                        -- Font Files: WOWTR_Font1, Original_Font1, Original_Font2
       if (txt and string.find(txt," ")==nil) then
          local ST_Hash = StringHash(ST_UsunZbedneZnaki(txt));
@@ -107,10 +107,18 @@ function ST_CheckAndReplaceTranslationText(obj, sav, prefix, font1)     -- obj=o
             local a1, a2, a3 = obj:GetFont();
             if (font1) then
                obj:SetFont(font1, a2);
-               obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,font1).." ");     -- hard space at the end of translation
+               if (onlyReverse) then
+                  obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");        -- hard space at the end of translation
+               else
+                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,font1).." ");        -- hard space at the end of translation
+               end
             else
                obj:SetFont(WOWTR_Font2, a2);
-               obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,WOWTR_Font2).." ");     -- hard space at the end of translation
+               if (onlyReverse) then
+                  obj:SetText(QTR_ReverseIfAR(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash])).." ");        -- hard space at the end of translation
+               else
+                  obj:SetText(QTR_ExpandUnitInfo(ST_TranslatePrepare(txt, ST_TooltipsHS[ST_Hash]),false,obj,WOWTR_Font2).." ");  -- hard space at the end of translation
+               end
             end
          elseif (sav and (ST_PM["saveNW"]=="1")) then
             ST_PH[ST_Hash] = prefix.."@"..ST_PrzedZapisem(txt);
@@ -1393,7 +1401,7 @@ end
 function ST_WorldMapFunc()
 --print("WorldMap");
    local wmframe01 = WorldMapFrameTitleText;
-   ST_CheckAndReplaceTranslationText(wmframe01, true, "ui");
+   ST_CheckAndReplaceTranslationText(wmframe01, true, "ui", nil, 1);
 
    local wmframe02 = WorldMapFrameHomeButtonText;
    ST_CheckAndReplaceTranslationText(wmframe02, true, "ui");
