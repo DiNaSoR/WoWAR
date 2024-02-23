@@ -699,7 +699,7 @@ end
 
 function QTR_ObjectiveTracker_QuestHeader()
    if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
-      local _font1, _size1, _3 = QuestScrollFrame.Contents.StoryHeader.Progress:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
+      local _font1, _size1, _3 = ObjectiveTrackerBlocksFrame.QuestHeader.Text:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
       ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(WoWTR_Localization.quests);
       ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, _size1);
    end
