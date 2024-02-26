@@ -1409,7 +1409,7 @@ function QTR_Translate_On(typ)
          QuestInfoDescriptionText:SetWidth(WOW_width+5);
          QuestInfoObjectivesText:SetWidth(WOW_width);
          QuestProgressText:SetWidth(WOW_width);
-         QuestInfoRewardText:SetWidth(WOW_width);
+         QuestInfoRewardText:SetWidth(WOW_width+5);
          QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestInfoObjectivesText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestProgressText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
