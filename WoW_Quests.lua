@@ -2374,6 +2374,7 @@ function WOW_ZmienKody(message, target)
       -- Colors for arabic version
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
       msg = string.gsub(msg, "|ﺫﻫﺒﻲ|", "002DFFFFc|"); --Gold
+      msg = string.gsub(msg, "|ﺭﻣﺎﺩﻱ|", "888888ffc|"); --Gold
 
    else
       msg = string.gsub(msg, "$b", "$B");

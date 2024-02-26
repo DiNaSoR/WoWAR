@@ -598,12 +598,20 @@ if (WoWTR_Localization.lang == 'AR') then
 else
    WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", 40, -2);
 end
-WOWTR_CheckButton1a.Text:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.translateOwnNames));   -- Display translation of GOSSIP texts
+if (WoWTR_Localization.lang == 'AR') then
+   WOWTR_CheckButton1a.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(WoWTR_Config_Interface.translateOwnNames)..""));   -- Display translation of GOSSIP texts
+else
+   WOWTR_CheckButton1a.Text:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.translateOwnNames));   -- Display translation of GOSSIP texts
+end
 WOWTR_CheckButton1a.Text:SetFont(WOWTR_Font2, 15);
 WOWTR_CheckButton1a:SetScript("OnEnter", function(self)
    GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
    GameTooltip:ClearLines();
-   GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.translateOwnNames).." ", false);                -- red color, no wrap
+   if (WoWTR_Localization.lang == 'AR') then
+      GameTooltip:AddLine(QTR_ReverseIfAR(WOW_ZmienKody(WoWTR_Config_Interface.translateOwnNames)).." ", false);                -- red color, no wrap
+   else
+      GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.translateOwnNames).." ", false);                                -- red color, no wrap
+   end
    getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
    GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.translateOwnNamesDESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
    getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
@@ -701,7 +709,7 @@ WOWTR_CheckButton15.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["sav
 WOWTR_CheckButton15:SetWidth(254);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 55, -20);
-   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -105, -22);
+   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -98, -22);
    WOWTR_CheckButton15:SetWidth(165);
 else
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 10, -20);
@@ -765,7 +773,7 @@ WOWTR_CheckButton17.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["imm
 WOWTR_CheckButton17:SetWidth(303);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton17.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header3, "TOPLEFT", 15, -20);
-   WOWTR_CheckButton17:SetPoint("TOPLEFT", WOWTR_Panel1Header3, "TOPLEFT", -220, -22);
+   WOWTR_CheckButton17:SetPoint("TOPLEFT", WOWTR_Panel1Header3, "TOPLEFT", -210, -22);
    WOWTR_CheckButton17:SetWidth(240);
 else
    WOWTR_CheckButton17.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header3, "TOPLEFT", 10, -20);
@@ -816,7 +824,7 @@ WOWTR_CheckButton19.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["que
 WOWTR_CheckButton19.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 0, 0);
 WOWTR_CheckButton19:SetWidth(355);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -270, -2);
+   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -265, -2);
    WOWTR_CheckButton19:SetWidth(275);
 else
    WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 40, -2);
@@ -2486,7 +2494,11 @@ WOWTR_Panel9Text:ClearAllPoints();
 WOWTR_Panel9Text:SetPoint("TOPLEFT", WOWTR_OptionPanel9, "TOPLEFT", 25, -10);
 WOWTR_Panel9Text:SetWidth(640);
 WOWTR_Panel9Text:SetFont(WOWTR_Font2, 14);
-WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-50));        -- generalText
+if (WoWTR_Localization.lang == 'AR') then
+   WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-30));        -- generalText
+else
+   WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-50));        -- generalText
+end
 
 local WOWTR_Panel9Header1 = WOWTR_OptionPanel9:CreateFontString(nil, "ARTWORK");
 WOWTR_Panel9Header1:SetFontObject(GameFontNormal);
