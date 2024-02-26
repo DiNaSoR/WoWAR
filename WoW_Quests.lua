@@ -1403,8 +1403,8 @@ function QTR_Translate_On(typ)
             end
             QuestInfoTitleHeader:SetWidth(WOW_width);
             QuestProgressTitleText:SetWidth(WOW_width);
-            QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1));
-            QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
+            QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-10));
+            QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-10));
          end
          QuestInfoDescriptionText:SetWidth(WOW_width+5);
          QuestInfoObjectivesText:SetWidth(WOW_width);
