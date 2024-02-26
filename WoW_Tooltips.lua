@@ -1,4 +1,4 @@
--- Addon: WoWTR-Tooltips (version: 10.S45) 2024.02.18
+﻿-- Addon: WoWTR-Tooltips (version: 10.S46) 2024.02.26
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -919,14 +919,14 @@ function ST_updateSpellBookFrame()
 
    local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
    local fo = SpellBookFrameTabButton1:CreateFontString();
-   fo:SetFont(WOWTR_Font2, 13);
+   fo:SetFont(WOWTR_Font2, 9);
    fo:SetText(text1);
    SpellBookFrameTabButton1:SetFontString(fo);
    SpellBookFrameTabButton1:SetText(text1);
    
    local text2 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
    local fo = SpellBookFrameTabButton2:CreateFontString();
-   fo:SetFont(WOWTR_Font2, 13);
+   fo:SetFont(WOWTR_Font2, 9);
    fo:SetText(text2);
    SpellBookFrameTabButton2:SetFontString(fo);
    SpellBookFrameTabButton2:SetText(text2);
@@ -934,9 +934,9 @@ function ST_updateSpellBookFrame()
    if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
       local text3 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
       local fo = SpellBookFrameTabButton3:CreateFontString();
-      fo:SetFont(WOWTR_Font2, 13);
+      fo:SetFont(WOWTR_Font2, 9);
       fo:SetText(text3);
-      SpellBookFrameTabButton2:SetFontString(fo);
+      SpellBookFrameTabButton3:SetFontString(fo);
       SpellBookFrameTabButton3:SetText(text3);
    end
    
