@@ -202,7 +202,7 @@ local WOWTR_CheckButton00 = CreateFrame("CheckButton", "WOWTR_CheckButton00", WO
 WOWTR_CheckButton00.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["icon"]=="1") then QTR_PS["icon"]="0"; WOWTR.db.profile.minimap.hide=true; LibDBIcon10_WOWTR_LDB:Hide(); else QTR_PS["icon"]="1"; WOWTR.db.profile.minimap.hide=false; LibDBIcon10_WOWTR_LDB:Show(); end; end);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 520, -20);
-   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 190, -22);
+   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 260, -22);
    WOWTR_CheckButton00.Text:SetText("|cffffffff"..AS_UTF8reverse(WoWTR_Config_Interface.showMinimapIcon).."|r");   -- Show then addon setting icon next to the minimap
    WOWTR_CheckButton00:SetWidth(260);
 else
@@ -1901,7 +1901,7 @@ WOWTR_CheckButton44:SetScript("OnLeave", function(self)
 
 WOWTR_ResetButton2 = CreateFrame("BUTTON", nil, WOWTR_OptionPanel4, "UIPanelButtonTemplate");
 WOWTR_ResetButton2:SetWidth(204);
-WOWTR_ResetButton2:SetHeight(48);
+WOWTR_ResetButton2:SetHeight(40);
 if (WoWTR_Localization.lang == 'AR') then
    local fo = WOWTR_ResetButton2:CreateFontString();
    fo:SetFont(WOWTR_Font2, 12);
@@ -1911,7 +1911,7 @@ end
 WOWTR_ResetButton2:SetText(QTR_ReverseIfAR(WoWTR_Localization.resetButton2));     -- Przywróć ustawienia domyślne dodatku
 WOWTR_ResetButton2:ClearAllPoints();
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_ResetButton2:SetPoint("TOPLEFT", WOWTR_Panel4Header1, "TOPLEFT", -430, -450);
+   WOWTR_ResetButton2:SetPoint("TOPLEFT", WOWTR_Panel4Header1, "TOPLEFT", -435, -450);
 else
    WOWTR_ResetButton2:SetPoint("TOPLEFT", WOWTR_Panel4Header1, "TOPLEFT", 449, -450);
 end
@@ -2495,7 +2495,7 @@ WOWTR_Panel9Text:SetPoint("TOPLEFT", WOWTR_OptionPanel9, "TOPLEFT", 25, -10);
 WOWTR_Panel9Text:SetWidth(640);
 WOWTR_Panel9Text:SetFont(WOWTR_Font2, 14);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-30));        -- generalText
+   WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-50));        -- generalText
 else
    WOWTR_Panel9Text:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.generalText,false,WOWTR_Panel9Text,WOWTR_Font2,-50));        -- generalText
 end
@@ -2622,7 +2622,11 @@ else
 end
 WOWTR_Panel9TextContact:SetWidth(640);
 WOWTR_Panel9TextContact:SetFont(WOWTR_Font2, 14);
-WOWTR_Panel9TextContact:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.textContact,false,WOWTR_Panel9TextContact,WOWTR_Font2));        -- TextContact
+if (WoWTR_Localization.lang == 'AR') then
+   WOWTR_Panel9TextContact:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.textContact,false,WOWTR_Panel9TextContact,WOWTR_Font2,-40));        -- TextContact
+else 
+   WOWTR_Panel9TextContact:SetText(QTR_ExpandUnitInfo(WoWTR_Config_Interface.textContact,false,WOWTR_Panel9TextContact,WOWTR_Font2));        -- TextContact
+end
 
 WOWTR_LinkFrame = CreateFrame("Frame", nil, WOWTR_OptionPanel9, "UIPanelDialogTemplate");
 WOWTR_LinkFrame:SetWidth(305);
