@@ -1395,8 +1395,8 @@ function QTR_Translate_On(typ)
          end
          if (QTR_PS["transtitle"]=="1") then
             if (WoWTR_Localization.lang == 'AR') then 
-               QuestInfoTitleHeader:SetFont(WOWTR_Font1,  IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 16);
-               QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 16);
+               QuestInfoTitleHeader:SetFont(WOWTR_Font1,  IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+               QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
             else
                QuestInfoTitleHeader:SetFont(WOWTR_Font1,  IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
                QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
@@ -2374,6 +2374,7 @@ function WOW_ZmienKody(message, target)
       -- Colors for arabic version
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
       msg = string.gsub(msg, "|ﺫﻫﺒﻲ|", "002DFFFFc|"); --Gold
+      msg = string.gsub(msg, "|ﺭﻣﺎﺩﻱ|", "888888ffc|"); --Gold
 
    else
       msg = string.gsub(msg, "$b", "$B");
