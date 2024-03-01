@@ -1935,7 +1935,7 @@ WOWTR_ResetButton2:SetScript("OnLeave", function(self)
 local WOWTR_OptionsHeaderIcon6 = WOWTR_OptionPanel5:CreateTexture(nil, "OVERLAY");
 WOWTR_OptionsHeaderIcon6:SetWidth(200);
 WOWTR_OptionsHeaderIcon6:SetHeight(200);
-WOWTR_OptionsHeaderIcon6:SetTexture("Interface\\AddOns\\WoWTR\\Fonts\\images\\books_mini.jpg");   -- WOWTR_OptionPanel5 thumbnail
+WOWTR_OptionsHeaderIcon6:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\books_mini.jpg");   -- WOWTR_OptionPanel5 thumbnail
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_OptionsHeaderIcon6:SetPoint("CENTER", -230, 150);
 else
