@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR_Config (version: 10.Z23) 2024.02.05
+-- Addon: WoWTR_Config (version: 10.Z23) 2024.02.05
 -- Opis: The AddOn displays the translated text information in chosen language
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -191,7 +191,7 @@ local WOWTR_OptionsHeaderText = WOWTR_Options:CreateFontString(nil, "OVERLAY", "
 WOWTR_OptionsHeaderText:SetFont(WOWTR_Font2, 18);
 WOWTR_OptionsHeaderText:SetWidth(600);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 50, 10);
+   WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 70, 10);
    WOWTR_OptionsHeaderText:SetText(AS_UTF8reverse(WoWTR_Localization.optionTitleAR));
 else
    WOWTR_OptionsHeaderText:SetPoint("LEFT", WOWTR_OptionsHeaderIcon, "RIGHT", 0, 0);
@@ -202,7 +202,7 @@ local WOWTR_CheckButton00 = CreateFrame("CheckButton", "WOWTR_CheckButton00", WO
 WOWTR_CheckButton00.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["icon"]=="1") then QTR_PS["icon"]="0"; WOWTR.db.profile.minimap.hide=true; LibDBIcon10_WOWTR_LDB:Hide(); else QTR_PS["icon"]="1"; WOWTR.db.profile.minimap.hide=false; LibDBIcon10_WOWTR_LDB:Show(); end; end);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 520, -20);
-   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 260, -22);
+   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 190, -22);
    WOWTR_CheckButton00.Text:SetText("|cffffffff"..AS_UTF8reverse(WoWTR_Config_Interface.showMinimapIcon).."|r");   -- Show then addon setting icon next to the minimap
    WOWTR_CheckButton00:SetWidth(260);
 else
@@ -593,7 +593,7 @@ WOWTR_CheckButton1a.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["own
 WOWTR_CheckButton1a.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", 0, 0);
 WOWTR_CheckButton1a:SetWidth(252);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", -258, -2);
+   WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", -130, -2);
    WOWTR_CheckButton1a:SetWidth(260);
 else
    WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", 40, -2);
@@ -651,7 +651,7 @@ WOWTR_CheckButton14:SetScript("OnLeave", function(self)
  
 local WOWTR_slider4 = CreateFrame("Slider", "WOWTR_slider4", WOWTR_OptionPanel1, "OptionsSliderTemplate");
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -160, -30);
+   WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -60, -30);
 else
    WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -30, -30);
 end
@@ -709,7 +709,7 @@ WOWTR_CheckButton15.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["sav
 WOWTR_CheckButton15:SetWidth(254);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 55, -20);
-   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -98, -22);
+   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -105, -22);
    WOWTR_CheckButton15:SetWidth(165);
 else
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 10, -20);
@@ -824,7 +824,7 @@ WOWTR_CheckButton19.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["que
 WOWTR_CheckButton19.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 0, 0);
 WOWTR_CheckButton19:SetWidth(355);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -265, -2);
+   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -270, -2);
    WOWTR_CheckButton19:SetWidth(275);
 else
    WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 40, -2);
@@ -1935,7 +1935,7 @@ WOWTR_ResetButton2:SetScript("OnLeave", function(self)
 local WOWTR_OptionsHeaderIcon6 = WOWTR_OptionPanel5:CreateTexture(nil, "OVERLAY");
 WOWTR_OptionsHeaderIcon6:SetWidth(200);
 WOWTR_OptionsHeaderIcon6:SetHeight(200);
-WOWTR_OptionsHeaderIcon6:SetTexture("Interface\\AddOns\\WoWTR\\Fonts\\images\\books_mini.jpg");   -- WOWTR_OptionPanel5 thumbnail
+WOWTR_OptionsHeaderIcon6:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\books_mini.jpg");   -- WOWTR_OptionPanel5 thumbnail
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_OptionsHeaderIcon6:SetPoint("CENTER", -230, 150);
 else
