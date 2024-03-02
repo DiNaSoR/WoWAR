@@ -1406,8 +1406,8 @@ function QTR_Translate_On(typ)
             QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-10));
             QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-10));
          end
-         QuestInfoDescriptionText:SetWidth(WOW_width+5);
-         QuestInfoObjectivesText:SetWidth(WOW_width);
+         QuestInfoDescriptionText:SetWidth(WOW_width-4);
+         QuestInfoObjectivesText:SetWidth(WOW_width-4);
          QuestProgressText:SetWidth(WOW_width);
          QuestInfoRewardText:SetWidth(WOW_width+5);
          QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
@@ -1417,7 +1417,7 @@ function QTR_Translate_On(typ)
          QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,QuestInfoDescriptionText,WOWTR_Font2,-5));
          QuestInfoObjectivesText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,true,QuestInfoObjectivesText,WOWTR_Font2));
          QuestProgressText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].progress,false,QuestProgressText,WOWTR_Font2));
-         QuestInfoRewardText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,QuestInfoRewardText,WOWTR_Font2,-10));
+         QuestInfoRewardText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,QuestInfoRewardText,WOWTR_Font2,-5));
       end
       if ((not isImmersion()) and (QuestInfoDescriptionText:GetText()~=QTR_quest_LG[QTR_quest_ID].details) and (QTR_first_show2 == 0)) then   -- nie wczytały się tłumaczenia
          QTR_first_show2 = 1;
@@ -1506,7 +1506,7 @@ function QTR_display_constants(lg)
       if (QuestFrame:IsVisible()) then
          WOW_width = 275;
       end
-      QuestInfoDescriptionHeader:SetWidth(WOW_width);
+      QuestInfoDescriptionHeader:SetWidth(WOW_width-5);
       QuestInfoObjectivesHeader:SetWidth(WOW_width);
       QuestInfoRewardsFrame.Header:SetWidth(WOW_width);
       QuestProgressRequiredItemsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
@@ -2372,6 +2372,17 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|cffffffff", "ffffffffc|");
       msg = string.gsub(msg, "|cFFFFD200", "002DFFFFc|");
       msg = string.gsub(msg, "|cFF00FFFF", "FFFF00FFc|");
+      msg = string.gsub(msg, "|080808ffc", "080808ffc|");
+
+      --msg = string.gsub(msg, "|988531T:42|t", "|T135889:24|t");
+      --msg = string.gsub(msg, "|T135890:24|t", "t|42:098531T|");
+      --msg = string.gsub(msg, "|cff999999", "999999ffc|");
+
+      --|080808ffc |080808ffc
+      --|988531T:42|t
+      --|T135889:24|t
+      --ffffffffc|
+      --|ffffffffc
 
       -- Colors for arabic version
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
