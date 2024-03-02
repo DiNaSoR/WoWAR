@@ -2370,6 +2370,8 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|D81E0EFFc", "D81E0EFFc|");
       msg = string.gsub(msg, "|888888ffc", "888888ffc|");
       msg = string.gsub(msg, "|cffffffff", "ffffffffc|");
+      msg = string.gsub(msg, "|cFFFFD200", "002DFFFFc|");
+      msg = string.gsub(msg, "|cFF00FFFF", "FFFF00FFc|");
 
       -- Colors for arabic version
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
