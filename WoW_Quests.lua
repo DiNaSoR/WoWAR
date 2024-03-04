@@ -2373,6 +2373,7 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|cFFFFD200", "002DFFFFc|");
       msg = string.gsub(msg, "|cFF00FFFF", "FFFF00FFc|");
       msg = string.gsub(msg, "|080808ffc", "080808ffc|");
+      --msg = string.gsub(msg, "|cff19ff19|", "91ff91ffc|");
 
       --msg = string.gsub(msg, "|988531T:42|t", "|T135889:24|t");
       --msg = string.gsub(msg, "|T135890:24|t", "t|42:098531T|");
@@ -2388,6 +2389,8 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
       msg = string.gsub(msg, "|ﺫﻫﺒﻲ|", "002DFFFFc|"); --Gold
       msg = string.gsub(msg, "|ﺭﻣﺎﺩﻱ|", "888888ffc|"); --Gold
+      msg = string.gsub(msg, "|n|n", "|n|"); --Gold
+      msg = string.gsub(msg, "2$", "$2");
 
    else
       msg = string.gsub(msg, "$b", "$B");

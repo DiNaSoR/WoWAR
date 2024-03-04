@@ -541,3 +541,108 @@ function QTR_LineReverse(s, limit)
    end
    return retstr;
 end
+
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+function BB_LineChat(txt, font_size, more_chars)
+   local retstr = "";
+   if (txt and font_size) then
+      local more_chars = more_chars or 0;
+      local chat_width = DEFAULT_CHAT_FRAME:GetWidth();             -- width of 1 chat line
+      local chars_limit = chat_width / (0.35*font_size+0.8)*1.1 ;   -- so much max. characters can fit on one line
+		local bytes = strlen(txt);
+		local pos = 1;
+      local counter = 0;
+      local second = 0;
+		local newstr = "";
+		local charbytes;
+      local newstrR;
+      local char1;
+		while (pos <= bytes) do
+			c = strbyte(txt, pos);                      -- read the character (odczytaj znak)
+			charbytes = AS_UTF8charbytes(txt, pos);    -- count of bytes (liczba bajtów znaku)
+         char1 = strsub(txt, pos, pos + charbytes - 1);
+			newstr = newstr .. char1;
+			pos = pos + charbytes;
+         
+         counter = counter + 1;
+         if ((char1 >= "A") and (char1 <= "z")) then
+            counter = counter + 1;        -- latin letters are 2x wider, then Arabic
+         end
+         if ((char1 == " ") and (counter-more_chars>=chars_limit-3)) then      -- break line here
+            newstrR = BB_AddSpaces(AS_UTF8reverse(newstr), second);
+            retstr = retstr .. newstrR .. "\n";
+            newstr = "";
+            counter = 0;
+            more_chars = 0;
+            second = 2;
+         end
+      end
+      newstrR = BB_AddSpaces(AS_UTF8reverse(newstr), second);
+      retstr = retstr .. newstrR;
+      retstr = string.gsub(retstr, "\n ", "\n");        -- space after newline code is useless
+   end
+	return retstr;
+end
+
+function BB_AddSpaces(txt, snd)                                 -- snd = second or next line (interspace 2 on right)
+   local _fontC, _sizeC, _C = DEFAULT_CHAT_FRAME:GetFont();     -- read current font, size and flag of the chat object
+   local chat_widthC = DEFAULT_CHAT_FRAME:GetWidth();           -- width of 1 chat line
+   local chars_limitC = chat_widthC / (0.35*_sizeC+0.8);        -- so much max. characters can fit on one line
+   
+   if (BB_TestLine == nil) then     -- a own frame for displaying the translation of texts and determining the length
+      BB_CreateTestLine();
+   end   
+   BB_TestLine:SetWidth(DEFAULT_CHAT_FRAME:GetWidth()+50);
+   BB_TestLine:Hide();     -- the frame is invisible in the game
+   BB_TestLine.text:SetFont(_fontC, _sizeC, _C);
+   local count = 0;
+   local text = txt;
+   BB_TestLine.text:SetText(text);
+   while ((BB_TestLine.text:GetHeight() < _sizeC*1.5) and (count < chars_limitC)) do
+      count = count + 1;
+      text = " "..text;
+      BB_TestLine.text:SetText(text);
+   end
+
+   if (count < chars_limitC) then    -- failed to properly add leading spaces
+      for i=4,count-snd,1 do         -- spaces are added to the left of the text
+         txt = " "..txt;
+      end
+   end
+   BB_TestLine.text:SetText(txt);
+   
+   return(txt);
+end
+
+function BB_CreateTestLine()
+   BB_TestLine = CreateFrame("Frame", "BB_TestLine", UIParent, "BasicFrameTemplateWithInset");
+   BB_TestLine:SetHeight(150);
+   BB_TestLine:SetWidth(DEFAULT_CHAT_FRAME:GetWidth()+50);
+   BB_TestLine:ClearAllPoints();
+   BB_TestLine:SetPoint("TOPLEFT", 20, -300);
+   BB_TestLine.title = BB_TestLine:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+   BB_TestLine.title:SetPoint("CENTER", BB_TestLine.TitleBg);
+   BB_TestLine.title:SetText("Frame for testing width of text");
+   BB_TestLine.ScrollFrame = CreateFrame("ScrollFrame", nil, BB_TestLine, "UIPanelScrollFrameTemplate");
+   BB_TestLine.ScrollFrame:SetPoint("TOPLEFT", BB_TestLine.InsetBg, "TOPLEFT", 10, -40);
+   BB_TestLine.ScrollFrame:SetPoint("BOTTOMRIGHT", BB_TestLine.InsetBg, "BOTTOMRIGHT", -5, 10);
+  
+   BB_TestLine.ScrollFrame.ScrollBar:ClearAllPoints();
+   BB_TestLine.ScrollFrame.ScrollBar:SetPoint("TOPLEFT", BB_TestLine.ScrollFrame, "TOPRIGHT", -12, -18);
+   BB_TestLine.ScrollFrame.ScrollBar:SetPoint("BOTTOMRIGHT", BB_TestLine.ScrollFrame, "BOTTOMRIGHT", -7, 15);
+   BBchild = CreateFrame("Frame", nil, BB_TestLine.ScrollFrame);
+   BBchild:SetSize(552,100);
+   BBchild.bg = BBchild:CreateTexture(nil, "BACKGROUND");
+   BBchild.bg:SetAllPoints(true);
+   BBchild.bg:SetColorTexture(0, 0.05, 0.1, 0.8);
+   BB_TestLine.ScrollFrame:SetScrollChild(BBchild);
+   BB_TestLine.text = BBchild:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
+   BB_TestLine.text:SetPoint("TOPLEFT", BBchild, "TOPLEFT", 2, 0);
+   BB_TestLine.text:SetText("");
+   BB_TestLine.text:SetSize(DEFAULT_CHAT_FRAME:GetWidth(),0);
+   BB_TestLine.text:SetJustifyH("LEFT");
+   BB_TestLine.CloseButton:SetPoint("TOPRIGHT", BB_TestLine, "TOPRIGHT", 0, 0);
+   BB_TestLine:Hide();     -- the frame is invisible in the game
+end
