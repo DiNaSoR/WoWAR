@@ -201,8 +201,8 @@ end
 local WOWTR_CheckButton00 = CreateFrame("CheckButton", "WOWTR_CheckButton00", WOWTR_Options, "SettingsCheckBoxControlTemplate");
 WOWTR_CheckButton00.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["icon"]=="1") then QTR_PS["icon"]="0"; WOWTR.db.profile.minimap.hide=true; LibDBIcon10_WOWTR_LDB:Hide(); else QTR_PS["icon"]="1"; WOWTR.db.profile.minimap.hide=false; LibDBIcon10_WOWTR_LDB:Show(); end; end);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 520, -20);
-   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 190, -22);
+   WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 502, -20);
+   WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 250, -22);
    WOWTR_CheckButton00.Text:SetText("|cffffffff"..AS_UTF8reverse(WoWTR_Config_Interface.showMinimapIcon).."|r");   -- Show then addon setting icon next to the minimap
    WOWTR_CheckButton00:SetWidth(260);
 else
@@ -593,7 +593,7 @@ WOWTR_CheckButton1a.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["own
 WOWTR_CheckButton1a.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", 0, 0);
 WOWTR_CheckButton1a:SetWidth(252);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", -130, -2);
+   WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", -260, -2);
    WOWTR_CheckButton1a:SetWidth(260);
 else
    WOWTR_CheckButton1a:SetPoint("TOPLEFT", WOWTR_CheckButton13.CheckBox, "BOTTOMLEFT", 40, -2);
@@ -651,7 +651,7 @@ WOWTR_CheckButton14:SetScript("OnLeave", function(self)
  
 local WOWTR_slider4 = CreateFrame("Slider", "WOWTR_slider4", WOWTR_OptionPanel1, "OptionsSliderTemplate");
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -60, -30);
+   WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", 70, -30);
 else
    WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -30, -30);
 end
@@ -709,7 +709,7 @@ WOWTR_CheckButton15.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["sav
 WOWTR_CheckButton15:SetWidth(254);
 if (WoWTR_Localization.lang == 'AR') then
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 55, -20);
-   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -105, -22);
+   WOWTR_CheckButton15:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", -95, -22);
    WOWTR_CheckButton15:SetWidth(165);
 else
    WOWTR_CheckButton15.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel1Header2, "TOPLEFT", 10, -20);

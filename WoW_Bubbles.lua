@@ -323,7 +323,7 @@ function BB_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)     -- wywo�
                DEFAULT_CHAT_FRAME:AddMessage(colorText..QTR_ExpandUnitInfo(newMessage:gsub("^%s*", ""),false,DEFAULT_CHAT_FRAME,WOWTR_Font2,-50)..mark_AI); -- usuń białe spacje na początku
             else
                if (WoWTR_Localization.lang == 'AR') then
-                  DEFAULT_CHAT_FRAME:AddMessage(QTR_ExpandUnitInfo("|r"..WOWTR_AnsiReverse(name_NPC).." :|FFFFFFFFc|r"..newMessage.."|D81E0EFFc",false,DEFAULT_CHAT_FRAME,WOWTR_Font2));
+                  DEFAULT_CHAT_FRAME:AddMessage(QTR_ExpandUnitInfo("r|"..WOWTR_AnsiReverse(name_NPC).." :FFFFFFFFc|r|"..newMessage.."D81E0EFFc|",false,DEFAULT_CHAT_FRAME,WOWTR_Font2,-10));
                else
                   DEFAULT_CHAT_FRAME:AddMessage(colorText.."|cCCDDEEFF"..name_NPC..":|r "..QTR_ExpandUnitInfo(newMessage,false,DEFAULT_CHAT_FRAME,WOWTR_Font2,-100)..mark_AI);   -- mówi (diyor ki)
                end
@@ -514,7 +514,9 @@ function BB_OknoTRonline()
   BB_Input2:SetWidth(400);
   BB_Input2:SetAutoFocus(false);
   BB_Input2:SetFontObject(GameFontWhite);
-  BB_Input2:SetText("a tutaj bedzie polskie tlumaczenie");
+  BB_Input2:SetText("a tutaj będzie polskie tłumaczenie");
+  local _font1, _size2, _flag3 = BB_Input2:GetFont(); -- odczytaj aktualną czcionkę i rozmiar
+  BB_Input2:SetFont(WOWTR_Font2, _size2, _flag3);
   BB_Input2:SetCursorPosition(0);
   BB_Input2:Hide();
   
