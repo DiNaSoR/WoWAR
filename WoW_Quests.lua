@@ -2619,6 +2619,13 @@ function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr)
          _corr = AR_corr;
       end
       msg = string.gsub(msg, "\n", "#");
+      msg = string.gsub(msg, "{r}", "r|");
+      local nr_poz1, nr_poz2 = string.find(msg, "{c");    -- znajdź kod koloru {c , gdy nie znalazł, jest: nil
+      while (nr_poz1) do
+         local pomoc = string.sub(msg, nr_poz2+1, nr_poz2+8);  -- odczytaj składowe koloru
+         msg = string.gsub(msg, "{c"..pomoc.."}", string.reverse(pomoc).."c|");
+         nr_poz1, nr_poz2 = string.find(msg, "{c");       -- znajdź kod koloru {c , gdy nie znalazł, jest: nil
+      end
       msg = AS_ReverseAndPrepareLineText(msg, AR_obj:GetWidth()+_corr, AR_font, AR_size);
    end
    
@@ -2630,7 +2637,14 @@ end
 -- jeśli tekst jest arabski - odwróć kolejność wszystkich liter (znaków)
 function QTR_ReverseIfAR(txt)
    if (WoWTR_Localization.lang == 'AR') then
-      return AS_UTF8reverse(txt);
+      local msg = string.gsub(txt, "{r}", "r|");
+      local nr_poz1, nr_poz2 = string.find(msg, "{c");    -- znajdź kod koloru {c , gdy nie znalazł, jest: nil
+      while (nr_poz1) do
+         local pomoc = string.sub(msg, nr_poz2+1, nr_poz2+8);  -- odczytaj składowe koloru
+         msg = string.gsub(msg, "{c"..pomoc.."}", string.reverse(pomoc).."c|");
+         nr_poz1, nr_poz2 = string.find(msg, "{c");       -- znajdź kod koloru {c , gdy nie znalazł, jest: nil
+      end
+      return AS_UTF8reverse(msg);
    end
    return txt;
 end
