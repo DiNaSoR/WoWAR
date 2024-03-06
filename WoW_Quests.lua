@@ -2363,33 +2363,23 @@ end
 function WOW_ZmienKody(message, target)
    msg = message;
    if (WoWTR_Localization.lang == 'AR') then
+
+      --Colors --Note: Web:|cFFE0E18D -- Engin:|D81E0EFFc --> D81E0EFFc|
       msg = string.gsub(msg, "|r", "r|");
       msg = string.gsub(msg, "|FFFFFFFFc", "FFFFFFFFc|");
       msg = string.gsub(msg, "|ffffffffc", "ffffffffc|");
-      msg = string.gsub(msg, "|FFFF00FFc", "FF00FFFFc|");
+      msg = string.gsub(msg, "|FFFF00FFc", "FFFF00FFc|");
       msg = string.gsub(msg, "|D81E0EFFc", "D81E0EFFc|");
-      msg = string.gsub(msg, "|888888ffc", "888888ffc|");
-      msg = string.gsub(msg, "|cffffffff", "ffffffffc|");
-      msg = string.gsub(msg, "|cFFFFD200", "002DFFFFc|");
-      msg = string.gsub(msg, "|cFF00FFFF", "FFFF00FFc|");
+      msg = string.gsub(msg, "|888888ffc", "888888ffc|"); --Gray
       msg = string.gsub(msg, "|080808ffc", "080808ffc|");
-      --msg = string.gsub(msg, "|cff19ff19|", "91ff91ffc|");
+      msg = string.gsub(msg, "|080808FFc", "080808FFc|");
 
-      --msg = string.gsub(msg, "|988531T:42|t", "|T135889:24|t");
-      --msg = string.gsub(msg, "|T135890:24|t", "t|42:098531T|");
-      --msg = string.gsub(msg, "|cff999999", "999999ffc|");
-
-      --|080808ffc |080808ffc
-      --|988531T:42|t
-      --|T135889:24|t
-      --ffffffffc|
-      --|ffffffffc
-
-      -- Colors for arabic version
+      -- Colors for arabic version test
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
       msg = string.gsub(msg, "|ﺫﻫﺒﻲ|", "002DFFFFc|"); --Gold
       msg = string.gsub(msg, "|ﺭﻣﺎﺩﻱ|", "888888ffc|"); --Gold
-      msg = string.gsub(msg, "|n|n", "|n|"); --Gold
+      msg = string.gsub(msg, "|n|n", "n|n|"); --Gold .|n|n
+      --msg = string.gsub(msg, "|n", "n|"); --Gold
       msg = string.gsub(msg, "2$", "$2");
 
    else

@@ -892,16 +892,16 @@ function ST_updateSpecContentsHook()
          end
       end
       local _font, _size, _ = specContentFrame.RoleName:GetFont();    -- odczytaj aktualną czcionkę i rozmiar
-      specContentFrame.RoleName:SetText(ST_SetText(specContentFrame.RoleName:GetText()));
+      specContentFrame.RoleName:SetText(QTR_ReverseIfAR(ST_SetText(specContentFrame.RoleName:GetText())));
       specContentFrame.RoleName:SetFont(WOWTR_Font2, _size);
       _font, _size, _ = specContentFrame.SampleAbilityText:GetFont();
-      specContentFrame.SampleAbilityText:SetText(ST_SetText(specContentFrame.SampleAbilityText:GetText()));
+      specContentFrame.SampleAbilityText:SetText(QTR_ReverseIfAR(ST_SetText(specContentFrame.SampleAbilityText:GetText())));
       specContentFrame.SampleAbilityText:SetFont(WOWTR_Font2, _size);
       _font, _size, _ = specContentFrame.ActivatedText:GetFont();
-      specContentFrame.ActivatedText:SetText(ST_SetText(specContentFrame.ActivatedText:GetText()));
+      specContentFrame.ActivatedText:SetText(QTR_ReverseIfAR(ST_SetText(specContentFrame.ActivatedText:GetText())));
       specContentFrame.ActivatedText:SetFont(WOWTR_Font2, _size);
       _font, _size, _ = specContentFrame.ActivateButton.Text:GetFont();
-      specContentFrame.ActivateButton.Text:SetText(ST_SetText(specContentFrame.ActivateButton.Text:GetText()));
+      specContentFrame.ActivateButton.Text:SetText(QTR_ReverseIfAR(ST_SetText(specContentFrame.ActivateButton.Text:GetText())));
       specContentFrame.ActivateButton.Text:SetFont(WOWTR_Font2, _size);
    end
 end
@@ -959,12 +959,17 @@ end
 -------------------------------------------------------------------------------------------------------
 
 function STtalent_ON_OFF()
+   
    if (ST_PM["talent"] == "1") then
       ST_PM["talent"] = "0";
       WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_enDESC);
    else
       ST_PM["talent"] = "1";
-      WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_trDESC);
+      local fo = WOWTR_ToggleButtonT:CreateFontString();
+      fo:SetFont(WOWTR_Font2, 13);
+      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_arDESC));
+      WOWTR_ToggleButtonT:SetFontString(fo);
+      WOWTR_ToggleButtonT:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_arDESC));
    end
 end
 
@@ -992,15 +997,15 @@ function WOWSTR_onEvent(_, event, addonName)
       -- przycisk do przełączania wersji TR - EN dla talentów
       WOWTR_ToggleButtonT = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate");
       WOWTR_ToggleButtonT:SetWidth(150);
-      WOWTR_ToggleButtonT:SetHeight(25);
+      WOWTR_ToggleButtonT:SetHeight(22);
       WOWTR_ToggleButtonT:SetFrameStrata("HIGH")
       if (ST_PM["talent"] == "1") then
-         WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_trDESC);
+         WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_arDESC);
       else
          WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_enDESC);
       end
       WOWTR_ToggleButtonT:ClearAllPoints();
-      WOWTR_ToggleButtonT:SetPoint("TOPLEFT", UIParent, "TOPLEFT", UIParent:GetWidth()/2-75, -40);
+      WOWTR_ToggleButtonT:SetPoint("TOPLEFT", UIParent, "TOPLEFT", UIParent:GetWidth()/2-75, -42);
       WOWTR_ToggleButtonT:Hide();
       WOWTR_ToggleButtonT:SetScript("OnClick", STtalent_ON_OFF);
 
