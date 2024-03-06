@@ -201,7 +201,11 @@ end
 local WOWTR_CheckButton00 = CreateFrame("CheckButton", "WOWTR_CheckButton00", WOWTR_Options, "SettingsCheckBoxControlTemplate");
 WOWTR_CheckButton00.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["icon"]=="1") then QTR_PS["icon"]="0"; WOWTR.db.profile.minimap.hide=true; LibDBIcon10_WOWTR_LDB:Hide(); else QTR_PS["icon"]="1"; WOWTR.db.profile.minimap.hide=false; LibDBIcon10_WOWTR_LDB:Show(); end; end);
 if (WoWTR_Localization.lang == 'AR') then
+<<<<<<< HEAD
    WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 502, -20);
+=======
+   WOWTR_CheckButton00.CheckBox:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 503, -20);
+>>>>>>> 6cff2103fb3c9b17ee0bbf1b7aa3e57b30e43b68
    WOWTR_CheckButton00:SetPoint("TOPLEFT", WOWTR_OptionsHeaderText, "TOPLEFT", 250, -22);
    WOWTR_CheckButton00.Text:SetText("|cffffffff"..AS_UTF8reverse(WoWTR_Config_Interface.showMinimapIcon).."|r");   -- Show then addon setting icon next to the minimap
    WOWTR_CheckButton00:SetWidth(260);
@@ -651,7 +655,11 @@ WOWTR_CheckButton14:SetScript("OnLeave", function(self)
  
 local WOWTR_slider4 = CreateFrame("Slider", "WOWTR_slider4", WOWTR_OptionPanel1, "OptionsSliderTemplate");
 if (WoWTR_Localization.lang == 'AR') then
+<<<<<<< HEAD
    WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", 70, -30);
+=======
+   WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -160, -30);
+>>>>>>> 6cff2103fb3c9b17ee0bbf1b7aa3e57b30e43b68
 else
    WOWTR_slider4:SetPoint("TOPLEFT", WOWTR_CheckButton14, "BOTTOMLEFT", -30, -30);
 end

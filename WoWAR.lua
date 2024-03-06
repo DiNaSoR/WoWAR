@@ -126,7 +126,7 @@ function WOWTR_CheckVars()
 --   end
    -- activate the quest tracker translation ONLINE
    if (not QTR_PS["tracker"] ) then
-      QTR_PS["tracker"] = "0";         -- Quest Tracker jest wyłączony w wersji AR
+      QTR_PS["tracker"] = "1";         -- Quest Tracker jest wyłączony w wersji AR
    end
    -- save of untranslated quests
    if (not QTR_PS["saveQS"] ) then
@@ -372,12 +372,12 @@ function WOWTR_onEvent(self, event, name, ...)
       ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", BB_ChatFilter)
 
       SlashCmdList["WOWTR"] = function(msg) WOWTR_SlashCommand(msg); end
-      SLASH_WOWTR_BUBBLES1 = "/wowtr";
-      SLASH_WOWTR_BUBBLES2 = "/qtr";
-      SLASH_WOWTR_BUBBLES3 = "/bbtr";
-      SLASH_WOWTR_BUBBLES4 = "/mtr";
-      SLASH_WOWTR_BUBBLES5 = "/btr";
-      SLASH_WOWTR_BUBBLES6 = "/str";
+      SLASH_WOWTR1 = "/wowar";
+      --SLASH_WOWTR2 = "/qtr";
+      --SLASH_WOWTR3 = "/bbtr";
+      --SLASH_WOWTR4 = "/mtr";
+      --SLASH_WOWTR5 = "/btr";
+      --SLASH_WOWTR6 = "/str";
       WOWTR_CheckVars();
       QTR_START();
       Config_OnEnable();
