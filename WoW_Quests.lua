@@ -1389,9 +1389,9 @@ function QTR_Translate_On(typ)
             QTR_ToggleButton5:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")");
             QTR_Storyline(1);
          end
-         local WOW_width = 260;
+         local WOW_width = 245;
          if (QuestFrame:IsVisible()) then
-            WOW_width = 275;
+            WOW_width = 265;
          end
          if (QTR_PS["transtitle"]=="1") then
             if (WoWTR_Localization.lang == 'AR') then 
@@ -1502,9 +1502,9 @@ function QTR_display_constants(lg)
       QuestInfoRewardsFrame.Header:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,QuestInfoRewardsFrame.Header,WOWTR_Font1));
       QuestInfoDescriptionHeader:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestInfoDescriptionHeader:SetText(QTR_ExpandUnitInfo(QTR_Messages.details,false,QuestInfoDescriptionHeader,WOWTR_Font1));
-      local WOW_width = 255;
+      local WOW_width = 245;
       if (QuestFrame:IsVisible()) then
-         WOW_width = 275;
+         WOW_width = 265;
       end
       QuestInfoDescriptionHeader:SetWidth(WOW_width-5);
       QuestInfoObjectivesHeader:SetWidth(WOW_width);
