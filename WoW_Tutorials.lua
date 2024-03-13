@@ -215,7 +215,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -229,7 +229,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -247,7 +247,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -261,7 +261,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -279,7 +279,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -293,7 +293,7 @@ function TT_onChoiceShow()
             hash= StringHash(txt);
             if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                local _font7, _size7, _37 = obj.Text:GetFont();
-               obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+               obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                obj.Text:SetFont(WOWTR_Font2, _size7);
             elseif (TT_PS["save"] == "1") then
                TT_TUTORIALS[tostring(hash)] = txt;
@@ -304,11 +304,11 @@ function TT_onChoiceShow()
    if (TT_firstUse == 0) then      -- pierwsze uruchomienie - trzeba jeszcze raz przeładować ramkę
       TT_firstUse = 1;
       PlayerChoiceFrame:Hide();
-      UIErrorsFrame:AddMessage(WoWTR_Localization.reopenBoard, 1,0.5,1);
+      UIErrorsFrame:AddMessage(QTR_ReverseIfAR(WoWTR_Localization.reopenBoard, 1,0.5,1));
       local regions = { UIErrorsFrame:GetRegions() };     -- poszukiwanie obiektu FontString do ustawienia własnej czcionki
       for k, v in pairs(regions) do
          if (v:GetObjectType() == "FontString") then
-            v:SetFont(WOWTR_Font2, 15);
+            v:SetFont(WOWTR_Font2, 18);
          end
       end
    else
@@ -322,7 +322,7 @@ function TT_onChoiceShow()
                   hash= StringHash(txt);
                   if (Tut_Data7[hash]) then       -- jest tłumacznie tego tekstu
                      local _font7, _size7, _37 = obj:GetFont();
-                     obj:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[hash])).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
+                     obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(Tut_Data7[hash]),false,obj,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie + twarda spacja
                      obj:SetFont(WOWTR_Font2, _size7);
                   elseif (TT_PS["save"] == "1") then
                      TT_TUTORIALS[tostring(hash)] = txt;

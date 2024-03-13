@@ -111,7 +111,11 @@ function GS_ON_OFF()
             Greeting_TR=string.gsub(Greeting_TR, "$1", wartab[1]);
          end
       end
-      GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR,false,GossipGreetingText,WOWTR_Font2));
+      if (WoWTR_Localization.lang == 'AR') then
+         GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR.." ",false,GossipGreetingText,WOWTR_Font2,-5));    -- dodano na końcu twardą spację
+      else
+         GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR.." ",false,GossipGreetingText,WOWTR_Font2));    -- dodano na końcu twardą spację
+      end
 --    GossipGreetingText:SetFont(WOWTR_Font2, 12);      
       QTR_ToggleButtonGS1:SetText("Gossip-Hash="..tostring(QTR_curr_hash).." "..WoWTR_Localization.lang);
       if (QTR_goss_optionsTR) then
@@ -290,7 +294,11 @@ function QTR_Gossip_Show()
                QTR_ToggleButtonGS1:Enable();
                GossipGreetingText = GossipTextFrame.GreetingText;
                local GO_height = GossipGreetingText:GetHeight();
-               GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR.." ",false,GossipGreetingText,WOWTR_Font2));    -- dodano na końcu twardą spację
+               if (WoWTR_Localization.lang == 'AR') then
+                  GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR.." ",false,GossipGreetingText,WOWTR_Font2,-5));    -- dodano na końcu twardą spację
+               else
+                  GossipGreetingText:SetText(QTR_ExpandUnitInfo(Greeting_TR.." ",false,GossipGreetingText,WOWTR_Font2));    -- dodano na końcu twardą spację
+               end
                GossipGreetingText:SetFont(WOWTR_Font2, tonumber(QTR_PS["fontsize"]));
 --               GossipTextFrame:Resize();
                QTR_curr_goss="1";
@@ -392,7 +400,7 @@ function QTR_Gossip_Show()
    -- Gossip Frame Buttons - Goodbye,
    -- print("Gossip Frame");
    local GFGoodbyeBtext = GossipFrame.GreetingPanel.GoodbyeButton.Text;
-   ST_CheckAndReplaceTranslationText(GFGoodbyeBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(GFGoodbyeBtext, true, "ui",false,true);
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -513,19 +521,19 @@ function GossipOnQuestFrame()       -- frame: QuestFrame
 -- Quest Frame Buttons - Accept, Decline, Complete Quest, Continue and Cancel
 -- print("Quest Frame");
    local QFCompleteQBtext = QuestFrameCompleteQuestButtonText;
-   ST_CheckAndReplaceTranslationText(QFCompleteQBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(QFCompleteQBtext, true, "ui",false,true);
 
    local QFAcceptBtext = QuestFrameAcceptButtonText;
-   ST_CheckAndReplaceTranslationText(QFAcceptBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(QFAcceptBtext, true, "ui",false,true);
 
    local QFDeclineBtext = QuestFrameDeclineButtonText;
-   ST_CheckAndReplaceTranslationText(QFDeclineBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(QFDeclineBtext, true, "ui",false,true);
 
    local QFContinueBtext = QuestFrameContinueButtonText;
-   ST_CheckAndReplaceTranslationText(QFContinueBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(QFContinueBtext, true, "ui",false,true);
 
    local QFGoodbyeBtext = QuestFrameGoodbyeButtonText;
-   ST_CheckAndReplaceTranslationText(QFGoodbyeBtext, true, "ui");
+   ST_CheckAndReplaceTranslationText(QFGoodbyeBtext, true, "ui",false,true);
 
 end
 
@@ -1365,7 +1373,7 @@ end
 function QTR_Translate_On(typ)
    QTR_display_constants(1);
    if (QuestNPCModelText:IsVisible() and (QTR_ModelTextHash>0)) then         -- jest wyświetlony tekst QuestNPCModelText
-      QuestNPCModelText:SetText(QTR_ExpandUnitInfo(QTR_ModelText_PL.." ",false,QuestNPCModelText,WOWTR_Font2));   -- na końcu dodajemy "twardą" spację
+      QuestNPCModelText:SetText(QTR_ExpandUnitInfo(QTR_ModelText_PL.." ",false,QuestNPCModelText,WOWTR_Font2,-15));   -- na końcu dodajemy "twardą" spację
       QuestNPCModelText:SetFont(WOWTR_Font2, 13);
    end
    
@@ -2369,6 +2377,7 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "|888888ffc", "888888ffc|"); --Gray
       msg = string.gsub(msg, "|080808ffc", "080808ffc|");
       msg = string.gsub(msg, "|080808FFc", "080808FFc|");
+      msg = string.gsub(msg, "|00ff00ffc", "00ff00ffc|");
 
       -- Colors for arabic version test
       msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
@@ -2671,6 +2680,8 @@ end
 function QTR_ReverseIfAR(txt)
    if (WoWTR_Localization.lang == 'AR') then
       local msg = string.gsub(txt, "{r}", "r|");
+      msg = string.gsub(msg, "{n}", "\n");
+      msg = string.gsub(msg, "|n|n", "n|n|");
       local nr_poz1, nr_poz2 = string.find(msg, "{c");    -- znajdź kod koloru {c , gdy nie znalazł, jest: nil
       while (nr_poz1) do
          local pomoc = string.sub(msg, nr_poz2+1, nr_poz2+8);  -- odczytaj składowe koloru
@@ -2681,6 +2692,7 @@ function QTR_ReverseIfAR(txt)
    end
    return txt;
 end
+
 
 -------------------------------------------------------------------------------------------------------------------
 
