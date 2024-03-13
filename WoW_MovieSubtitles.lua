@@ -71,9 +71,15 @@ function MF_ShowCinematicSubtitles()            -- wyświetlanie napisów w CINE
                local MF_napis2_HS = WOWTR_DeleteSpecialCodes(MF_napis2);
                local MF_hash2 = StringHash(MF_napis2_HS);
                if (BB_Bubbles[MF_hash2] or MF_Hash[MF_hash2]) then                           -- istnieje tłumaczenie w dymkach
-                  local MF_output = "|cFFFF9900"..string.sub(MF_napis,1,p1-1).." :|r "..WOW_ZmienKody(BB_Bubbles[MF_hash2] or MF_Hash[MF_hash2]);
-                  SubtitlesFrame.Subtitle1:SetText(QTR_ReverseIfAR(MF_output).." ");         -- podmień wyświetlany tekst dodając twardą spację
-                  MF_zapisz_EN = false;
+                  if (WoWTR_Localization.lang == 'AR') then
+                     local MF_output = "r|"..WOWTR_AnsiReverse(string.sub(MF_napis,1,p1-1)).." :0099FFFFc| "..WOW_ZmienKody(BB_Bubbles[MF_hash2] or MF_Hash[MF_hash2]);
+                     SubtitlesFrame.Subtitle1:SetText(QTR_ExpandUnitInfo((MF_output),false,SubtitlesFrame.Subtitle1,WOWTR_Font1).." ");         -- podmień wyświetlany tekst dodając twardą spację
+                     MF_zapisz_EN = false;
+                  else
+                     local MF_output = "|cFFFF9900"..string.sub(MF_napis,1,p1-1).." :|r "..WOW_ZmienKody(BB_Bubbles[MF_hash2] or MF_Hash[MF_hash2]);
+                     SubtitlesFrame.Subtitle1:SetText(MF_output.." ");         -- podmień wyświetlany tekst dodając twardą spację
+                     MF_zapisz_EN = false;
+                  end
                else
                   if ((MF_zapisz_EN) and (MF_PM["save"] == "1")) then       -- zapisz oryginalny tekst wraz z kodem Hash
                      MF_PS[tostring(MF_hash2)] = MF_napis2.."@"..WOWTR_player_name..":"..WOWTR_player_race..":"..WOWTR_player_class;       

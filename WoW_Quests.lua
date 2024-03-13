@@ -446,7 +446,7 @@ function GossipOnQuestFrame()       -- frame: QuestFrame
             end
          end
          if (CurrentQuestsText and CurrentQuestsText:IsVisible()) then
-            CurrentQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.currquests));
+            CurrentQuestsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.currquests,false,CurrentQuestsText,WOWTR_Font1,-30));
             CurrentQuestsText:SetFont(WOWTR_Font1, 18);
          end
          if (AvailableQuestsText and AvailableQuestsText:IsVisible()) then
@@ -486,7 +486,7 @@ function GossipOnQuestFrame()       -- frame: QuestFrame
                      local point, relativeTo, relativePoint, xOfs, yOfs = GText.Icon:GetPoint(1);
                      if (relativePoint ~= "TOPRIGHT") then
                         GText.Icon:ClearAllPoints();
-                        GText.Icon:SetPoint(point, relativeTo, "TOPRIGHT", xOfs-40, yOfs);
+                        GText.Icon:SetPoint(point, relativeTo, "TOPRIGHT", xOfs-40, yOfs-7);
                      end
                   end
                else
@@ -1516,7 +1516,7 @@ function QTR_display_constants(lg)
       QuestProgressRequiredItemsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestProgressRequiredItemsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,QuestProgressRequiredItemsText,WOWTR_Font1,-10));
       CurrentQuestsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-      CurrentQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.currquests));
+      CurrentQuestsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.currquests,false,CurrentQuestsText,WOWTR_Font1,-30));
       AvailableQuestsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       AvailableQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.avaiquests));
       local regions = { QuestMapFrame.DetailsFrame.RewardsFrame:GetRegions() };
