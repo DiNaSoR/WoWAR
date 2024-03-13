@@ -2636,7 +2636,7 @@ function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr)
       while (nr_poz1) do
          local nr_poz2 = string.find(msg, "{t}");  -- koniec składowych kodu
          if (nr_poz2) then
-            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-1);  -- odczytaj składowe
+            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-2);  -- odczytaj składowe
             msg = string.gsub(msg, "{T"..pomoc.."}", string.reverse(pomoc).."T|");
             nr_poz1 = string.find(msg, "{T");       -- znajdź kod {T , gdy nie znalazł, jest: nil
          else
@@ -2647,7 +2647,7 @@ function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr)
       while (nr_poz1) do
          local nr_poz2 = string.find(msg, "{a}");  -- koniec składowych kodu
          if (nr_poz2) then
-            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-1);  -- odczytaj składowe
+            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-2);  -- odczytaj składowe
             msg = string.gsub(msg, "{A"..pomoc.."}", string.reverse(pomoc).."A|");
             nr_poz1 = string.find(msg, "{A");       -- znajdź kod {A , gdy nie znalazł, jest: nil
          else
@@ -2658,7 +2658,7 @@ function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr)
       while (nr_poz1) do
          local nr_poz2 = string.find(msg, "{h}");  -- koniec składowych kodu
          if (nr_poz2) then
-            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-1);  -- odczytaj składowe
+            local pomoc = string.sub(msg, nr_poz1+2, nr_poz2-2);  -- odczytaj składowe
             msg = string.gsub(msg, "{H"..pomoc.."}", string.reverse(pomoc).."H|");
             nr_poz1 = string.find(msg, "{H");       -- znajdź kod {H , gdy nie znalazł, jest: nil
          else
