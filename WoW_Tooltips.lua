@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Tooltips (version: 10.S46) 2024.02.26
+﻿-- Addon: WoWTR-Tooltips (version: 10.S47) 2024.03.14
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -535,7 +535,7 @@ function ST_GameTooltipOnShow()
       end
       
       local ST_kodKoloru;
-      local ST_leftText, ST_rightText, ST_tlumaczenie, ST_hash, ST_hash2, ST_pomoc5, ST_pomoc6;
+      local ST_leftText, ST_rightText, ST_tlumaczenie, ST_hash, ST_hash2, ST_pomoc5, ST_pomoc6, ST_pomoc7;
       local _font1, _size1, _1;
       local ST_odstep = true;
       local ST_orygText = {};
@@ -596,8 +596,23 @@ function ST_GameTooltipOnShow()
                if (((ST_kodKoloru == "c7") or (string.len(ST_leftText)>30)) and (not ST_hash2)) then
                   ST_hash2 = ST_hash;
                end
-               if (ST_TooltipsHS[ST_hash]) then        -- mamy przetłumaczony ten Hash
-                  ST_tlumaczenie = ST_TooltipsHS[ST_hash];
+               ST_pomoc7, _ = string.find(ST_leftText,"<Made by");    -- znajdź czy jest to tekst typu "|cff00ff00<Made by Platine>|r"
+               if (ST_pomoc7) then
+                  ST_hash = 1381871427;
+               end
+               if (ST_TooltipsHS[ST_hash]) then        -- mamy przetłumaczony ten Hash lub jest to <Made by...
+                  if (ST_pomoc7) then
+                     local endBy = string.find(ST_leftText,">");
+                     local nameBy = string.sub(ST_leftText,ST_pomoc7+9,endBy-1);
+                     ST_tlumaczenie = ST_TooltipsHS[ST_hash];
+                     if (WoWTR_Localization.lang == 'AR') then
+                        ST_tlumaczenie = string.gsub(ST_tlumaczenie, "NAMEBY", string.reverse(nameBy));
+                     else
+                        ST_tlumaczenie = string.gsub(ST_tlumaczenie, "$M", nameBy);
+                     end
+                  else
+                     ST_tlumaczenie = ST_TooltipsHS[ST_hash];
+                  end
                   ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
                   _font1, _size1, _1 = _G["GameTooltipTextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
                   _G["GameTooltipTextLeft"..i]:SetFont(WOWTR_Font2, _size1);      -- ustawiamy czcionkę turecką
