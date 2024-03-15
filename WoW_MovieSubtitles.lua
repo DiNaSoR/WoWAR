@@ -239,6 +239,7 @@ function MF_CinematicStart()             -- fired by CINEMATIC_START event
          MF_sub1 = MF_Data[MF_race..":01"]["START"];
          MF_sub2 = MF_Data[MF_race..":01"]["STOP"];
          MF_sub3 = MF_Data[MF_race..":01"]["NAPIS"];
+         SubtitlesFrame.showSubtitles = false;     -- hide english subtitles
          CinematicFrame:HookScript("OnUpdate", MF_ShowCinematicIntro);
       end
    else                                      -- mamy cinematic on game
