@@ -450,7 +450,7 @@ function GossipOnQuestFrame()       -- frame: QuestFrame
             CurrentQuestsText:SetFont(WOWTR_Font1, 18);
          end
          if (AvailableQuestsText and AvailableQuestsText:IsVisible()) then
-            AvailableQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.avaiquests));
+            AvailableQuestsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.avaiquests,false,AvailableQuestsText,WOWTR_Font1,-30));
             AvailableQuestsText:SetFont(WOWTR_Font1, 18);
          end
          if (QTR_PS["gossip"]=="1") then
