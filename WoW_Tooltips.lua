@@ -607,6 +607,7 @@ function ST_GameTooltipOnShow()
                      ST_tlumaczenie = ST_TooltipsHS[ST_hash];
                      if (WoWTR_Localization.lang == 'AR') then
                         ST_tlumaczenie = string.gsub(ST_tlumaczenie, "NAMEBY", string.reverse(nameBy));
+                        ST_tlumaczenie = string.gsub(ST_tlumaczenie, "{$M}", string.reverse(nameBy));
                      else
                         ST_tlumaczenie = string.gsub(ST_tlumaczenie, "$M", nameBy);
                      end
