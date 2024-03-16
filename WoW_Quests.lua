@@ -1402,17 +1402,21 @@ function QTR_Translate_On(typ)
             WOW_width = 245;
          end
          if (QTR_PS["transtitle"]=="1") then
-            QuestInfoTitleHeader:SetWidth(WOW_width+10);
+            QuestInfoTitleHeader:SetWidth(WOW_width+30);
             QuestProgressTitleText:SetWidth(WOW_width+10);
             QuestInfoTitleHeader:SetFont(WOWTR_Font1,  IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
             QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-            QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-30));
+            if (WorldMapFrame:IsVisible()) then
+               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-50));
+            else
+               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-30));
+            end
             QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-10));
          end
          QuestInfoDescriptionText:SetWidth(WOW_width+5);
          QuestInfoObjectivesText:SetWidth(WOW_width);
          QuestProgressText:SetWidth(WOW_width);
-         QuestInfoRewardText:SetWidth(WOW_width);
+         QuestInfoRewardText:SetWidth(WOW_width+5);
          QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestInfoObjectivesText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestProgressText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
@@ -1512,7 +1516,7 @@ function QTR_display_constants(lg)
       QuestInfoDescriptionHeader:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestInfoDescriptionHeader:SetText(QTR_ExpandUnitInfo(QTR_Messages.details,false,QuestInfoDescriptionHeader,WOWTR_Font1,-10));
       QuestInfoRewardsFrame.Header:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-      QuestInfoRewardsFrame.Header:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,QuestInfoRewardsFrame.Header,WOWTR_Font1,-10));
+      QuestInfoRewardsFrame.Header:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,QuestInfoRewardsFrame.Header,WOWTR_Font1,-12));
       QuestProgressRequiredItemsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestProgressRequiredItemsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,QuestProgressRequiredItemsText,WOWTR_Font1,-10));
       CurrentQuestsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
@@ -1531,7 +1535,7 @@ function QTR_display_constants(lg)
       -- stałe elementy okna zadania:
       if (WoWTR_Localization.lang == 'AR') then
          QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 14);
-         QuestInfoRewardsFrame.ItemChooseText:SetWidth(270);
+         QuestInfoRewardsFrame.ItemChooseText:SetWidth(260);
          QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("RIGHT"); -- wyrównanie od prawego
          QuestInfoRewardsFrame.ItemChooseText:SetText(AS_UTF8reverse(QTR_quest_LG[QTR_quest_ID].itemchoose));
    
@@ -1546,7 +1550,7 @@ function QTR_display_constants(lg)
             QTR_QuestDetail_ItemReceiveText:SetJustifyH("RIGHT");
             QTR_QuestDetail_ItemReceiveText:SetJustifyV("TOP");
             QTR_QuestDetail_ItemReceiveText:ClearAllPoints();
-            QTR_QuestDetail_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 270, 2);
+            QTR_QuestDetail_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2);
             QTR_QuestDetail_ItemReceiveText:SetFont(WOWTR_Font2, 14);
          end
          if (QTR_quest_LG[QTR_quest_ID].itemreceive) then
@@ -1561,7 +1565,7 @@ function QTR_display_constants(lg)
             QTR_QuestReward_ItemReceiveText:SetJustifyH("RIGHT");
             QTR_QuestReward_ItemReceiveText:SetJustifyV("TOP");
             QTR_QuestReward_ItemReceiveText:ClearAllPoints();
-            QTR_QuestReward_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 270, 2);
+            QTR_QuestReward_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2);
             QTR_QuestReward_ItemReceiveText:SetFont(WOWTR_Font2, 14);
          end
          if (QTR_quest_LG[QTR_quest_ID].itemreceive) then
@@ -1575,7 +1579,7 @@ function QTR_display_constants(lg)
             QTR_QuestDetail_InfoXP:SetJustifyH("RIGHT");
             QTR_QuestDetail_InfoXP:SetJustifyV("TOP");
             QTR_QuestDetail_InfoXP:ClearAllPoints();
-            QTR_QuestDetail_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 270, 2);
+            QTR_QuestDetail_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2);
             QTR_QuestDetail_InfoXP:SetFont(WOWTR_Font2, 14);
          end
          QTR_QuestDetail_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience));
@@ -1586,7 +1590,7 @@ function QTR_display_constants(lg)
             QTR_QuestReward_InfoXP:SetJustifyH("RIGHT");
             QTR_QuestReward_InfoXP:SetJustifyV("TOP");
             QTR_QuestReward_InfoXP:ClearAllPoints();
-            QTR_QuestReward_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 270, 2);
+            QTR_QuestReward_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2);
             QTR_QuestReward_InfoXP:SetFont(WOWTR_Font2, 14);
          end
          QTR_QuestReward_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience));
