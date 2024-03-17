@@ -1414,7 +1414,7 @@ function QTR_Translate_On(typ)
             QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-10));
          end
          QuestInfoDescriptionText:SetWidth(WOW_width+5);
-         QuestInfoObjectivesText:SetWidth(WOW_width);
+         QuestInfoObjectivesText:SetWidth(WOW_width+5);
          QuestProgressText:SetWidth(WOW_width);
          QuestInfoRewardText:SetWidth(WOW_width+5);
          QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
@@ -1422,7 +1422,7 @@ function QTR_Translate_On(typ)
          QuestProgressText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestInfoRewardText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
          QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,QuestInfoDescriptionText,WOWTR_Font2,-5));
-         QuestInfoObjectivesText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,true,QuestInfoObjectivesText,WOWTR_Font2));
+         QuestInfoObjectivesText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,true,QuestInfoObjectivesText,WOWTR_Font2,-10));
          QuestProgressText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].progress,false,QuestProgressText,WOWTR_Font2));
          QuestInfoRewardText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,QuestInfoRewardText,WOWTR_Font2,-5));
       end
