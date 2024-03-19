@@ -302,6 +302,7 @@ function BB_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)     -- wywo≈
          end
          BB_is_translation="1";      
          nr_poz=BB_FindProS(newMessage,1);
+         
          local mark_AI = "";
          if (BB_AI and BB_AI[HashCode]) then
             mark_AI = " |c0000FFFF(AI)|r";

@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A37) 2024.02.16
+-- Addon: WoW_Quests (version: 10.A38) 2024.03.19
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -1868,6 +1868,7 @@ function QTR_display_constants(lg)
 end
 
 -------------------------------------------------------------------------------------------------------------------
+
 function QTR_ResetQuestToOriginal()
    
    -- Reset Quest Info headers and text to original values
@@ -2435,8 +2436,13 @@ function WOW_ZmienKody(message, target)
    end
    
    msg = string.gsub(msg, "NEW_LINE", "\n");
-   msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(WOWTR_player_name)));
-   msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(WOWTR_player_name));
+   if (target) then
+      msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(target)));
+      msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(target));
+   else
+      msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(WOWTR_player_name)));
+      msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(WOWTR_player_name));
+   end
 
    if (WOWTR_player_sex == 3) then   -- female, nominative case
       msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M2));
