@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Tooltips (version: 10.S47) 2024.03.14
+﻿-- Addon: WoWTR-Tooltips (version: 10.S48) 2024.03.19
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -672,8 +672,10 @@ function ST_GameTooltipOnShow()
       if ((ST_orygText or (ST_nh==1)) and (ST_PM["saveNW"]=="1")) then
          for _, ST_origin in ipairs(ST_orygText) do   
             ST_hash = StringHash(ST_UsunZbedneZnaki(ST_origin));
-            if ((not ST_TooltipsHS[ST_hash]) and (string.find(ST_origin," ")==nil)) then    -- i nie jest to tekst tłumaczenia (twarda spacja)
-               ST_PH[ST_hash]=ST_prefix.."@"..ST_PrzedZapisem(ST_origin);
+            if (string.sub(ST_leftText,1,11) ~= '|A:raceicon') then
+               if ((not ST_TooltipsHS[ST_hash]) and (string.find(ST_origin," ")==nil)) then    -- i nie jest to tekst tłumaczenia (twarda spacja)
+                  ST_PH[ST_hash]=ST_prefix.."@"..ST_PrzedZapisem(ST_origin);
+               end
             end
          end
       end
