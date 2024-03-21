@@ -1003,9 +1003,9 @@ function STtalent_ON_OFF()
       ST_PM["talent"] = "1";
       local fo = WOWTR_ToggleButtonT:CreateFontString();
       fo:SetFont(WOWTR_Font2, 13);
-      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_arDESC));
+      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_trDESC));
       WOWTR_ToggleButtonT:SetFontString(fo);
-      WOWTR_ToggleButtonT:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_arDESC));
+      WOWTR_ToggleButtonT:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Talent_trDESC));
    end
 end
 
@@ -1036,7 +1036,7 @@ function WOWSTR_onEvent(_, event, addonName)
       WOWTR_ToggleButtonT:SetHeight(22);
       WOWTR_ToggleButtonT:SetFrameStrata("HIGH")
       if (ST_PM["talent"] == "1") then
-         WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_arDESC);
+         WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_trDESC);
       else
          WOWTR_ToggleButtonT:SetText(WoWTR_Localization.WoWTR_Talent_enDESC);
       end

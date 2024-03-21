@@ -44,9 +44,9 @@ WoWTR_Localization = {
    sellPrice = ":ﺳﻌﺮ ﺍﻟﺒﻴﻊ",                                         -- Sell price:
    currentlyEquipped = "ﻣﺮﺗﺪﻱ ﺣﺎﻟﻴﺎ",                                -- Currently Equipped
    additionalEquipped = "ﻣﺮﺗﺪﻱ ﻣﻌﺪﺍﺕ ﺇﺿﺎﻓﻴﺔ",                        -- Equipped with additional Equipment
-   WoWTR_Talent_arDESC = "ﺍﻟﻤﻬﺎﺭﺍﺕ: ﺑﺎﻟﻌﺮﺑﻲ",                        -- Talents: Arabic
+   WoWTR_Talent_trDESC = "ﺍﻟﻤﻬﺎﺭﺍﺕ: ﺑﺎﻟﻌﺮﺑﻲ",                        -- Talents: Arabic
    WoWTR_Talent_enDESC = "Talents: English",                         -- Talents: English
-   WoWTR_Spellbook_arDESC = "ﺍﻟﻘﺪﺭﺍﺕ: ﺑﺎﻟﻌﺮﺑﻲ",                      -- Spell Book: Arabic
+   WoWTR_Spellbook_trDESC = "ﺍﻟﻘﺪﺭﺍﺕ: ﺑﺎﻟﻌﺮﺑﻲ",                      -- Spell Book: Arabic
    WoWTR_Spellbook_enDESC = "Spell Book: English",                   -- Spell Book: English
    your_home = "ﻣﻨﺰﻟﻚ",                                              -- 'your home' (if the Hearthstone location fails to be read)
    welcomeIconPos = 255,                                             -- position of welcome icon on the welcom panel; 0 = disabled to display
