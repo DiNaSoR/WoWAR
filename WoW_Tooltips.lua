@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Tooltips (version: 10.S48) 2024.03.19
+﻿-- Addon: WoWTR-Tooltips (version: 10.S49) 2024.03.21
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -209,63 +209,83 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
       end
    end;
    if (arg0>19) then
+      tlumaczenie=string.gsub(tlumaczenie, "{02}", WOWTR_AnsiReverse(wartab[20]));
       tlumaczenie=string.gsub(tlumaczenie, "$20", WOWTR_AnsiReverse(wartab[20]));
    end
    if (arg0>18) then
+      tlumaczenie=string.gsub(tlumaczenie, "{91}", WOWTR_AnsiReverse(wartab[19]));
       tlumaczenie=string.gsub(tlumaczenie, "$19", WOWTR_AnsiReverse(wartab[19]));
    end
    if (arg0>17) then
+      tlumaczenie=string.gsub(tlumaczenie, "{81}", WOWTR_AnsiReverse(wartab[18]));
       tlumaczenie=string.gsub(tlumaczenie, "$18", WOWTR_AnsiReverse(wartab[18]));
    end
    if (arg0>16) then
+      tlumaczenie=string.gsub(tlumaczenie, "{71}", WOWTR_AnsiReverse(wartab[17]));
       tlumaczenie=string.gsub(tlumaczenie, "$17", WOWTR_AnsiReverse(wartab[17]));
    end
    if (arg0>15) then
+      tlumaczenie=string.gsub(tlumaczenie, "{61}", WOWTR_AnsiReverse(wartab[16]));
       tlumaczenie=string.gsub(tlumaczenie, "$16", WOWTR_AnsiReverse(wartab[16]));
    end
    if (arg0>14) then
+      tlumaczenie=string.gsub(tlumaczenie, "{51}", WOWTR_AnsiReverse(wartab[15]));
       tlumaczenie=string.gsub(tlumaczenie, "$15", WOWTR_AnsiReverse(wartab[15]));
    end
    if (arg0>13) then
+      tlumaczenie=string.gsub(tlumaczenie, "{41}", WOWTR_AnsiReverse(wartab[14]));
       tlumaczenie=string.gsub(tlumaczenie, "$14", WOWTR_AnsiReverse(wartab[14]));
    end
    if (arg0>12) then
+      tlumaczenie=string.gsub(tlumaczenie, "{31}", WOWTR_AnsiReverse(wartab[13]));
       tlumaczenie=string.gsub(tlumaczenie, "$13", WOWTR_AnsiReverse(wartab[13]));
    end
    if (arg0>11) then
+      tlumaczenie=string.gsub(tlumaczenie, "{21}", WOWTR_AnsiReverse(wartab[12]));
       tlumaczenie=string.gsub(tlumaczenie, "$12", WOWTR_AnsiReverse(wartab[12]));
    end
    if (arg0>10) then
+      tlumaczenie=string.gsub(tlumaczenie, "{11}", WOWTR_AnsiReverse(wartab[11]));
       tlumaczenie=string.gsub(tlumaczenie, "$11", WOWTR_AnsiReverse(wartab[11]));
    end
    if (arg0>9) then
+      tlumaczenie=string.gsub(tlumaczenie, "{01}", WOWTR_AnsiReverse(wartab[10]));
       tlumaczenie=string.gsub(tlumaczenie, "$10", WOWTR_AnsiReverse(wartab[10]));
    end
    if (arg0>8) then
+      tlumaczenie=string.gsub(tlumaczenie, "{9}", WOWTR_AnsiReverse(wartab[9]));
       tlumaczenie=string.gsub(tlumaczenie, "$9", WOWTR_AnsiReverse(wartab[9]));
    end
    if (arg0>7) then
+      tlumaczenie=string.gsub(tlumaczenie, "{8}", WOWTR_AnsiReverse(wartab[8]));
       tlumaczenie=string.gsub(tlumaczenie, "$8", WOWTR_AnsiReverse(wartab[8]));
    end
    if (arg0>6) then
+      tlumaczenie=string.gsub(tlumaczenie, "{7}", WOWTR_AnsiReverse(wartab[7]));
       tlumaczenie=string.gsub(tlumaczenie, "$7", WOWTR_AnsiReverse(wartab[7]));
    end
    if (arg0>5) then
+      tlumaczenie=string.gsub(tlumaczenie, "{6}", WOWTR_AnsiReverse(wartab[6]));
       tlumaczenie=string.gsub(tlumaczenie, "$6", WOWTR_AnsiReverse(wartab[6]));
    end
    if (arg0>4) then
+      tlumaczenie=string.gsub(tlumaczenie, "{5}", WOWTR_AnsiReverse(wartab[5]));
       tlumaczenie=string.gsub(tlumaczenie, "$5", WOWTR_AnsiReverse(wartab[5]));
    end
    if (arg0>3) then
+      tlumaczenie=string.gsub(tlumaczenie, "{4}", WOWTR_AnsiReverse(wartab[4]));
       tlumaczenie=string.gsub(tlumaczenie, "$4", WOWTR_AnsiReverse(wartab[4]));
    end
    if (arg0>2) then
+      tlumaczenie=string.gsub(tlumaczenie, "{3}", WOWTR_AnsiReverse(wartab[3]));
       tlumaczenie=string.gsub(tlumaczenie, "$3", WOWTR_AnsiReverse(wartab[3]));
    end
    if (arg0>1) then
+      tlumaczenie=string.gsub(tlumaczenie, "{2}", WOWTR_AnsiReverse(wartab[2]));
       tlumaczenie=string.gsub(tlumaczenie, "$2", WOWTR_AnsiReverse(wartab[2]));
    end
    if (arg0>0) then
+      tlumaczenie=string.gsub(tlumaczenie, "{1}", WOWTR_AnsiReverse(wartab[1]));
       tlumaczenie=string.gsub(tlumaczenie, "$1", WOWTR_AnsiReverse(wartab[1]));
    end
 

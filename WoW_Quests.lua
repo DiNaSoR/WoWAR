@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A38) 2024.03.19
+-- Addon: WoW_Quests (version: 10.A39) 2024.03.21
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -2398,24 +2398,10 @@ function WOW_ZmienKody(message, target)
    msg = message;
    if (WoWTR_Localization.lang == 'AR') then
 
-      --Colors --Note: Web:|cFFE0E18D -- Engin:|D81E0EFFc --> D81E0EFFc|
-      msg = string.gsub(msg, "|r", "r|");
-      msg = string.gsub(msg, "|FFFFFFFFc", "FFFFFFFFc|");
-      msg = string.gsub(msg, "|ffffffffc", "ffffffffc|");
-      msg = string.gsub(msg, "|FFFF00FFc", "FFFF00FFc|");
-      msg = string.gsub(msg, "|D81E0EFFc", "D81E0EFFc|");
-      msg = string.gsub(msg, "|888888ffc", "888888ffc|"); --Gray
-      msg = string.gsub(msg, "|080808ffc", "080808ffc|");
-      msg = string.gsub(msg, "|080808FFc", "080808FFc|");
-      msg = string.gsub(msg, "|00ff00ffc", "00ff00ffc|");
-
-      -- Colors for arabic version test
-      msg = string.gsub(msg, "|ﺑﻠﻮﻥ|", "r|"); -- eng of color
-      msg = string.gsub(msg, "|ﺫﻫﺒﻲ|", "002DFFFFc|"); --Gold
-      msg = string.gsub(msg, "|ﺭﻣﺎﺩﻱ|", "888888ffc|"); --Gold
-      msg = string.gsub(msg, "|n|n", "n|n|"); --Gold .|n|n
-      --msg = string.gsub(msg, "|n", "n|"); --Gold
-      msg = string.gsub(msg, "2$", "$2");
+      msg = string.gsub(msg, "{N}", "YOUR_NAME");
+      msg = string.gsub(msg, "{B}", "NEW_LINE");
+      msg = string.gsub(msg, "{R}", "YOUR_RACE");
+      msg = string.gsub(msg, "{C}", "YOUR_CLASS");
 
    else
       msg = string.gsub(msg, "$b", "$B");
