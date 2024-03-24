@@ -1,6 +1,6 @@
-﻿## Interface: 100205
-## Title: WoWAR |cff8080ff0.0.1|r
-## Version: 0.0.1
+﻿## Interface: 100206
+## Title: WoWAR |cff8080ff10.01|r
+## Version: 10.01
 ## Notes: World of Warcraft in Arabic.
 ## Author: Platine & Dragonarab
 ## E-mail: Dragonarab@gmail.com

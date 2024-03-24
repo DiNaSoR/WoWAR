@@ -2513,7 +2513,7 @@ function WOW_ZmienKody(message, target)
       local nr_poz, nr_poz2 = string.find(msg, "{G");    -- gdy nie znalazł, jest: nil
       while (nr_poz and nr_poz2>0) do
          nr_1 = nr_poz2 + 1;   
-         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+         if (string.sub(msg, nr_1, nr_1) == " ") then    -- dopuszczam jedną spację po słowie kodowym
             nr_1 = nr_1 + 1;
          end
          nr_2 =  nr_1 + 1;
@@ -2551,7 +2551,7 @@ function WOW_ZmienKody(message, target)
       local nr_poz, nr_poz2 = string.find(msg, "{P");    -- gdy nie znalazł, jest: nil
       while (nr_poz and nr_poz2>0) do
          nr_1 = nr_poz2 + 1;   
-         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+         if (string.sub(msg, nr_1, nr_1) == " ") then    -- dopuszczam jedną spację po słowie kodowym
             nr_1 = nr_1 + 1;
          end
          nr_2 =  nr_1 + 1;
@@ -2589,7 +2589,7 @@ function WOW_ZmienKody(message, target)
       local nr_poz, nr_poz2 = string.find(msg, "{O");    -- gdy nie znalazł, jest: nil
       while (nr_poz and nr_poz2>0) do
          nr_1 = nr_poz2 + 1;   
-         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+         if (string.sub(msg, nr_1, nr_1) == " ") then    -- dopuszczam jedną spację po słowie kodowym
             nr_1 = nr_1 + 1;
          end
          nr_2 =  nr_1 + 1;
@@ -2815,7 +2815,7 @@ end
 
 -- jeśli tekst jest arabski - odwróć kolejność wszystkich liter (znaków)
 function QTR_ReverseIfAR(txt)
-   if (WoWTR_Localization.lang == 'AR') then
+   if (txt and (WoWTR_Localization.lang == 'AR')) then
       local msg = string.gsub(txt, "{r}", "r|");
       msg = string.gsub(msg, "{n}", "\n");
       msg = string.gsub(msg, "|n|n", "n|n|");
