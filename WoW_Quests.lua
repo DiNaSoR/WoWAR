@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A39) 2024.03.21
+-- Addon: WoW_Quests (version: 10.A40) 2024.03.24
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -2506,29 +2506,29 @@ function WOW_ZmienKody(message, target)
    msg = string.gsub(msg, "YOUR_CLASS$", WOWTR_AnsiReverse(string.upper(WOWTR_player_class)));
    msg = string.gsub(msg, "YOUR_CLASS", WOWTR_AnsiReverse(WOWTR_player_class));
 
--- obsługa kodu YOUR_GENDER(x;y)
-   local nr_1, nr_2, nr_3 = 0;
-   local QTR_forma = "";
-   local nr_poz, nr_poz2 = string.find(msg, "YOUR_GENDER");    -- gdy nie znalazł, jest: nil
-   while (nr_poz and nr_poz2>0) do
-      nr_1 = nr_poz2 + 1;   
-      while (string.sub(msg, nr_1, nr_1) ~= "(") do            -- dopuszczam jedną spację po słowie kodowym
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(msg, nr_1, nr_1) == "(") then
+   if (WoWTR_Localization.lang == 'AR') then
+      -- obsługa kodu {Gx;y}
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz, nr_poz2 = string.find(msg, "{G");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
          nr_2 =  nr_1 + 1;
-         while (string.sub(msg, nr_2, nr_2) ~= ";") do
+         while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
             nr_2 = nr_2 + 1;
          end
          if (string.sub(msg, nr_2, nr_2) == ";") then
             nr_3 = nr_2 + 1;
-            while (string.sub(msg, nr_3, nr_3) ~= ")") do
+            while ((string.sub(msg, nr_3, nr_3) ~= "}") and (nr_3 - nr_2 < 50)) do
                nr_3 = nr_3 + 1;
             end
-            if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (WOWTR_player_sex==3) then        -- forma żeńska
+            if (string.sub(msg, nr_3, nr_3) == "}") then
+               if (WOWTR_player_sex==3) then   -- forma żeńska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
-               else                        -- forma męska
+               else                            -- forma męska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
                if (nr_poz>1) then
@@ -2536,36 +2536,37 @@ function WOW_ZmienKody(message, target)
                else
                   msg = QTR_forma .. string.sub(msg,nr_3+1);
                end
-            end   
+            else
+               msg = string.gsub(msg, "{G", "{X");    -- error in code {Gx;y}
+            end
+         else
+            msg = string.gsub(msg, "{G", "{X");    -- error in code {Gx;y}
          end
+         nr_poz, nr_poz2 = string.find(msg, "{G");
       end
-      nr_poz, nr_poz2 = string.find(msg, "YOUR_GENDER");
-   end
 
--- obsługa kodu NPC_GENDER(x;y)
-   local nr_1, nr_2, nr_3 = 0;
-   local QTR_forma = "";
-   local NPC_sex = UnitSex("npc");       -- 1:neutral,  2:męski,  3:żeński
-   local nr_poz, nr_poz2 = string.find(msg, "NPC_GENDER");     -- gdy nie znalazł, jest: nil
-   while (nr_poz and nr_poz2>0) do
-      nr_1 = nr_poz2 + 1;   
-      while (string.sub(msg, nr_1, nr_1) ~= "(") do            -- dopuszczam jedną spację po słowie kodowym
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(msg, nr_1, nr_1) == "(") then
+      -- obsługa kodu {Px;y}
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz, nr_poz2 = string.find(msg, "{P");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
          nr_2 =  nr_1 + 1;
-         while (string.sub(msg, nr_2, nr_2) ~= ";") do
+         while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
             nr_2 = nr_2 + 1;
          end
          if (string.sub(msg, nr_2, nr_2) == ";") then
             nr_3 = nr_2 + 1;
-            while (string.sub(msg, nr_3, nr_3) ~= ")") do
+            while ((string.sub(msg, nr_3, nr_3) ~= "}") and (nr_3 - nr_2 < 50)) do
                nr_3 = nr_3 + 1;
             end
-            if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (NPC_sex==3) then        -- forma żeńska
+            if (string.sub(msg, nr_3, nr_3) == "}") then
+               if (WOWTR_player_sex==3) then   -- forma żeńska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
-               else                        -- forma męska
+               else                            -- forma męska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
                if (nr_poz>1) then
@@ -2573,35 +2574,37 @@ function WOW_ZmienKody(message, target)
                else
                   msg = QTR_forma .. string.sub(msg,nr_3+1);
                end
-            end   
+            else
+               msg = string.gsub(msg, "{P", "{X");    -- error in code {Px;y}
+            end
+         else
+            msg = string.gsub(msg, "{P", "{X");    -- error in code {Px;y}
          end
+         nr_poz, nr_poz2 = string.find(msg, "{P");
       end
-      nr_poz, nr_poz2 = string.find(msg, "NPC_GENDER");
-   end
    
--- obsługa kodu OWN_NAME(EN;PL)
-   local nr_1, nr_2, nr_3 = 0;
-   local QTR_forma = "";
-   local nr_poz, nr_poz2 = string.find(msg, "OWN_NAME");    -- gdy nie znalazł, jest: nil
-   while (nr_poz and nr_poz2>0) do
-      nr_1 = nr_poz2 + 1;   
-      while (string.sub(msg, nr_1, nr_1) ~= "(") do         -- dopuszczam jedną spację po słowie kodowym
-         nr_1 = nr_1 + 1;
-      end
-      if (string.sub(msg, nr_1, nr_1) == "(") then
+      -- obsługa kodu {Ox;y}
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz, nr_poz2 = string.find(msg, "{O");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         if (string.sub(msg, nr_1, nr_1) == " ") do      -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
          nr_2 =  nr_1 + 1;
-         while (string.sub(msg, nr_2, nr_2) ~= ";") do
+         while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
             nr_2 = nr_2 + 1;
          end
          if (string.sub(msg, nr_2, nr_2) == ";") then
             nr_3 = nr_2 + 1;
-            while (string.sub(msg, nr_3, nr_3) ~= ")") do
+            while ((string.sub(msg, nr_3, nr_3) ~= "}") and (nr_3 - nr_2 < 50)) do
                nr_3 = nr_3 + 1;
             end
-            if (string.sub(msg, nr_3, nr_3) == ")") then
-               if (QTR_PS["ownname"] == "1") then        -- forma polska, czeska, ukraińska, węgierska, włoska, turecka, arabska
+            if (string.sub(msg, nr_3, nr_3) == "}") then
+               if (WOWTR_player_sex==3) then   -- forma arabska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
-               else                                      -- forma angielska
+               else                            -- forma angielska
                   QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
                end
                if (nr_poz>1) then
@@ -2609,10 +2612,123 @@ function WOW_ZmienKody(message, target)
                else
                   msg = QTR_forma .. string.sub(msg,nr_3+1);
                end
-            end   
+            else
+               msg = string.gsub(msg, "{O", "{X");    -- error in code {Ox;y}
+            end
+         else
+            msg = string.gsub(msg, "{O", "{X");    -- error in code {Ox;y}
          end
+         nr_poz, nr_poz2 = string.find(msg, "{O");
       end
-      nr_poz, nr_poz2 = string.find(msg, "OWN_NAME");
+   else
+      -- obsługa kodu YOUR_GENDER(x;y)
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz, nr_poz2 = string.find(msg, "YOUR_GENDER");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         while (string.sub(msg, nr_1, nr_1) ~= "(") do            -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
+         if (string.sub(msg, nr_1, nr_1) == "(") then
+            nr_2 =  nr_1 + 1;
+            while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
+               nr_2 = nr_2 + 1;
+            end
+            if (string.sub(msg, nr_2, nr_2) == ";") then
+               nr_3 = nr_2 + 1;
+               while ((string.sub(msg, nr_3, nr_3) ~= ")") and (nr_3 - nr_2 < 50)) do
+                  nr_3 = nr_3 + 1;
+               end
+               if (string.sub(msg, nr_3, nr_3) == ")") then
+                  if (WOWTR_player_sex==3) then        -- forma żeńska
+                     QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
+                  else                        -- forma męska
+                     QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  end
+                  if (nr_poz>1) then
+                     msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+                  else
+                     msg = QTR_forma .. string.sub(msg,nr_3+1);
+                  end
+               end   
+            end
+         end
+         nr_poz, nr_poz2 = string.find(msg, "YOUR_GENDER");
+      end
+
+      -- obsługa kodu NPC_GENDER(x;y)
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local NPC_sex = UnitSex("npc");       -- 1:neutral,  2:męski,  3:żeński
+      local nr_poz, nr_poz2 = string.find(msg, "NPC_GENDER");     -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         while (string.sub(msg, nr_1, nr_1) ~= "(") do            -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
+         if (string.sub(msg, nr_1, nr_1) == "(") then
+            nr_2 =  nr_1 + 1;
+            while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
+               nr_2 = nr_2 + 1;
+            end
+            if (string.sub(msg, nr_2, nr_2) == ";") then
+               nr_3 = nr_2 + 1;
+               while ((string.sub(msg, nr_3, nr_3) ~= ")") and (nr_3 - nr_2 < 50)) do
+                  nr_3 = nr_3 + 1;
+               end
+               if (string.sub(msg, nr_3, nr_3) == ")") then
+                  if (NPC_sex==3) then        -- forma żeńska
+                     QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
+                  else                        -- forma męska
+                     QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  end
+                  if (nr_poz>1) then
+                     msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+                  else
+                     msg = QTR_forma .. string.sub(msg,nr_3+1);
+                  end
+               end   
+            end
+         end
+         nr_poz, nr_poz2 = string.find(msg, "NPC_GENDER");
+      end
+   
+      -- obsługa kodu OWN_NAME(EN;PL)
+      local nr_1, nr_2, nr_3 = 0;
+      local QTR_forma = "";
+      local nr_poz, nr_poz2 = string.find(msg, "OWN_NAME");    -- gdy nie znalazł, jest: nil
+      while (nr_poz and nr_poz2>0) do
+         nr_1 = nr_poz2 + 1;   
+         while (string.sub(msg, nr_1, nr_1) ~= "(") do         -- dopuszczam jedną spację po słowie kodowym
+            nr_1 = nr_1 + 1;
+         end
+         if (string.sub(msg, nr_1, nr_1) == "(") then
+            nr_2 =  nr_1 + 1;
+            while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
+               nr_2 = nr_2 + 1;
+            end
+            if (string.sub(msg, nr_2, nr_2) == ";") then
+               nr_3 = nr_2 + 1;
+               while ((string.sub(msg, nr_3, nr_3) ~= ")") and (nr_3 - nr_2 < 50)) do
+                  nr_3 = nr_3 + 1;
+               end
+               if (string.sub(msg, nr_3, nr_3) == ")") then
+                  if (QTR_PS["ownname"] == "1") then        -- forma narodowa: polska, czeska, ukraińska, węgierska, włoska, turecka, arabska
+                     QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
+                  else                                      -- forma angielska
+                     QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  end
+                  if (nr_poz>1) then
+                     msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
+                  else
+                     msg = QTR_forma .. string.sub(msg,nr_3+1);
+                  end
+               end   
+            end
+         end
+         nr_poz, nr_poz2 = string.find(msg, "OWN_NAME");
+      end
    end
    
    return msg;
