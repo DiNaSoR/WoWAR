@@ -148,6 +148,10 @@ function WOWTR_CheckVars()
    if (not QTR_PS["storyline"] ) then
       QTR_PS["storyline"] = "1";   
    end
+   -- activate translations in DialogueUI addon
+   if (not QTR_PS["dialogueui"] ) then
+      QTR_PS["dialogueui"] = "1";   
+   end
    -- current font file
    if (not QTR_PS["FontFile"] ) then
       QTR_PS["FontFile"] = WOWTR_Fonts[1];   
@@ -459,7 +463,7 @@ function WOWTR_onEvent(self, event, name, ...)
          local QTR_mapINFO = C_Map.GetMapInfo(QTR_mapID);
          QTR_SAVED[QTR_quest_ID.." MAPID"]=QTR_mapID.."@"..QTR_mapINFO.name.."@"..QTR_mapINFO.mapType.."@"..QTR_mapINFO.parentMapID;     -- save mapID to locale place of this quest
       end
-      if ( QuestFrame:IsVisible() or isImmersion()) then
+      if ( QuestFrame:IsVisible() or isImmersion() or isDUIQuestFrame()) then
          QTR_QuestPrepare(event);
       elseif (isStoryline()) then
          if (not WOWTR_wait(1,QTR_Storyline_Quest)) then

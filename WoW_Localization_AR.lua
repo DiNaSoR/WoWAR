@@ -130,6 +130,8 @@ WoWTR_Config_Interface = {
    translateStoryLineDESC = "ﻋﻨﺪ ﺍﻹﻏﻼﻕ, ﺳﺘﻈﻬﺮ eniLyrotS ﺑﺎﻟﻠﻐﺔ ﺍﻷﺻﻠﻴﺔ",
    translateQuestLog = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ goL tseuQ cissalC",
    translateQuestLogDESC = "ﻋﻨﺪ ﺍﻹﻏﻼﻕ, ﺳﺘﻈﻬﺮ goL tseuQ cissalC ﺑﺎﻟﻠﻐﺔ ﺍﻷﺻﻠﻴﺔ",
+   translateDialogueUI = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ IUeuqolaiD",
+   translateDialogueUIDESC = "ﻋﻨﺪ ﺍﻹﻏﻼﻕ, ﺳﺘﻈﻬﺮ IUeuqolaiD ﺑﺎﻟﻠﻐﺔ ﺍﻷﺻﻠﻴﺔ",
    sampleGossipText = "ﻧﻤﻮﺫﺝ ﺣﺠﻢ ﺍﻟﺨﻂ ﻟﻨﺺ ﺍﻟﺤﻮﺍﺭﺍﺕ CPN",
    
    titleTab2 = "ﺍﻟﻔﻘﺎﻋﺎﺕ",

@@ -1,4 +1,4 @@
--- Addon: WoWTR_Config (version: 10.Z23) 2024.02.05
+-- Addon: WoWTR_Config (version: 10.Z24) 2024.03.28
 -- Opis: The AddOn displays the translated text information in chosen language
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -22,6 +22,7 @@ function WOWTR_SetCheckButtonState()
    WOWTR_CheckButton18:SetValue(QTR_PS["storyline"]=="1");
    WOWTR_CheckButton19:SetValue(QTR_PS["questlog"]=="1");
    WOWTR_CheckButton1a:SetValue(QTR_PS["ownnames"]=="1");
+   WOWTR_CheckButton1b:SetValue(QTR_PS["dialogueui"]=="1");
  
    WOWTR_CheckButton21:SetValue(BB_PM["active"]=="1");
    WOWTR_CheckButton22:SetValue(BB_PM["chat-en"]=="1");
@@ -796,13 +797,13 @@ WOWTR_CheckButton17:SetScript("OnLeave", function(self)
 
 local WOWTR_CheckButton18 = CreateFrame("CheckButton", "WOWTR_CheckButton18", WOWTR_OptionPanel1, "SettingsCheckBoxControlTemplate");
 WOWTR_CheckButton18.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["storyline"]=="1") then QTR_PS["storyline"]="0" else QTR_PS["storyline"]="1" end; end);
-WOWTR_CheckButton18.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", 0, 0);
+WOWTR_CheckButton18.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", 0, 5);
 WOWTR_CheckButton18:SetWidth(295);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton18:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", -215, -2);
+   WOWTR_CheckButton18:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", -215, 3);
    WOWTR_CheckButton18:SetWidth(220);
 else
-   WOWTR_CheckButton18:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", 40, -2);
+   WOWTR_CheckButton18:SetPoint("TOPLEFT", WOWTR_CheckButton17.CheckBox, "BOTTOMLEFT", 40, 3);
 end
 WOWTR_CheckButton18.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.translateStoryLine).."|r");   -- Display translation in StoryLine addon
 WOWTR_CheckButton18.Text:SetFont(WOWTR_Font2, 15);
@@ -821,13 +822,13 @@ WOWTR_CheckButton18:SetScript("OnLeave", function(self)
 
 local WOWTR_CheckButton19 = CreateFrame("CheckButton", "WOWTR_CheckButton19", WOWTR_OptionPanel1, "SettingsCheckBoxControlTemplate");
 WOWTR_CheckButton19.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["questlog"]=="1") then QTR_PS["questlog"]="0" else QTR_PS["questlog"]="1" end; end);
-WOWTR_CheckButton19.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 0, 0);
+WOWTR_CheckButton19.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 0, 5);
 WOWTR_CheckButton19:SetWidth(355);
 if (WoWTR_Localization.lang == 'AR') then
-   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -270, -2);
+   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", -270, 3);
    WOWTR_CheckButton19:SetWidth(275);
 else
-   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 40, -2);
+   WOWTR_CheckButton19:SetPoint("TOPLEFT", WOWTR_CheckButton18.CheckBox, "BOTTOMLEFT", 40, 3);
 end
 WOWTR_CheckButton19.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.translateQuestLog).."|r");   -- Display translation in StoryLine addon
 WOWTR_CheckButton19.Text:SetFont(WOWTR_Font2, 15);
@@ -841,6 +842,31 @@ WOWTR_CheckButton19:SetScript("OnEnter", function(self)
    GameTooltip:Show()   -- Show the tooltip
    end);
 WOWTR_CheckButton19:SetScript("OnLeave", function(self)
+   GameTooltip:Hide()   -- Hide the tooltip
+   end);
+
+local WOWTR_CheckButton1b = CreateFrame("CheckButton", "WOWTR_CheckButton1b", WOWTR_OptionPanel1, "SettingsCheckBoxControlTemplate");
+WOWTR_CheckButton1b.CheckBox:SetScript("OnClick", function(self) if (QTR_PS["dialogueui"]=="1") then QTR_PS["dialogueui"]="0" else QTR_PS["dialogueui"]="1" end; end);
+WOWTR_CheckButton1b.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton19.CheckBox, "BOTTOMLEFT", 0, 5);
+WOWTR_CheckButton1b:SetWidth(355);
+if (WoWTR_Localization.lang == 'AR') then
+   WOWTR_CheckButton1b:SetPoint("TOPLEFT", WOWTR_CheckButton19.CheckBox, "BOTTOMLEFT", -230, 3);
+   WOWTR_CheckButton1b:SetWidth(275);
+else
+   WOWTR_CheckButton1b:SetPoint("TOPLEFT", WOWTR_CheckButton19.CheckBox, "BOTTOMLEFT", 40, 3);
+end
+WOWTR_CheckButton1b.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.translateDialogueUI).."|r");   -- Display translation in StoryLine addon
+WOWTR_CheckButton1b.Text:SetFont(WOWTR_Font2, 15);
+WOWTR_CheckButton1b:SetScript("OnEnter", function(self)
+   GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+   GameTooltip:ClearLines();
+   GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.translateDialogueUI).." ", false);                -- red color, no wrap
+   getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.translateDialogueUIDESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
+   getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
+   GameTooltip:Show()   -- Show the tooltip
+   end);
+WOWTR_CheckButton1b:SetScript("OnLeave", function(self)
    GameTooltip:Hide()   -- Hide the tooltip
    end);
 
