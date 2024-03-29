@@ -2473,6 +2473,16 @@ end
 
 -------------------------------------------------------------------------------------------------------------------
 
+function QTR_DUIbuttons()
+   local DUI_AcceptButton = DUIQuestFrame.AcceptButton.Content.Name;
+   ST_CheckAndReplaceTranslationText(DUI_AcceptButton, true, "ui",false,true);
+
+   local DUI_ExitButton = DUIQuestFrame.ExitButton.Content.Name;
+   ST_CheckAndReplaceTranslationText(DUI_ExitButton, true, "ui",false,true);
+end
+   
+-------------------------------------------------------------------------------------------------------------------
+
 function DUI_ON_OFF()
    if (QTR_curr_dialog == "1") then      -- wyłącz tłumaczenie - pokaż oryginalny tekst
       QTR_curr_dialog = "0";
@@ -2599,6 +2609,8 @@ function QTR_DUIQuestFrame(nr,event)
       element:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
    end
    DUIQuestFrame.textBackgroundPool:ProcessActiveObjects(ProcessBG);
+   
+   QTR_DUIbuttons();
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -2670,6 +2682,8 @@ function QTR_DUIGossipFrame(nr)
    
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessGS);
    QTR_curr_goss = "1";           -- aktualnie wyświetlane jest tłumaczenie
+   
+   QTR_DUIbuttons();
 end
 
 -------------------------------------------------------------------------------------------------------------------
