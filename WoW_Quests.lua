@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A41) 2024.03.28
+-- Addon: WoW_Quests (version: 10.A41) 2024.03.29
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -257,6 +257,7 @@ function QTR_Gossip_Show()
             Hash = StringHash(Czysty_Text);
             QTR_curr_hash = Hash;
          end
+         
          if ( GS_Gossip[Hash] ) then   -- istnieje tłumaczenie tekstu GOSSIP tego NPC
             local Greeting_TR = GS_Gossip[Hash];
             if (string.sub(Nazwa_NPC,1,17) == "Bronze Timekeeper") then       -- wyścigi na smokach - wyjątej z sekundami: $1.$2 oraz $3.$4
@@ -330,6 +331,11 @@ function QTR_Gossip_Show()
          else              -- nie mamy tłumaczenia
             QTR_ToggleButtonGS1:SetText("Gossip-Hash="..tostring(Hash).." (EN)");
             QTR_ToggleButtonGS1:Disable();
+            if (isDUIQuestFrame()) then   -- jest aktywny dodatek DialogueUI i zezwolono na tłumaczenia
+               QTR_ToggleButton6:SetText("Gossip-Hash="..tostring(Hash).." (EN)");
+               QTR_ToggleButton6:Show();
+               QTR_ToggleButton7:Hide();
+            end
             -- zapis do pliku
             if (QTR_PS["saveGS"]=="1") then
                Origin_Text = string.gsub(Origin_Text, '"', '\"');                
@@ -872,6 +878,7 @@ function isDUIQuestFrame()
          QTR_ToggleButton7:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 150, -16);
          QTR_ToggleButton7:SetScript("OnClick", DUI_ON_OFF);
          QTR_ToggleButton7:Disable();          -- nie można na razie przyciskać przycisku
+         DUIQuestFrame:HookScript("OnHide", function() QTR_ToggleButton6:Hide(); QTR_ToggleButton7:Hide(); end);
       end
       if (QTR_PS["dialogueui"]=="0") then      -- jest aktywny DialogueUI, ale nie zezwolono na tłumaczenie
          QTR_ToggleButton6:Hide();
@@ -2506,7 +2513,7 @@ function QTR_DUIQuestFrame(nr,event)
       DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1,18);
       DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
    end
-   
+
    local function SplitParagraph(text)
       local tbl = {};
       if (text) then
@@ -2520,6 +2527,7 @@ function QTR_DUIQuestFrame(nr,event)
    local countFontString = 0;
    local offset = 0;
    local objectivesNow = false;
+   local rewardsNow = false;
    local det = string.gsub(QTR_quest_LG[QTR_quest_ID].details or '', 'NEW_LINE', '\n');
    local det = string.gsub(det, '$B', '\n');
    local det = string.gsub(det, '{B}', '\n');
@@ -2538,6 +2546,7 @@ function QTR_DUIQuestFrame(nr,event)
    local function Process(fontString)
 --      print(event, fontString:GetText());
       countFontString = countFontString + 1;
+      fontString:SetSpacing(4.2);      -- normalny odstęp między wierszami
       table.insert(dialogueUI_EN, fontString:GetText());    -- english version
       local _font1, _size1, _1 = fontString:GetFont();      -- odczytaj aktualną czcionkę i rozmiar
       fontString:SetFont(WOWTR_Font2,_size1);
@@ -2545,9 +2554,10 @@ function QTR_DUIQuestFrame(nr,event)
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.objectives,false,fontString,WOWTR_Font2,-5));
          objectivesNow = true;
-      elseif (fontString:GetText() == "Rewards") then       -- nagłówek "Nagrody:"
+      elseif ((fontString:GetText() == "Rewards") or (fontString:GetText() == "Reward")) then       -- nagłówek "Nagrody:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,fontString,WOWTR_Font2,-5));
+         rewardsNow = true;
       elseif (fontString:GetText() == "Requirements") then       -- nagłówek "Wymagane przedmioty:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,fontString,WOWTR_Font2,-5));
@@ -2565,11 +2575,18 @@ function QTR_DUIQuestFrame(nr,event)
          elseif (objectivesNow) then
             fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2));
             objectivesNow = false;        -- objectives is in one long rows?
+         elseif (rewardsNow) then
+            fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemchoose,false,fontString,WOWTR_Font2));
+            objectivesNow = false;
          end
          local secondHeight = fontString:GetHeight();
          offset = secondHeight - firstHeight;
-         if (offset > 0) then
-            fontString:SetSpacing(fontString:GetSpacing()*firstHeight/secondHeight*0.9);     -- zmiana odstępu między wierszami
+         local counter0 = 0;
+         while ((offset > 0) and (counter0<6)) do
+            counter0 = counter0 + 1;
+            fontString:SetSpacing(fontString:GetSpacing()*firstHeight/secondHeight);  -- zmiana odstępu między wierszami
+            secondHeight = fontString:GetHeight();
+            offset = secondHeight - firstHeight;
          end
       end
       table.insert(dialogueUI_LN, fontString:GetText());    -- translated version
