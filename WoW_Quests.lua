@@ -326,7 +326,7 @@ function QTR_Gossip_Show()
             if (isDUIQuestFrame()) then   -- jest aktywny dodatek DialogueUI i zezwolono na tłumaczenia
                QTR_ToggleButton6:SetText("Gossip-Hash="..tostring(Hash).." ("..WoWTR_Localization.lang..")");
                QTR_ToggleButton6:Enable();
-               QTR_DUIGossipFrame(1);
+               QTR_DUIGossipFrame();
             end
          else              -- nie mamy tłumaczenia
             QTR_ToggleButtonGS1:SetText("Gossip-Hash="..tostring(Hash).." (EN)");
@@ -334,7 +334,11 @@ function QTR_Gossip_Show()
             if (isDUIQuestFrame()) then   -- jest aktywny dodatek DialogueUI i zezwolono na tłumaczenia
                QTR_ToggleButton6:SetText("Gossip-Hash="..tostring(Hash).." (EN)");
                QTR_ToggleButton6:Show();
+               QTR_ToggleButton6:Disable();
                QTR_ToggleButton7:Hide();
+               if (TT_PS["ui1"] == "1") then
+                  QTR_DUIbuttons();
+                  end
             end
             -- zapis do pliku
             if (QTR_PS["saveGS"]=="1") then
@@ -455,7 +459,7 @@ function GossipOnQuestFrame()       -- frame: QuestFrame
             if (isDUIQuestFrame()) then   -- jest aktywny dodatek DialogueUI i zezwolono na tłumaczenia
                QTR_ToggleButton6:SetText("Gossip-Hash="..tostring(Hash).." ("..WoWTR_Localization.lang..")");
                QTR_ToggleButton6:Enable();
-               QTR_DUIGossipFrame(1);
+               QTR_DUIGossipFrame();
             end
          else                       -- brak tłumaczenia
             QTR_ToggleButton0:SetText("Gossip-Hash="..tostring(Hash).." (EN)");
@@ -1512,7 +1516,7 @@ function QTR_Translate_On(typ,event)
          end
       end
       if (isDUIQuestFrame()) then
-         QTR_DUIQuestFrame(1,event);
+         QTR_DUIQuestFrame(event);
       end
    else
       if (QTR_curr_trans == "1") then
@@ -2514,7 +2518,7 @@ end
 
 -------------------------------------------------------------------------------------------------------------------
 
-function QTR_DUIQuestFrame(nr,event)
+function QTR_DUIQuestFrame(event)
 --print("obsługa okna DUIQuestFrame");
    QTR_ToggleButton7:Show();
    QTR_ToggleButton6:Hide();
@@ -2610,7 +2614,9 @@ function QTR_DUIQuestFrame(nr,event)
    end
    DUIQuestFrame.textBackgroundPool:ProcessActiveObjects(ProcessBG);
    
-   QTR_DUIbuttons();
+   if (TT_PS["ui1"] == "1") then
+      QTR_DUIbuttons();
+   end
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -2638,7 +2644,7 @@ end
 
 -------------------------------------------------------------------------------------------------------------------
 
-function QTR_DUIGossipFrame(nr)
+function QTR_DUIGossipFrame()
 --print("obsługa okna DUIGossipFrame");
    QTR_ToggleButton6:Show();
    QTR_ToggleButton7:Hide();
@@ -2683,7 +2689,9 @@ function QTR_DUIGossipFrame(nr)
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessGS);
    QTR_curr_goss = "1";           -- aktualnie wyświetlane jest tłumaczenie
    
-   QTR_DUIbuttons();
+   if (TT_PS["ui1"] == "1") then
+      QTR_DUIbuttons();
+   end
 end
 
 -------------------------------------------------------------------------------------------------------------------
