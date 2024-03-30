@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A41) 2024.03.29
+-- Addon: WoW_Quests (version: 10.A42) 2024.03.30
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -232,7 +232,7 @@ function QTR_Gossip_Show()
          end
       end
       
-      if (Greeting_Text and (string.find(Greeting_Text," ")==nil)) then   -- nie jest to tekst po turecku (nie ma twardej spacji)
+      if (Greeting_Text and (string.find(Greeting_Text," ")==nil)) then   -- nie jest to tekst przetłumaczony (nie ma twardej spacji)
          Nazwa_NPC = string.gsub(Nazwa_NPC, '"', '\"');
          local Origin_Text = WOWTR_DetectAndReplacePlayerName(Greeting_Text);
          local Czysty_Text = WOWTR_DeleteSpecialCodes(Origin_Text);
@@ -2639,7 +2639,18 @@ function gossipDUI_ON_OFF()
          fontString:SetText(gossipDUI_EN[countFontString]);
       end
    end
+   local count2FontString = 0;
+   local function Process2OnOff(buttonString)
+      count2FontString = count2FontString + 1;
+      local fontString = buttonString.Content.Name;
+      if (QTR_curr_goss == "1") then   -- pokaż tłumaczenia
+         fontString:SetText(gossip2DUI_LN[count2FontString]);
+      else                             -- pokaż tekst oryginalny
+         fontString:SetText(gossip2DUI_EN[count2FontString]);
+      end
+   end
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessOnOff);
+   DUIQuestFrame.optionButtonPool:ProcessActiveObjects(Process2OnOff);
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -2668,26 +2679,56 @@ function QTR_DUIGossipFrame()
    local gossip = SplitParagraph(gos);
    gossipDUI_LN = { };
    gossipDUI_EN = { };
+   gossip2DUI_LN = { };
+   gossip2DUI_EN = { };
 
    local function ProcessGS(fontString)
 --      print(event, fontString:GetText());
       countFontString = countFontString + 1;
       table.insert(gossipDUI_EN, fontString:GetText());    -- english version
-      local _font1, _size1, _1 = fontString:GetFont();      -- odczytaj aktualną czcionkę i rozmiar
+      local _font1, _size1, _1 = fontString:GetFont();     -- odczytaj aktualną czcionkę i rozmiar
       fontString:SetFont(WOWTR_Font2,_size1);
       local firstHeight = fontString:GetHeight();
       gossipX = gossip[countFontString];
       fontString:SetText(QTR_ExpandUnitInfo(gossipX,false,fontString,WOWTR_Font2));
       local secondHeight = fontString:GetHeight();
       offset = secondHeight - firstHeight;
-      if (offset > 0) then
-         fontString:SetSpacing(fontString:GetSpacing()*firstHeight/secondHeight*0.9);     -- zmiana odstępu między wierszami
+      local counter0 = 0;
+      while ((offset > 0) and (counter0<6)) do
+         counter0 = counter0 + 1;
+         fontString:SetSpacing(fontString:GetSpacing()*firstHeight/secondHeight);  -- zmiana odstępu między wierszami
+         secondHeight = fontString:GetHeight();
+         offset = secondHeight - firstHeight;
       end
       table.insert(gossipDUI_LN, fontString:GetText());    -- translated version
    end
    
+   local function ProcessOPT(buttonString)
+      local fontString = buttonString.Content.Name;
+      local GOptionText = WOWTR_DetectAndReplacePlayerName(fontString:GetText());
+      local prefix = "";
+      local sufix = "";
+      table.insert(gossip2DUI_EN, fontString:GetText());   -- english version
+      local _font1, _size1, _1 = fontString:GetFont();     -- odczytaj aktualną czcionkę i rozmiar
+      fontString:SetFont(WOWTR_Font2,_size1);
+      if (string.sub(GOptionText,1,2) == "|c") then
+         prefix = string.sub(GOptionText, 1, 10);
+         sufix = "|r";
+         GOptionText = string.gsub(GOptionText, prefix, "");
+         GOptionText = string.gsub(GOptionText, sufix, "");
+      end
+      local OptHash = StringHash(GOptionText);
+      if (GS_Gossip[OptHash]) then               -- jest tłumaczenie
+         local transLN = prefix .. QTR_ExpandUnitInfo(GS_Gossip[OptHash],false,fontString,WOWTR_Font2,-40) .. sufix .. " ";   -- twarda spacja na końcu
+         fontString:SetText(transLN);
+      end
+      table.insert(gossip2DUI_LN, fontString:GetText());    -- translated version
+   end
+
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessGS);
    QTR_curr_goss = "1";           -- aktualnie wyświetlane jest tłumaczenie
+   
+   DUIQuestFrame.optionButtonPool:ProcessActiveObjects(ProcessOPT);
    
    if (TT_PS["ui1"] == "1") then
       QTR_DUIbuttons();
