@@ -2472,14 +2472,16 @@ function DUI_ON_OFF()
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." (EN)");
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(Original_Font1,18);
-         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_EN[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
+         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_quest_EN[QTR_quest_ID].title);
+         DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("LEFT");
       end
    else                                  -- pokaż tłumaczenie
       QTR_curr_dialog="1";
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")");
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1,18);
-         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
+         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ReverseIfAR(QTR_quest_LG[QTR_quest_ID].title));
+         DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT");
       end
    end
    
@@ -2504,7 +2506,8 @@ function QTR_DUIQuestFrame(nr,event)
    
    if (QTR_PS["transtitle"]=="1") then
       DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1,18);
-      DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
+      DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ReverseIfAR(QTR_quest_LG[QTR_quest_ID].title));
+      DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT");
    end
    
    local function SplitParagraph(text)
@@ -2545,7 +2548,7 @@ function QTR_DUIQuestFrame(nr,event)
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.objectives,false,fontString,WOWTR_Font2,-5));
          objectivesNow = true;
-      elseif (fontString:GetText() == "Rewards") then       -- nagłówek "Nagrody:"
+      elseif (fontString:GetText() == "Reward") then       -- nagłówek "Nagrody:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,fontString,WOWTR_Font2,-5));
       elseif (fontString:GetText() == "Requirements") then       -- nagłówek "Wymagane przedmioty:"
