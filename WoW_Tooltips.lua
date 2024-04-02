@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Tooltips (version: 10.S50) 2024.03.28
+﻿-- Addon: WoWTR-Tooltips (version: 10.S51) 2024.04.02
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -1751,9 +1751,9 @@ function ST_MountJournal()
       local CJobj01 = MountJournalLore;
       local ST_MountName = MountJournalName:GetText();
       if (WoWTR_Localization.lang == 'AR') then
-         ST_CheckAndReplaceTranslationText(CJobj01, true, "Collections:Mount:"..ST_MountName,false,false,-10);
+         ST_CheckAndReplaceTranslationText(CJobj01, true, "Collections:Mount:"..(ST_MountName or ''),false,false,-10);
       else
-         ST_CheckAndReplaceTranslationTextUI(CJobj01, true, "Collections:Mount:"..ST_MountName); -- https://imgur.com/7INQmHh
+         ST_CheckAndReplaceTranslationTextUI(CJobj01, true, "Collections:Mount:"..(ST_MountName or ''));  -- https://imgur.com/7INQmHh
       end
 
       local CJobj02 = MountJournalSummonRandomFavoriteButtonSpellName;
