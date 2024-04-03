@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A42) 2024.03.30
+-- Addon: WoW_Quests (version: 10.A43) 2024.04.03
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -2521,16 +2521,14 @@ function DUI_ON_OFF()
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." (EN)");
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(Original_Font1,18);
-         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_quest_EN[QTR_quest_ID].title);
-         DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("LEFT");
+         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_EN[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
       end
    else                                  -- pokaż tłumaczenie
       QTR_curr_dialog="1";
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")");
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1,18);
-         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ReverseIfAR(QTR_quest_LG[QTR_quest_ID].title));
-         DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT");
+         DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
       end
    end
    
@@ -2555,8 +2553,7 @@ function QTR_DUIQuestFrame(event)
    
    if (QTR_PS["transtitle"]=="1") then
       DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1,18);
-      DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ReverseIfAR(QTR_quest_LG[QTR_quest_ID].title));
-      DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT");
+      DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1));
    end
 
    local function SplitParagraph(text)
@@ -2608,9 +2605,9 @@ function QTR_DUIQuestFrame(event)
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,fontString,WOWTR_Font2,-5));
       else
          local firstHeight = fontString:GetHeight();
-         detailsX = details[countFontString];
-         progressX = progress[countFontString];
-         completionX = completion[countFontString];
+         detailsX = details[countFontString] or '';
+         progressX = progress[countFontString] or '';
+         completionX = completion[countFontString] or '';
          if (event=="QUEST_DETAIL" and detailsX) then
             fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
          elseif (event=="QUEST_PROGRESS" and progressX) then
@@ -2720,7 +2717,7 @@ function QTR_DUIGossipFrame()
          local _font1, _size1, _1 = fontString:GetFont();     -- odczytaj aktualną czcionkę i rozmiar
          fontString:SetFont(WOWTR_Font2,_size1);
          local firstHeight = fontString:GetHeight();
-         gossipX = gossip[countFontString];
+         gossipX = gossip[countFontString] or '';
          fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2));
          local secondHeight = fontString:GetHeight();
          offset = secondHeight - firstHeight;
