@@ -2605,9 +2605,9 @@ function QTR_DUIQuestFrame(event)
          fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,fontString,WOWTR_Font2,-5));
       else
          local firstHeight = fontString:GetHeight();
-         detailsX = details[countFontString] or '';
-         progressX = progress[countFontString] or '';
-         completionX = completion[countFontString] or '';
+         detailsX = details[countFontString];
+         progressX = progress[countFontString];
+         completionX = completion[countFontString];
          if (event=="QUEST_DETAIL" and detailsX) then
             fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
          elseif (event=="QUEST_PROGRESS" and progressX) then
