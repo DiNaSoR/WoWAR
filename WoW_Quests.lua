@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A43) 2024.04.03
+-- Addon: WoW_Quests (version: 10.A44) 2024.04.06
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -202,7 +202,7 @@ end
 
 -- NPC chat window opened - frame: GossipFrame
 function QTR_Gossip_Show()
-
+--print ("Gossip_Show");
    local function ProcessOPT(buttonString)
       local fontString = buttonString.Content.Name;
       local GOptionText = WOWTR_DetectAndReplacePlayerName(fontString:GetText());
@@ -1418,6 +1418,9 @@ function QTR_QuestPrepare(zdarzenie)
             QTR_ToggleButton6:Hide();     -- przycisk w ramce DUIQuestFrame (gossip)
             QTR_ToggleButton7:Disable();
             QTR_ToggleButton7:SetText("Quest ID="..str_ID);
+            if (TT_PS["ui1"] == "1") then
+               QTR_DUIbuttons();
+            end
          end
          QTR_Translate_On(0);
          QTR_SaveQuest(zdarzenie);
@@ -2741,14 +2744,14 @@ function QTR_DUIGossipFrame()
       local _font1, _size1, _1 = fontString:GetFont();     -- odczytaj aktualną czcionkę i rozmiar
       fontString:SetFont(WOWTR_Font2,_size1);
 --      buttonString:HookScript("OnClick", QTR_DUIGossipFrame);
+      if (string.sub(GOptionText,2,2)==".") then           -- usuń liczby przed tekstem opcji
+         GOptionText = string.sub(GOptionText,4);
+      end
       if (string.sub(GOptionText,1,2) == "|c") then
          prefix = string.sub(GOptionText, 1, 10);
          sufix = "|r";
          GOptionText = string.gsub(GOptionText, prefix, "");
          GOptionText = string.gsub(GOptionText, sufix, "");
-      end
-      if (string.sub(GOptionText,2,2)==".") then
-         GOptionText = string.sub(GOptionText,4);
       end
       local OptHash = StringHash(GOptionText);
       if (GS_Gossip[OptHash]) then               -- jest tłumaczenie
