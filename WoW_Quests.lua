@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A44) 2024.04.06
+-- Addon: WoW_Quests (version: 10.A45) 2024.04.07
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -34,13 +34,17 @@ QTR_MessOrig = {
    reward_unlock    = "You will unlock access to the following:", 
    reward_bonus     = "Completing this quest while in Party Sync may reward:", 
    };
-QTR_quest_ID = 0;      
-QTR_quest_EN = { };      
-QTR_quest_LG = { };      
+QTR_quest_ID = 0;
+QTR_quest_EN = { };
+QTR_quest_LG = { };
 QTR_quest_EN[0] = { };
 QTR_quest_LG[0] = { };
 QTR_goss_optionsEN = { };
 QTR_goss_optionsTR = { };
+gossipDUI_LN = { };
+gossipDUI_EN = { };
+gossip2DUI_LN = { };
+gossip2DUI_EN = { };
 QTR_curr_trans = "1";
 QTR_curr_goss = "X";
 QTR_curr_hash = 0;
