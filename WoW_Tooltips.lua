@@ -395,7 +395,10 @@ end
 -------------------------------------------------------------------------------------------------------
 
 function ST_ElvSpellBookTooltipOnShow()
+   local E, L, V, P, G = unpack(ElvUI);
+   local ElvUISpellBookTooltip = E.SpellBookTooltip;
    local numLines = ElvUISpellBookTooltip:NumLines();
+
    if (numLines == 1) then   -- ElvUISpellBookTooltip zawiera tylko 1 linijkę opisu i jest to tytuł spella
       return;
    end
@@ -418,8 +421,8 @@ function ST_ElvSpellBookTooltipOnShow()
    ST_MyGameTooltip:SetPoint("TOPLEFT", ElvUISpellBookTooltip, "BOTTOMLEFT", 0, 0);    -- pod przyciskiem od lewej strony
    ST_MyGameTooltip:ClearLines();
    for i = 2, numLines-1, 1 do
-      ST_leftText = _G["ElvUISpellBookTooltipTextLeft"..i]:GetText();
-      leftColR, leftColG, leftColB = _G["ElvUISpellBookTooltipTextLeft"..i]:GetTextColor();
+      ST_leftText = _G[ElvUISpellBookTooltip:GetName().."TextLeft"..i]:GetText();
+      leftColR, leftColG, leftColB = _G[ElvUISpellBookTooltip:GetName().."TextLeft"..i]:GetTextColor();
       ST_kodKoloru = OkreslKodKoloru(leftColR, leftColG, leftColB);
       if (ST_leftText and (string.len(ST_leftText)>15) and ((ST_kodKoloru == "c7") or (ST_kodKoloru == "c4") or (string.len(ST_leftText)>30))) then
          ST_hash = StringHash(ST_UsunZbedneZnaki(ST_leftText));
@@ -431,7 +434,7 @@ function ST_ElvSpellBookTooltipOnShow()
             ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
             ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true);
             numLines = ST_MyGameTooltip:NumLines();           -- aktualna liczba linii
-            _font1, _size1, _1 = _G["ElvUISpellBookTooltipTextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
+            _font1, _size1, _1 = _G[ElvUISpellBookTooltip:GetName().."TextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
             _G["ST_MyGameTooltipTextLeft"..numLines]:SetFont(WOWTR_Font2, 11);        -- ustawiamy własną czcionkę 
          end
       end

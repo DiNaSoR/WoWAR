@@ -403,8 +403,9 @@ function WOWTR_onEvent(self, event, name, ...)
       BT_ToggleButton0:SetPoint("BOTTOMRIGHT", ItemTextFrame, "BOTTOMRIGHT", -29, 5);
       BT_ToggleButton0:SetScript("OnClick", BT_ON_OFF);
       
-      if (_G.ElvUISpellBookTooltip) then
-         _G.ElvUISpellBookTooltip:HookScript("OnShow", function(self, ...)
+      if (_G.ElvUI) then
+         local E, L, V, P, G = unpack(ElvUI);
+         E.SpellBookTooltip:HookScript("OnShow", function(self, ...)
             if (not WOWTR_wait(0.02, ST_ElvSpellBookTooltipOnShow)) then
             -- opóźnienie 0.02 sek
             end
