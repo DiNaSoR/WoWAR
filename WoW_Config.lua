@@ -1,4 +1,4 @@
--- Addon: WoWTR_Config (version: 10.Z24) 2024.03.28
+-- Addon: WoWTR_Config (version: 10.Z25) 2024.04.09
 -- Opis: The AddOn displays the translated text information in chosen language
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -41,6 +41,12 @@ function WOWTR_SetCheckButtonState()
    WOWTR_CheckButton33:SetValue(MF_PM["movie"]=="1");
    WOWTR_CheckButton34:SetValue(MF_PM["cinematic"]=="1");
    WOWTR_CheckButton35:SetValue(MF_PM["save"]=="1");
+   
+   if (WoWTR_Localization.lang == 'AR') then          -- part: Chat
+      WOWTR_CheckButton36:SetValue(CH_PM["active"]=="1");
+      WOWTR_CheckButton37:SetValue(CH_PM["setsize"]=="1");
+      WOWTR_slider6:SetValue(tonumber(CH_PM["fontsize"]));
+   end
    
    WOWTR_CheckButton40:SetValue(TT_PS["ui8"]=="1");
    WOWTR_CheckButton41:SetValue(TT_PS["active"]=="1");
@@ -1419,6 +1425,105 @@ WOWTR_CheckButton35:SetScript("OnEnter", function(self)
 WOWTR_CheckButton35:SetScript("OnLeave", function(self)
    GameTooltip:Hide()   -- Hide the tooltip
    end);
+
+if (WoWTR_Localization.lang == 'AR') then          -- part: Chat
+   local WOWTR_Panel3Separator = WOWTR_OptionPanel4:CreateFontString(nil, "ARTWORK");
+   WOWTR_Panel3Separator:SetFontObject(GameFontWhite);
+   WOWTR_Panel3Separator:SetJustifyH("LEFT"); 
+   WOWTR_Panel3Separator:SetJustifyV("TOP");
+   WOWTR_Panel3Separator:ClearAllPoints();
+   WOWTR_Panel3Separator:SetPoint("TOPLEFT", WOWTR_OptionPanel4, "TOPLEFT", 20, -300);
+   local frame3 = WOWTR_OptionPanel3:CreateTexture(nil, "BACKGROUND")
+   frame3:SetSize(684, 1)
+   frame3:SetPoint("TOPLEFT", 0, -300)
+   frame3:SetColorTexture(0.2, 0.2, 0.2, 1)
+
+   local WOWTR_OptionsHeaderIcon8 = WOWTR_OptionPanel3:CreateTexture(nil, "OVERLAY");
+   WOWTR_OptionsHeaderIcon8:SetWidth(200);
+   WOWTR_OptionsHeaderIcon8:SetHeight(200);
+   WOWTR_OptionsHeaderIcon8:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\archat.jpg");
+   WOWTR_OptionsHeaderIcon8:SetPoint("CENTER", -230, -150);
+
+   local WOWTR_Panel3Header3 = WOWTR_OptionPanel3:CreateFontString(nil, "ARTWORK");
+   WOWTR_Panel3Header3:SetFontObject(GameFontNormal);
+   WOWTR_Panel3Header3:SetJustifyH("LEFT"); 
+   WOWTR_Panel3Header3:SetJustifyV("TOP");
+   WOWTR_Panel3Header3:ClearAllPoints();
+   WOWTR_Panel3Header3:SetPoint("TOPLEFT", WOWTR_Panel3Separator, "TOPLEFT", 400, -20);
+   WOWTR_Panel3Header3:SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.chatService));
+   WOWTR_Panel3Header3:SetFont(WOWTR_Font2, 15);
+
+   local WOWTR_CheckButton36 = CreateFrame("CheckButton", "WOWTR_CheckButton36", WOWTR_OptionPanel3, "SettingsCheckBoxControlTemplate");
+   WOWTR_CheckButton36.CheckBox:SetScript("OnClick", function(self) if (CH_PM["active"]=="1") then CH_PM["active"]="0";CH_ToggleButton:SetText("EN");CH_ToggleButton:Hide() else CH_PM["active"]="1";CH_ToggleButton:Show() end; end);
+   WOWTR_CheckButton36:SetWidth(218);
+   WOWTR_CheckButton36.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel3Header3, "TOPLEFT", 215, -20);
+   WOWTR_CheckButton36:SetPoint("TOPLEFT", WOWTR_Panel3Header3, "TOPLEFT", -30, -22);
+   WOWTR_CheckButton36:SetWidth(250);
+   WOWTR_CheckButton36.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.activateChatService).."|r");   -- Activate service of arabic chat
+   WOWTR_CheckButton36.Text:SetFont(WOWTR_Font2, 15);
+   WOWTR_CheckButton36:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+      GameTooltip:ClearLines();
+      GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.activateChatService).." ", false);                -- red color, no wrap
+      getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+      GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.activateChatServiceDESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
+      getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
+      GameTooltip:Show()   -- Show the tooltip
+      end);
+   WOWTR_CheckButton36:SetScript("OnLeave", function(self)
+      GameTooltip:Hide()   -- Hide the tooltip
+      end);
+
+   local WOWTR_CheckButton37 = CreateFrame("CheckButton", "WOWTR_CheckButton37", WOWTR_OptionPanel3, "SettingsCheckBoxControlTemplate");
+   WOWTR_CheckButton37.CheckBox:SetScript("OnClick", function(self) if (CH_PM["setsize"]=="1") then CH_PM["setsize"]="0" else CH_PM["setsize"]="1" end; end);
+   WOWTR_CheckButton37:SetWidth(235);
+   WOWTR_CheckButton37.CheckBox:SetPoint("TOPLEFT", WOWTR_CheckButton36.CheckBox, "BOTTOMLEFT", 0, 0);
+   WOWTR_CheckButton37:SetPoint("TOPLEFT", WOWTR_CheckButton36.CheckBox, "BOTTOMLEFT", -140, -2);
+   WOWTR_CheckButton37:SetWidth(150);
+   WOWTR_CheckButton37.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.chatFontActivate).."|r");   -- Activate font size changes
+   WOWTR_CheckButton37.Text:SetFont(WOWTR_Font2, 15);
+   WOWTR_CheckButton37:SetScript("OnEnter", function(self)
+   GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
+   GameTooltip:ClearLines();
+   GameTooltip:AddLine(QTR_ReverseIfAR(WoWTR_Config_Interface.chatFontActivate).." ", false);                -- red color, no wrap
+   getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+   GameTooltip:AddLine(QTR_ExpandUnitInfo(WoWTR_Config_Interface.chatFontActivateDESC,false,getglobal("GameTooltipTextLeft1"),WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
+   getglobal("GameTooltipTextLeft2"):SetFont(WOWTR_Font2, 13);
+   GameTooltip:Show()   -- Show the tooltip
+   end);
+   WOWTR_CheckButton37:SetScript("OnLeave", function(self)
+   GameTooltip:Hide()   -- Hide the tooltip
+   end);
+
+   local WOWTR_slider6 = CreateFrame("Slider", "WOWTR_slider6", WOWTR_OptionPanel3, "OptionsSliderTemplate");
+   WOWTR_slider6:SetPoint("TOPLEFT", WOWTR_CheckButton37, "BOTTOMLEFT", 20, -30);
+   WOWTR_slider6:SetMinMaxValues(10, 20);
+   WOWTR_slider6.minValue, WOWTR_slider6.maxValue = WOWTR_slider6:GetMinMaxValues();
+   WOWTR_slider6.Low:SetText(WOWTR_slider6.minValue);
+   WOWTR_slider6.High:SetText(WOWTR_slider6.maxValue);
+   getglobal(WOWTR_slider6:GetName() .. 'Text'):SetText(QTR_ReverseIfAR(WoWTR_Config_Interface.fontsizeBubbles));
+   getglobal(WOWTR_slider6:GetName() .. 'Text'):SetFont(WOWTR_Font2, 11);
+   WOWTR_slider6:SetValue(tonumber(CH_PM["fontsize"]));
+   WOWTR_slider6:SetValueStep(1);
+   WOWTR_slider6:SetScript("OnValueChanged", function(self,event,arg1) 
+                                      BB_PM["fontsize"]=string.format("%d",event); 
+                                      WOWTR_sliderVal6:SetText(BB_PM["fontsize"]);
+                                      end);
+   WOWTR_sliderVal6 = WOWTR_OptionPanel3:CreateFontString(nil, "ARTWORK");
+   WOWTR_sliderVal6:SetFontObject(GameFontNormal);
+   WOWTR_sliderVal6:SetJustifyH("CENTER");
+   WOWTR_sliderVal6:SetJustifyV("TOP");
+   WOWTR_sliderVal6:ClearAllPoints();
+   WOWTR_sliderVal6:SetPoint("CENTER", WOWTR_slider6, "CENTER", 0, -12);
+   WOWTR_sliderVal6:SetText(BB_PM["fontsize"]);   
+   WOWTR_sliderVal6:SetFont(WOWTR_Font2, 13);
+   
+   if (CH_PM["active"]=="1") then
+      CH_ToggleButton:Show();
+   else
+      CH_ToggleButton:Hide();
+   end
+end
 
 ----- TAB 4
 

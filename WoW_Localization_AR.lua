@@ -176,6 +176,13 @@ WoWTR_Config_Interface = {
    savingUntranslatedSubtitles = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
    saveUntranslatedSubtitles = "ﺣﻔﻆ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
    saveUntranslatedSubtitlesDESC = "ﺇﺿﺎﻓﺔ ﺍﻟﺒﻴﺎﻧﺎﺕ ﺇﻟﻰ ﻣﻠﻒ ﺍﻟﺤﻔﻆ",
+   chatService = "ﺗﺮﺟﻤﺎﺕ ﺍﻷﻓﻼﻡ ﻭﺍﻟﻌﺮﻭﺽ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ - tahC",
+   activateChatService = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻷﻓﻼﻡ ﻭﺍﻟﻌﺮﻭﺽ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ",
+   activateChatServiceDESC = "ﻋﻨﺪ ﺍﻹﻏﻼﻕ, ﻟﻦ ﺗﻈﻬﺮ ﺍﻟﺘﺮﺟﻤﺎﺕ",
+   chatFontActivate = "ﺗﻔﻌﻴﻞ ﺗﻐﻴﻴﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   chatFontActivateDESC = "ﻋﻨﺪ ﺍﻟﺘﻔﻌﻴﻞ, ﻳﺘﻢ ﺗﻌﺪﻳﻞ ﺣﺠﻢ ﺍﻟﺨﻂ ﻭﻓﻘﺎ ﻻﺧﺘﻴﺎﺭﻙ",
+   fontsizeChat = "ﺍﺧﺘﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   fontsizeChatDESC = "ﻳﻤﻜﻨﻚ ﺍﺧﺘﻴﺎﺭ ﺣﺠﻢ ﻳﺘﺮﺍﻭﺡ ﺑﻴﻦ 10 ﻭ20",
    
    titleTab4 = "ﺇﻋﺪﺍﺩﺍﺕ ﺍﻟﻮﺍﺟﻬﺔ",
    generalMainHeaderTT = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﺪﺭﻭﺱ ﺍﻟﺘﻌﻠﻴﻤﻴﺔ - slairotuT",

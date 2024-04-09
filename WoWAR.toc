@@ -1,6 +1,6 @@
 ﻿## Interface: 100206
-## Title: WoWAR |cff8080ff10.01|r
-## Version: 10.01
+## Title: WoWAR |cff8080ff10.02|r
+## Version: 10.02
 ## Notes: World of Warcraft in Arabic.
 ## Author: Platine & Dragonarab
 ## E-mail: Dragonarab@gmail.com
@@ -8,7 +8,7 @@
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## IconTexture: Interface\AddOns\WoWAR\Fonts\images\wia.blp
-## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, WoWTR_minimapDB
+## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, CH_PM, WoWTR_minimapDB
 
 Libs\LibStub\LibStub.lua
 Libs\AceAddon-3.0\AceAddon-3.0.lua
@@ -35,6 +35,7 @@ WoW_MovieSubtitles.lua
 WoW_Tutorials.lua
 WoW_Books.lua
 WoW_Tooltips.lua
+WoW_Chat.lua
 
 WoWAR.lua
 WoW_Config.lua

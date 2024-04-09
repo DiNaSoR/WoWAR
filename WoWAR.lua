@@ -1,4 +1,4 @@
--- Addon: WoWAR (version: 10.2.0.01) 2024.02.05
+﻿-- Addon: WoWAR (version: 10.02) 2024.02.07
 -- Description: The AddOn displays the translated text information in Arabic
 -- Autor: Platine
 -- E-mail: platine.wow@gmail.com
@@ -384,6 +384,7 @@ function WOWTR_onEvent(self, event, name, ...)
       --SLASH_WOWTR6 = "/str";
       WOWTR_CheckVars();
       QTR_START();
+      CHAT_START();
       Config_OnEnable();
       TutorialFrame:HookScript("OnShow", TT_onTutorialShow);
       if (not PlayerChoiceFrame) then

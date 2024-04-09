@@ -376,6 +376,177 @@ function AS_UTF8reverse(s)
 end
 
 -------------------------------------------------------------------------------------------------------
+
+-- Reverses the order of UTF-8 letters with ReShaping - using for chat
+function AS_UTF8reverseRS(s)
+   local newstr = "";
+   if (s) then                                   -- check if argument is not empty (nil)
+      local bytes = strlen(s);
+      local pos = 1;
+      local char0 = '';
+      local char1, char2, char3;
+      local charbytes1, charbytes2, charbytes3;
+      local position = -1;           -- not specified
+      local nextletter = 0;
+      local spaces = '( )?؟!,.;:،';  -- letters that we treat as a space
+
+      while (pos <= bytes) do
+         charbytes1 = AS_UTF8charbytes(s, pos);        -- count of bytes (liczba bajtów znaku)
+         char1 = strsub(s, pos, pos + charbytes1 - 1);  -- current character
+         pos = pos + charbytes1;
+         
+         if (pos <= bytes) then
+            charbytes2 = AS_UTF8charbytes(s, pos);        -- count of bytes (liczba bajtów znaku)
+            char2 = strsub(s, pos, pos + charbytes2 - 1);  -- next character
+            if (pos+charbytes2 <= bytes) then              -- 3rd next letter is available
+               charbytes3 = AS_UTF8charbytes(s, pos+charbytes2);                   -- count of bytes (liczba bajtów znaku)
+               char3 = strsub(s, pos+charbytes2, pos+charbytes2 + charbytes3 - 1);  -- 3rd next character
+            else
+               charbytes3 = 0;
+               char3 = 'X';
+            end
+            
+            if (AS_UTF8find(spaces,char2)) then
+               nextletter = 1;      -- space, question mark, exclamation mark, comma, dot, etc.
+            else
+               nextletter = 2;      -- normal letter
+            end
+         else
+            nextletter = 0;         -- no more letters
+            char2 = 'X';
+            char3 = 'X';
+            charbytes2 = 0;
+            charbytes3 = 0;
+         end
+
+         -- first determine the original position of the letter in the word
+         if (AS_UTF8find(spaces,char1)) then
+            position = -1;      -- space, question mark, exclamation mark, comma, dot, etc.
+         elseif (position < 0) then        -- not specified yet (start the word)
+            if ((nextletter == 0) or (nextletter == 1)) then    -- end of file or space on as a next letter
+               position = 0;           -- isolated letter
+            else
+               position = 1;           -- initial letter
+            end
+         elseif ((position == 0) or (position == 1) or (position == 2)) then       -- it was isolated or initial or middle letter
+            if ((nextletter == 0) or (nextletter == 1)) then    -- end of file or space on next letter
+               position = 3;           -- final letter
+            else
+               if (position == 0) then    -- it was isolated letter
+                  position = 1;           -- initial letter
+               else
+                  position = 2;           -- middle letter
+               end
+            end         
+         else                             -- it was final letter (position == 3)
+            position = -1;
+         end
+
+         -- now modifications to the form of the letter depending on the preceding special letters   
+         if ((char0 == "ﻼ") or (char0 == "ﻸ") or (char0 == "ﻺ") or (char0 == "ﻶ") or (char0 == "ا") or (char0 == "أ") or (char0 == "إ") or (char0 == "آ") or (char0 == "لا") or (char0 == "ﻷ") or (char0 == "ﻹ") or (char0 == "ﻵ") or (char0 == "ﻵا") or (char0 == "ﻷا") or (char0 == "ﻹا") or (char0 == "ﻻا")) then    -- previous letter was ALEF, DA, THA, RA, ZAI, WA or LA, current should be in isolated form, only if this letter is the last in the word, otherwise form must be initial
+            if (AS_UTF8find(spaces,char1)) then                                     -- current character is space
+               position = 0;                                                        -- isolated letter
+            elseif ((nextletter == 0) or (nextletter == 1)) then                    -- end of file or space on as a next letter OR letter is ALEF
+               position = 0;      
+            else
+               position = 1;                                                        -- initial letter
+            end
+         elseif (char0 == "ذ") and (char1 == "ه") then                              -- previous letter was THA, current HA should be in isolated form, only if HA is the last in the word, otherwise form must be initial
+            if ((nextletter == 0) or (nextletter == 1)) then                        -- end of file or space on as a next letter
+               position = 0;                                                        -- isolated letter
+            else
+               position = 1;                                                        -- initial letter
+            end
+         elseif  (char0 == "د") or (char0 == "ذ") or (char0 == "ر") or (char0 == "ز") or (char0 == "و") or (char0 == "ؤ") then
+            if (AS_UTF8find(spaces,char1)) then                                     -- current character is space
+               position = 0;                                                        -- isolated letter
+            elseif ((nextletter == 0) or (nextletter == 1)) then                    -- next character is space
+               position = 0;                                                        -- isolated letter
+            else
+               position = 1;                                                        -- initial letter
+            end
+         end
+         
+         
+         if ((AS_Reshaping_Rules3[char1..char2..char3]) and (position >= 0)) then  -- ligature 3 characters
+            local ligature = AS_Reshaping_Rules3[char1..char2..char3];
+            if (position == 0) then
+               char1 = ligature.isolated;
+            elseif (position == 1) then
+               char1 = ligature.initial;
+            elseif (position == 2) then
+               char1 = ligature.middle;
+            else
+               char1 = ligature.final;
+            end
+            pos = pos + charbytes2 + charbytes3;    -- we omit the next preceding letters
+         elseif ((AS_Reshaping_Rules2[char1..char2]) and (position >= 0)) then     -- ligature 2 characters
+            local ligature = AS_Reshaping_Rules2[char1..char2];
+            if (position == 0) then
+               char1 = ligature.isolated;
+            elseif (position == 1) then
+               char1 = ligature.initial;
+            elseif (position == 2) then
+               char1 = ligature.middle;
+            else
+               char1 = ligature.final;
+            end
+            pos = pos + charbytes2;    -- we omit the next preceding letter
+         end   
+         
+
+         -- check if the character has reshaping rules
+         local rules = AS_Reshaping_Rules[char1];
+         if (rules) then
+            -- apply reshaping rules based on the character's position in the string
+            if (position == 0) then       -- isolated letter
+               if (debug_show_form == 1) then
+                  newstr = '0'..rules.isolated .. newstr;
+               else
+                  newstr = rules.isolated .. newstr;
+               end
+            elseif (position == 1) then   -- initial letter
+               if (debug_show_form == 1) then
+                  newstr = '1'..rules.initial .. newstr;
+               else
+                  newstr = rules.initial .. newstr;
+               end
+            elseif (position == 2) then   -- middle letter
+               if (debug_show_form == 1) then
+                  newstr = '2'..rules.middle .. newstr;
+               else
+                  newstr = rules.middle .. newstr;
+               end
+            else                          -- final letter
+               if (debug_show_form == 1) then
+                  newstr = '3'..rules.final .. newstr;
+               else
+                  newstr = rules.final .. newstr;
+               end
+            end
+         else  -- character has no reshaping rules, add it to the result string as is
+            if (char1 == "<") then        -- we need to reverse the directions of the parentheses
+               char1 = ">";
+            elseif (char1 == ">") then
+               char1 = "<";
+            elseif (char1 == "(") then
+               char1 = ")";
+            elseif (char1 == ")") then
+               char1 = "(";
+            end
+            if (debug_show_form == 1) then
+               newstr = position..char1 .. newstr;
+            else
+               newstr = char1 .. newstr;
+            end
+         end
+         char0 = char1;    --save to previous letter
+      end
+   end
+   return newstr;
+end
+
+-------------------------------------------------------------------------------------------------------
 -- the function create testing frame to determine the length of text in a frame
 -- Creates a test frame for measuring the width of text.
 -------------------------------------------------------------------------------------------------------
@@ -574,20 +745,20 @@ function BB_LineChat(txt, font_size, more_chars)
       local more_chars = more_chars or 0;
       local chat_width = DEFAULT_CHAT_FRAME:GetWidth();             -- width of 1 chat line
       local chars_limit = chat_width / (0.35*font_size+0.8)*1.1 ;   -- so much max. characters can fit on one line
-		local bytes = strlen(txt);
-		local pos = 1;
+      local bytes = strlen(txt);
+      local pos = 1;
       local counter = 0;
       local second = 0;
-		local newstr = "";
-		local charbytes;
+      local newstr = "";
+      local charbytes;
       local newstrR;
       local char1;
-		while (pos <= bytes) do
-			c = strbyte(txt, pos);                      -- read the character (odczytaj znak)
-			charbytes = AS_UTF8charbytes(txt, pos);    -- count of bytes (liczba bajtów znaku)
+      while (pos <= bytes) do
+         c = strbyte(txt, pos);                      -- read the character (odczytaj znak)
+         charbytes = AS_UTF8charbytes(txt, pos);    -- count of bytes (liczba bajtów znaku)
          char1 = strsub(txt, pos, pos + charbytes - 1);
-			newstr = newstr .. char1;
-			pos = pos + charbytes;
+         newstr = newstr .. char1;
+         pos = pos + charbytes;
          
          counter = counter + 1;
          if ((char1 >= "A") and (char1 <= "z")) then
@@ -606,8 +777,9 @@ function BB_LineChat(txt, font_size, more_chars)
       retstr = retstr .. newstrR;
       retstr = string.gsub(retstr, "\n ", "\n");        -- space after newline code is useless
    end
-	return retstr;
+   return retstr;
 end
+
 
 function BB_AddSpaces(txt, snd)                                 -- snd = second or next line (interspace 2 on right)
    local _fontC, _sizeC, _C = DEFAULT_CHAT_FRAME:GetFont();     -- read current font, size and flag of the chat object
@@ -638,6 +810,7 @@ function BB_AddSpaces(txt, snd)                                 -- snd = second 
    
    return(txt);
 end
+
 
 function BB_CreateTestLine()
    BB_TestLine = CreateFrame("Frame", "BB_TestLine", UIParent, "BasicFrameTemplateWithInset");
