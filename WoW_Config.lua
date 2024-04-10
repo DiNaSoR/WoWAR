@@ -1457,7 +1457,7 @@ if (WoWTR_Localization.lang == 'AR') then          -- part: Chat
    WOWTR_CheckButton36.CheckBox:SetScript("OnClick", function(self) if (CH_PM["active"]=="1") then CH_PM["active"]="0";CH_ToggleButton:SetText("EN");CH_ToggleButton:Hide() else CH_PM["active"]="1";CH_ToggleButton:Show() end; end);
    WOWTR_CheckButton36:SetWidth(218);
    WOWTR_CheckButton36.CheckBox:SetPoint("TOPLEFT", WOWTR_Panel3Header3, "TOPLEFT", 215, -20);
-   WOWTR_CheckButton36:SetPoint("TOPLEFT", WOWTR_Panel3Header3, "TOPLEFT", -30, -22);
+   WOWTR_CheckButton36:SetPoint("TOPLEFT", WOWTR_Panel3Header3, "TOPLEFT", 20, -22);
    WOWTR_CheckButton36:SetWidth(250);
    WOWTR_CheckButton36.Text:SetText("|cffffffff"..QTR_ReverseIfAR(WoWTR_Config_Interface.activateChatService).."|r");   -- Activate service of arabic chat
    WOWTR_CheckButton36.Text:SetFont(WOWTR_Font2, 15);
