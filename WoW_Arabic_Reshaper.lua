@@ -79,6 +79,8 @@ AS_Reshaping_Rules2 = {
    ["\217\132" .. "\216\165"] = { isolated = "\239\187\185", initial = "\239\187\185", middle = "\239\187\186", final = "\239\187\186" }, -- Arabic ligature LAM with ALEF with HAMZA below
    ["\217\132" .. "\216\162"] = { isolated = "\239\187\181", initial = "\239\187\181", middle = "\239\187\182", final = "\239\187\182" }, -- Arabic ligature LAM with ALEF with MADDA
    ["ي" .. "ء"] = { isolated = "0", initial = "ءي", middle = "ءﻲ", final = "ءﻲ" },
+   --["ا" .. "ً"] = { isolated = "0", initial = "ﴽ", middle = "2", final = "3" },
+
 };
 
 -------------------------------------------------------------------------------------------------------
