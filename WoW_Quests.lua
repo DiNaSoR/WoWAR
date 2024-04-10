@@ -2654,17 +2654,50 @@ function QTR_DUIQuestFrame(event)
          progressX = progress[countFontString];
          completionX = completion[countFontString];
          if (event=="QUEST_DETAIL" and detailsX) then
-            fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
+            if (WoWTR_Localization.lang == 'AR') then
+               fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("RIGHT");
+            else
+               fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("LEFT");
+            end
          elseif (event=="QUEST_PROGRESS" and progressX) then
-            fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2));
+            if (WoWTR_Localization.lang == 'AR') then
+               fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("RIGHT");
+            else
+               fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("LEFT");
+            end
          elseif (event=="QUEST_COMPLETE" and completionX) then
-            fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2));
+            if (WoWTR_Localization.lang == 'AR') then
+               fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("RIGHT");
+            else
+               fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("LEFT");
+            end
          elseif (objectivesNow) then
-            fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2));
-            objectivesNow = false;        -- objectives is in one long rows?
+            if (WoWTR_Localization.lang == 'AR') then
+               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("RIGHT");
+               objectivesNow = false;        -- objectives is in one long rows?
+            else
+               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("LEFT");
+               objectivesNow = false;        -- objectives is in one long rows?
+            end
+
          elseif (rewardsNow) then
-            fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemchoose,false,fontString,WOWTR_Font2));
-            objectivesNow = false;
+            if (WoWTR_Localization.lang == 'AR') then
+               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemreceive,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("RIGHT");
+               rewardsNow = false;        -- rewards is in one long rows?
+            else
+               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemreceive,false,fontString,WOWTR_Font2));
+               fontString:SetJustifyH("LEFT");
+               rewardsNow = false;        -- rewards is in one long rows?
+            end
          end
          local secondHeight = fontString:GetHeight();
          offset = secondHeight - firstHeight;
