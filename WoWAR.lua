@@ -420,9 +420,9 @@ function WOWTR_onEvent(self, event, name, ...)
       if (ST_PM["spell"] == "1") then
          local fo = WOWTR_ToggleButtonS:CreateFontString();
          fo:SetFont(WOWTR_Font2, 14);
-         fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
+         fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
          WOWTR_ToggleButtonS:SetFontString(fo);
-         WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
+         WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
       else
          WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_enDESC);
       end
@@ -527,9 +527,9 @@ function STspell_ON_OFF()
       ST_PM["spell"] = "1";
       local fo = WOWTR_ToggleButtonS:CreateFontString();
       fo:SetFont(WOWTR_Font2, 14);
-      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
+      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
       WOWTR_ToggleButtonS:SetFontString(fo);
-      WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_arDESC));
+      WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
    end
 end
 
