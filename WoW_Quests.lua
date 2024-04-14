@@ -779,7 +779,7 @@ function QTR_QuestScrollFrame_OnShow()
          txt = string.gsub(txt, "Chapters", WoWTR_Localization.storyLineChapters);
          local _font1, _size1, _3 = QuestScrollFrame.Contents.StoryHeader.Progress:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
          QuestScrollFrame.Contents.StoryHeader.Progress:SetText(QTR_ReverseIfAR(txt));
-         QuestScrollFrame.Contents.StoryHeader.Progress:SetFont(WOWTR_Font2, _size1); 
+         QuestScrollFrame.Contents.StoryHeader.Progress:SetFont(WOWTR_Font2, _size1);
       end
    end
 end
@@ -2012,11 +2012,14 @@ function QTR_ResetQuestToOriginal()
    -- Reset Quest Info headers and text to original values
    QuestInfoObjectivesHeader:SetText(QTR_MessOrig.objectives);
    QuestInfoObjectivesHeader:SetFont(Original_Font1, 18);
+   QuestInfoObjectivesHeader:SetJustifyH("LEFT");
    QuestInfoObjectivesText:SetFont(Original_Font2, 13);
+   QuestInfoObjectivesText:SetJustifyH("LEFT");
    
    QuestInfoDescriptionHeader:SetText(QTR_MessOrig.details); 
    QuestInfoDescriptionHeader:SetFont(Original_Font1, 18);
    QuestInfoDescriptionText:SetFont(Original_Font2, 13);
+   QuestInfoDescriptionText:SetJustifyH("LEFT");
    
    QuestInfoRewardsFrame.Header:SetText(QTR_MessOrig.rewards);
    QuestInfoRewardsFrame.Header:SetFont(Original_Font1, 18);
@@ -2051,6 +2054,12 @@ function QTR_ResetQuestToOriginal()
       MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoRewardsFrame.PlayerTitleText:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.QuestSessionBonusReward:SetJustifyH("LEFT");
+      if (QTR_QuestDetail_ItemReceiveText) then         -- własne obiekty
+         QTR_QuestDetail_ItemReceiveText:Hide();
+      end
+      if (QTR_QuestReward_ItemReceiveText) then
+         QTR_QuestReward_ItemReceiveText:Hide();
+      end
    end
    
    -- Reset fonts and text for various quest elements
