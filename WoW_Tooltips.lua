@@ -185,6 +185,7 @@ function ST_TranslatePrepare(ST_origin, ST_tlumacz)
    end
    tlumaczenie = string.gsub(tlumaczenie,"NEW_LINE","\n");
    tlumaczenie = string.gsub(tlumaczenie,"$B","\n");
+   tlumaczenie = string.gsub(tlumaczenie,"{B}","\n");
    tlumaczenie = string.gsub(tlumaczenie,"$b","\n");
    tlumaczenie = string.gsub(tlumaczenie,"YOUR_NAME",WOWTR_player_name);
    tlumaczenie = string.gsub(tlumaczenie,"$N",WOWTR_player_name);
@@ -480,7 +481,11 @@ function ST_BuffOrDebuff()
          ST_MyGameTooltip:ClearAllPoints();
          ST_MyGameTooltip:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", 0, 0);    -- pod przyciskiem od prawej strony
          ST_MyGameTooltip:ClearLines();
-         ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true);
+         if (WoWTR_Localization.lang == 'AR') then
+            ST_MyGameTooltip:AddLine(QTR_ExpandUnitInfo(ST_tlumaczenie,false,ST_MyGameTooltip,WOWTR_Font2), leftColR, leftColG, leftColB, true);
+         else
+            ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true);
+         end
          _G["ST_MyGameTooltipTextLeft1"]:SetFont(WOWTR_Font2, 12);      -- wielkość 12
          if (ST_PM["showHS"]=="1") then            -- czy Hash ?
             ST_MyGameTooltip:AddLine(" ",0,0,0);   -- dodaj odstęp przed linią z Hash
@@ -903,10 +908,10 @@ end
 
 function ST_TalentsTab_OnShow(talentsTab)
    local _font, _size, _ = talentsTab.ClassCurrencyDisplay.CurrencyLabel:GetFont();    -- odczytaj aktualną czcionkę i rozmiar
-   talentsTab.ClassCurrencyDisplay.CurrencyLabel:SetText(QTR_ReverseIfAR(ST_SetText(talentsTab.ClassCurrencyDisplay.CurrencyLabel:GetText())));   -- DRUID POINTS AVAILABLE
+   talentsTab.ClassCurrencyDisplay.CurrencyLabel:SetText(QTR_ReverseIfAR(ST_SetText(talentsTab.ClassCurrencyDisplay.CurrencyLabel:GetText())));   -- Main Class Talent Title
    talentsTab.ClassCurrencyDisplay.CurrencyLabel:SetFont(WOWTR_Font2, _size);
    local _font, _size, _ = talentsTab.SpecCurrencyDisplay.CurrencyLabel:GetFont();
-   talentsTab.SpecCurrencyDisplay.CurrencyLabel:SetText(QTR_ReverseIfAR(ST_SetText(talentsTab.SpecCurrencyDisplay.CurrencyLabel:GetText())));     -- BALANCE POINTS AVAILABLE
+   talentsTab.SpecCurrencyDisplay.CurrencyLabel:SetText(QTR_ReverseIfAR(ST_SetText(talentsTab.SpecCurrencyDisplay.CurrencyLabel:GetText())));     -- Spec Class Talent Title
    talentsTab.SpecCurrencyDisplay.CurrencyLabel:SetFont(WOWTR_Font2, _size);
 end
 
