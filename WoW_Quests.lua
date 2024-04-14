@@ -2031,6 +2031,12 @@ function QTR_ResetQuestToOriginal()
       MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoRewardsFrame.PlayerTitleText:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.QuestSessionBonusReward:SetJustifyH("LEFT");
+      if (QTR_QuestDetail_ItemReceiveText) then         -- własne obiekty
+         QTR_QuestDetail_ItemReceiveText:Hide();
+      end
+      if (QTR_QuestReward_ItemReceiveText) then
+         QTR_QuestReward_ItemReceiveText:Hide();
+      end
    end
    
    -- Reset fonts and text for various quest elements
