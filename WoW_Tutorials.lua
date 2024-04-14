@@ -68,8 +68,14 @@ function TT_onTutorialShow()          -- główna funkcja wywoływana, gdy pojaw
                   id = StringHash(txt);
                   if (Tut_Data7[id]) then         -- jest tureckie tłumaczenie w bazie tłumaczeń
                      local _font5, _size5, _35 = _G[obj].Text:GetFont();
-                     _G[obj].Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
-                     _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
+                        if (WoWTR_Localization.lang == 'AR') then
+                           _G[obj].Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].Text,WOWTR_Font2, -5).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                           _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
+                           _G[obj].Text:SetJustifyH("RIGHT");
+                        else
+                           _G[obj].Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                           _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
+                        end
                   elseif (TT_PS["save"] == "1") then
                      TT_TUTORIALS[tostring(id)] = txt;
                   end
