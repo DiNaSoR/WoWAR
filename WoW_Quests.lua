@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A46) 2024.04.10
+-- Addon: WoW_Quests (version: 10.A48) 2024.04.16
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -749,6 +749,9 @@ function QTR_START()
    isClassicQuestLog();
    isImmersion();
    isStoryline();
+   if (isDUIQuestFrame()) then
+      DUIQuestFrame:HookScript("OnShow", QTR_Gossip_Show);
+   end
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -1253,6 +1256,8 @@ function QTR_QuestPrepare(zdarzenie)
          QTR_ToggleButton7:Enable();   -- przycisk w ramce DUIQuestFrame (quests)
       end
       QTR_curr_trans = "1";                -- aktualnie wyświetlane jest tłumaczenie PL
+      QTR_quest_EN[QTR_quest_ID].itemchoose = QTR_MessOrig.itemchoose0;
+      QTR_quest_EN[QTR_quest_ID].itemreceive = QTR_MessOrig.itemreceiv0;
       if ( QTR_QuestData[str_ID] ) then    -- wyświetlaj tylko, gdy istnieje tłumaczenie
          if (QTR_quest_EN[QTR_quest_ID].title == nil) then
             QTR_quest_LG[QTR_quest_ID].title = QTR_QuestData[str_ID]["Title"];
@@ -1426,7 +1431,7 @@ function QTR_QuestPrepare(zdarzenie)
                QTR_DUIbuttons();
             end
          end
-         QTR_Translate_On(0);
+         QTR_Translate_Off(1);
          QTR_SaveQuest(zdarzenie);
       end   -- jest przetłumaczony quest w bazie
    else     -- tłumaczenia wyłączone
@@ -2067,7 +2072,7 @@ function QTR_ResetQuestToOriginal()
    QuestInfoRewardsFrame.ItemReceiveText:SetFont(Original_Font2, 13);
    QuestInfoRewardsFrame.ItemChooseText:SetText(QTR_quest_EN[QTR_quest_ID].itemchoose);
    QuestInfoRewardsFrame.ItemReceiveText:SetText(QTR_quest_EN[QTR_quest_ID].itemreceive);
-   
+
    QuestInfoSpellObjectiveLearnLabel:SetFont(Original_Font2, 13);
    QuestInfoSpellObjectiveLearnLabel:SetText(QTR_MessOrig.learnspell);
    
@@ -2865,9 +2870,9 @@ function QTR_DUIGossipFrame()
       table.insert(gossip2DUI_LN, fontString:GetText());    -- translated version
    end
 
-   DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessGS);
    QTR_curr_goss = "1";           -- aktualnie wyświetlane jest tłumaczenie
    
+   DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessGS);
    DUIQuestFrame.optionButtonPool:ProcessActiveObjects(ProcessOPT);
    
    if (TT_PS["ui1"] == "1") then
