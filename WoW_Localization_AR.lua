@@ -41,7 +41,7 @@ WoWTR_Localization = {
    stopTheMovieYes = "ﻧﻌﻢ",                                          -- Yes
    stopTheMovieNo = "ﻻ",                                             -- No
    reopenBoard = "ﺇﻋﺎﺩﺓ ﻓﺘﺢ ﻟﻮﺣﺔ ﺍﻹﻋﻼﻧﺎﺕ",                           -- Reopen the Bulletin Board
-   sellPrice = ":ﺳﻌﺮ ﺍﻟﺒﻴﻊ",                                         -- Sell price:
+   sellPrice = "اﻟﺴﻌﺮ:",                                         -- Sell price:
    currentlyEquipped = "ﻣﺮﺗﺪﻱ ﺣﺎﻟﻴﺎ",                                -- Currently Equipped
    additionalEquipped = "ﻣﺮﺗﺪﻱ ﻣﻌﺪﺍﺕ ﺇﺿﺎﻓﻴﺔ",                        -- Equipped with additional Equipment
    WoWTR_Talent_trDESC = "ﺍﻟﻤﻬﺎﺭﺍﺕ: ﺑﺎﻟﻌﺮﺑﻲ",                        -- Talents: Arabic
@@ -50,16 +50,16 @@ WoWTR_Localization = {
    WoWTR_Spellbook_enDESC = "Spell Book: English",                   -- Spell Book: English
    your_home = "ﻣﻨﺰﻟﻚ",                                              -- 'your home' (if the Hearthstone location fails to be read)
    welcomeIconPos = 255,                                             -- position of welcome icon on the welcom panel; 0 = disabled to display
-   resetButton1 = "ﻣﺴﺢ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺨﺰﻧﺔ ﻓﻲ ﻣﻠﻒ aul.RAWoW",             -- مسح النصوص غير المترجمة المحفوظة (بدون خط عربي)
-   resetButton2 = "ﺇﻋﺎﺩﺓ ﺿﺒﻂ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ",                        -- إعادة الإضافة إلى إعداداتها الافتراضية (بدون خط عربي)
-   resetButton1Opis = "ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ ﺍﻟﻤﺤﻔﻮﻇﺔ",            -- ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ ﺍﻟﻤﺤﻔﻮﻇﺔ (كتلميح)
-   resetButton1OpisDESC = "ﺳﻴﺘﻢ ﺣﺬﻑ ﺟﻤﻴﻊ ﺍﻟﺒﻴﺎﻧﺎﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ ﻓﻲ ﺍﻟﻠﻌﺒﺔ",  -- مسح النصوص غير المترجمة المحفوظة (كتلميح)
-   resetButton2Opis = "ﺇﻋﺎﺩﺓ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ",           -- ﺇﻋﺎﺩﺓ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ (كتلميح)
+   resetButton1 = "ﻣﺴﺢ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺨﺰﻧﺔ ﻓﻲ ﻣﻠﻒ aul.RAWoW",             -- Clear saved untranslated texts (no Arabic font)
+   resetButton2 = "ﺇﻋﺎﺩﺓ ﺿﺒﻂ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ",                        -- Restore the extension to its default settings (no Arabic font)
+   resetButton1Opis = "ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ ﺍﻟﻤﺤﻔﻮﻇﺔ",            -- Clear saved untranslated text (as a hint)
+   resetButton1OpisDESC = "ﺳﻴﺘﻢ ﺣﺬﻑ ﺟﻤﻴﻊ ﺍﻟﺒﻴﺎﻧﺎﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ ﻓﻲ ﺍﻟﻠﻌﺒﺔ",  -- Clear saved untranslated texts (as a hint)
+   resetButton2Opis = "ﺇﻋﺎﺩﺓ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ",           -- Restore the extension to its default settings (as a tip)
    resetButton2OpisDESC = "ﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺍﻟﻮﺿﻊ ﺍﻻﻓﺘﺮﺍﺿﻲ \n)ﻭﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻟﻮﺍﺟﻬﺔ(",
-   resultButton1 = "ﺗﻢ ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﺍﻟﻤﺨﺰﻧﺔ",                             -- تم تنظيف النصوص المحفوظة
-   confirmationHeader = "ﺗﺄﻛﻴﺪ",                                        -- عنوان الﺗﺄﻛﻴﺪ
-   confirmationText1 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﻣﺴﺢ ﺟﻤﻴﻊ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ؟",          -- هل تود مسح جميع النصوص غير المترجمة المحفوظة؟
-   confirmationText2 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ؟\n(ﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻟﻮﺍﺟﻬﺔ)",   -- هل تود استعادة إعدادات الإضافة الافتراضية؟
+   resultButton1 = "ﺗﻢ ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﺍﻟﻤﺨﺰﻧﺔ",                             -- Saved texts have been erased
+   confirmationHeader = "ﺗﺄﻛﻴﺪ",                                        -- Confirmation
+   confirmationText1 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﻣﺴﺢ ﺟﻤﻴﻊ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ؟",          -- Do you want to clear all saved untranslated texts?
+   confirmationText2 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ؟\n(ﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻟﻮﺍﺟﻬﺔ)",   -- Do you want to restore the addon's default settings?
    moveFrameUpDown = "ﺣﺮﻙ ﺍﻟﻨﺎﻓﺬﺓ ﻷﻋﻠﻰ ﺃﻭ ﻷﺳﻔﻞ",                        -- Move the window up or down
 };
 
