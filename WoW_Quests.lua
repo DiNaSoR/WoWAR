@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A49) 2024.04.16
+-- Addon: WoW_Quests (version: 10.A49) 2024.04.17
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -749,9 +749,6 @@ function QTR_START()
    isClassicQuestLog();
    isImmersion();
    isStoryline();
-   if (isDUIQuestFrame()) then
-      DUIQuestFrame:HookScript("OnShow", QTR_Gossip_Show);
-   end
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -2017,11 +2014,14 @@ function QTR_ResetQuestToOriginal()
    -- Reset Quest Info headers and text to original values
    QuestInfoObjectivesHeader:SetText(QTR_MessOrig.objectives);
    QuestInfoObjectivesHeader:SetFont(Original_Font1, 18);
+   QuestInfoObjectivesHeader:SetJustifyH("LEFT");
    QuestInfoObjectivesText:SetFont(Original_Font2, 13);
+   QuestInfoObjectivesText:SetJustifyH("LEFT");
    
    QuestInfoDescriptionHeader:SetText(QTR_MessOrig.details); 
    QuestInfoDescriptionHeader:SetFont(Original_Font1, 18);
    QuestInfoDescriptionText:SetFont(Original_Font2, 13);
+   QuestInfoDescriptionText:SetJustifyH("LEFT");
    
    QuestInfoRewardsFrame.Header:SetText(QTR_MessOrig.rewards);
    QuestInfoRewardsFrame.Header:SetFont(Original_Font1, 18);
@@ -2049,16 +2049,16 @@ function QTR_ResetQuestToOriginal()
    if (WoWTR_Localization.lang == 'AR') then
       -- For Arabic, set text justification to left
       QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT");
-      QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT");
+      QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoSpellObjectiveLearnLabel:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.XPFrame.ReceiveText:SetJustifyH("LEFT");
       MapQuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT");
-      MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT");
+      MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoRewardsFrame.PlayerTitleText:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.QuestSessionBonusReward:SetJustifyH("LEFT");
-      QuestInfoObjectivesText:SetJustifyH("LEFT");
-      QuestInfoObjectivesHeader:SetJustifyH("LEFT");
-      QuestInfoDescriptionText:SetJustifyH("LEFT");
+      if (QTR_QuestDetail_ItemReceiveText) then         -- własne obiekty
+         QTR_QuestDetail_ItemReceiveText:Hide();
+      end
       if (QTR_QuestReward_ItemReceiveText) then
          QTR_QuestReward_ItemReceiveText:Hide();
       end
@@ -2090,15 +2090,11 @@ function QTR_ResetQuestToOriginal()
    QuestInfoRewardsFrame.QuestSessionBonusReward:SetFont(Original_Font2, 13);
    QuestInfoRewardsFrame.QuestSessionBonusReward:SetText(QTR_MessOrig.reward_bonus);
 
-   
    if (QTR_QuestDetail_ItemReceiveText) then
       QTR_QuestDetail_ItemReceiveText:Hide();
    end
    if (QTR_QuestDetail_InfoXP) then
       QTR_QuestDetail_InfoXP:Hide();
-   end
-   if (QTR_QuestReward_InfoXP) then
-      QTR_QuestReward_InfoXP:Hide(); 
    end
 
    if ( QuestInfoRewardsFrame:IsVisible() ) then
@@ -2887,24 +2883,10 @@ function WOW_ZmienKody(message, target)
    msg = message;
    if (WoWTR_Localization.lang == 'AR') then
 
-      msg = string.gsub(msg, "{B}", "\n");
-      if (target) then
-         msg = string.gsub(msg, "{N}", WOWTR_AnsiReverse(target));
-      else
-         msg = string.gsub(msg, "{N}", WOWTR_AnsiReverse(WOWTR_player_name));
-      end
-      if (WOWTR_player_sex == 3) then   -- female
-         msg = string.gsub(msg, "{R}", WOWTR_AnsiReverse(player_race_table.F));
-         msg = string.gsub(msg, "{C}", WOWTR_AnsiReverse(player_class_table.F));
-      else
-         msg = string.gsub(msg, "{R}", WOWTR_AnsiReverse(player_race_table.M));
-         msg = string.gsub(msg, "{C}", WOWTR_AnsiReverse(player_class_table.M));
-      end
-      --Tutorial Color Codes
-      msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
-      msg = string.gsub(msg, "{FFFF00FFc}", "{cFF00FFFF}");
-      msg = string.gsub(msg, "{0000FFFFc}", "{cFFFF0000}");
-      --msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
+      msg = string.gsub(msg, "{N}", "YOUR_NAME");
+      msg = string.gsub(msg, "{B}", "NEW_LINE");
+      msg = string.gsub(msg, "{R}", "YOUR_RACE");
+      msg = string.gsub(msg, "{C}", "YOUR_CLASS");
 
    else
       msg = string.gsub(msg, "$b", "$B");
@@ -2922,90 +2904,98 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "$G", "YOUR_GENDER");
       msg = string.gsub(msg, "$P", "NPC_GENDER");
       msg = string.gsub(msg, "$O", "OWN_NAME");
+   end
    
-      msg = string.gsub(msg, "NEW_LINE", "\n");
-      if (target) then
-         msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(target)));
-         msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(target));
+   msg = string.gsub(msg, "NEW_LINE", "\n");
+   if (target) then
+      msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(target)));
+      msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(target));
+   else
+      msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(WOWTR_player_name)));
+      msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(WOWTR_player_name));
+   end
+
+   if (WOWTR_player_sex == 3) then   -- female, nominative case
+      msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, genitive case
+      msg = string.gsub(msg, "YOUR_RACE2", WOWTR_AnsiReverse(player_race_table.D2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE2", WOWTR_AnsiReverse(player_race_table.D1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, dative case
+      msg = string.gsub(msg, "YOUR_RACE3", WOWTR_AnsiReverse(player_race_table.C2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE3", WOWTR_AnsiReverse(player_race_table.C1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, accusative case
+      msg = string.gsub(msg, "YOUR_RACE4", WOWTR_AnsiReverse(player_race_table.B2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE4", WOWTR_AnsiReverse(player_race_table.B1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, ablative case
+      msg = string.gsub(msg, "YOUR_RACE5", WOWTR_AnsiReverse(player_race_table.N2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE5", WOWTR_AnsiReverse(player_race_table.N1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, localive case
+      msg = string.gsub(msg, "YOUR_RACE6", WOWTR_AnsiReverse(player_race_table.K2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE6", WOWTR_AnsiReverse(player_race_table.K1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, vocative case
+      msg = string.gsub(msg, "YOUR_RACE7", WOWTR_AnsiReverse(player_race_table.W2));
+   else
+      msg = string.gsub(msg, "YOUR_RACE7", WOWTR_AnsiReverse(player_race_table.W1));
+   end
+   msg = string.gsub(msg, "YOUR_RACE$", WOWTR_AnsiReverse(string.upper(WOWTR_player_race)));
+   msg = string.gsub(msg, "YOUR_RACE", WOWTR_AnsiReverse(WOWTR_player_race));
+   
+   if (WOWTR_player_sex == 3) then   -- female, nominative case
+      msg = string.gsub(msg, "YOUR_CLASS1", WOWTR_AnsiReverse(player_class_table.M2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS1", WOWTR_AnsiReverse(player_class_table.M1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, genitive case
+      msg = string.gsub(msg, "YOUR_CLASS2", WOWTR_AnsiReverse(player_class_table.D2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS2", WOWTR_AnsiReverse(player_class_table.D1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, dative case
+      msg = string.gsub(msg, "YOUR_CLASS3", WOWTR_AnsiReverse(player_class_table.C2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS3", WOWTR_AnsiReverse(player_class_table.C1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, accusative case
+      msg = string.gsub(msg, "YOUR_CLASS4", WOWTR_AnsiReverse(player_class_table.B2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS4", WOWTR_AnsiReverse(player_class_table.B1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, ablative case
+      msg = string.gsub(msg, "YOUR_CLASS5", WOWTR_AnsiReverse(player_class_table.N2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS5", WOWTR_AnsiReverse(player_class_table.N1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, localive case
+      msg = string.gsub(msg, "YOUR_CLASS6", WOWTR_AnsiReverse(player_class_table.K2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS6", WOWTR_AnsiReverse(player_class_table.K1));
+   end
+   if (WOWTR_player_sex == 3) then   -- female, vocative case
+      msg = string.gsub(msg, "YOUR_CLASS7", WOWTR_AnsiReverse(player_class_table.W2));
+   else
+      msg = string.gsub(msg, "YOUR_CLASS7", WOWTR_AnsiReverse(player_class_table.W1));
+   end
+      if (WoWTR_Localization.lang == 'AR') then
+         msg = string.gsub(msg, "YOUR_CLASS$", WOWTR_AnsiReverse(string.upper(WOWTR_player_class)));
+         msg = string.gsub(msg, "YOUR_CLASS", WOWTR_AnsiReverse(WOWTR_player_class));
       else
-         msg = string.gsub(msg, "YOUR_NAME$", WOWTR_AnsiReverse(string.upper(WOWTR_player_name)));
-         msg = string.gsub(msg, "YOUR_NAME", WOWTR_AnsiReverse(WOWTR_player_name));
+         msg = string.gsub(msg, "YOUR_CLASS$", WOWTR_AnsiReverse(string.upper(WOWTR_player_class)));
+         msg = string.gsub(msg, "YOUR_CLASS", WOWTR_AnsiReverse(WOWTR_player_class));
       end
 
-      if (WOWTR_player_sex == 3) then   -- female, nominative case
-         msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, genitive case
-         msg = string.gsub(msg, "YOUR_RACE2", WOWTR_AnsiReverse(player_race_table.D2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE2", WOWTR_AnsiReverse(player_race_table.D1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, dative case
-         msg = string.gsub(msg, "YOUR_RACE3", WOWTR_AnsiReverse(player_race_table.C2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE3", WOWTR_AnsiReverse(player_race_table.C1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, accusative case
-         msg = string.gsub(msg, "YOUR_RACE4", WOWTR_AnsiReverse(player_race_table.B2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE4", WOWTR_AnsiReverse(player_race_table.B1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, ablative case
-         msg = string.gsub(msg, "YOUR_RACE5", WOWTR_AnsiReverse(player_race_table.N2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE5", WOWTR_AnsiReverse(player_race_table.N1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, localive case
-         msg = string.gsub(msg, "YOUR_RACE6", WOWTR_AnsiReverse(player_race_table.K2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE6", WOWTR_AnsiReverse(player_race_table.K1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, vocative case
-         msg = string.gsub(msg, "YOUR_RACE7", WOWTR_AnsiReverse(player_race_table.W2));
-      else
-         msg = string.gsub(msg, "YOUR_RACE7", WOWTR_AnsiReverse(player_race_table.W1));
-      end
-      msg = string.gsub(msg, "YOUR_RACE$", WOWTR_AnsiReverse(string.upper(WOWTR_player_race)));
-      msg = string.gsub(msg, "YOUR_RACE", WOWTR_AnsiReverse(WOWTR_player_race));
-      
-      if (WOWTR_player_sex == 3) then   -- female, nominative case
-         msg = string.gsub(msg, "YOUR_CLASS1", WOWTR_AnsiReverse(player_class_table.M2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS1", WOWTR_AnsiReverse(player_class_table.M1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, genitive case
-         msg = string.gsub(msg, "YOUR_CLASS2", WOWTR_AnsiReverse(player_class_table.D2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS2", WOWTR_AnsiReverse(player_class_table.D1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, dative case
-         msg = string.gsub(msg, "YOUR_CLASS3", WOWTR_AnsiReverse(player_class_table.C2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS3", WOWTR_AnsiReverse(player_class_table.C1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, accusative case
-         msg = string.gsub(msg, "YOUR_CLASS4", WOWTR_AnsiReverse(player_class_table.B2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS4", WOWTR_AnsiReverse(player_class_table.B1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, ablative case
-         msg = string.gsub(msg, "YOUR_CLASS5", WOWTR_AnsiReverse(player_class_table.N2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS5", WOWTR_AnsiReverse(player_class_table.N1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, localive case
-         msg = string.gsub(msg, "YOUR_CLASS6", WOWTR_AnsiReverse(player_class_table.K2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS6", WOWTR_AnsiReverse(player_class_table.K1));
-      end
-      if (WOWTR_player_sex == 3) then   -- female, vocative case
-         msg = string.gsub(msg, "YOUR_CLASS7", WOWTR_AnsiReverse(player_class_table.W2));
-      else
-         msg = string.gsub(msg, "YOUR_CLASS7", WOWTR_AnsiReverse(player_class_table.W1));
-      end
-   end
 
    if (WoWTR_Localization.lang == 'AR') then
       -- obsługa kodu {Gx;y}
