@@ -96,7 +96,11 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            if (WoWTR_Localization.lang == 'AR') then
+               _G[obj].ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].ContainerFrame.Text,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            else
+               _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            end
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -111,7 +115,11 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            if (WoWTR_Localization.lang == 'AR') then
+               _G[obj].ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].ContainerFrame.Text,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            else
+               _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            end
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
