@@ -641,7 +641,7 @@ function QTR_START()
    QTR_ToggleButton0:SetText("Quest ID=?");
    QTR_ToggleButton0:Show();
    QTR_ToggleButton0:ClearAllPoints();
-   QTR_ToggleButton0:SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", 105, -32);
+   QTR_ToggleButton0:SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", 105, -20);
    QTR_ToggleButton0:SetScript("OnClick", QTR_ON_OFF);
    
    -- przycisk z nr ID questu w QuestLogPopupDetailFrame
@@ -749,9 +749,6 @@ function QTR_START()
    isClassicQuestLog();
    isImmersion();
    isStoryline();
-   if (isDUIQuestFrame()) then
-      DUIQuestFrame:HookScript("OnShow", QTR_Gossip_Show);
-   end
 end
 
 -------------------------------------------------------------------------------------------------------------------
@@ -895,43 +892,55 @@ end
 -------------------------------------------------------------------------------------------------------------------
 
 function isDUIQuestFrame()
-   if (DUIQuestFrame ~= nil ) then        -- jest uruchomiony dodatek DialogueUI
-      if (QTR_ToggleButton6==nil) then    -- przycisk w oknie tekstu gossip
+   if (DUIQuestFrame ~= nil) then        -- jest uruchomiony dodatek DialogueUI
+      if (QTR_ToggleButton6 == nil) then    -- przycisk w oknie tekstu gossip
          -- przycisk z Hash gossip
-         QTR_ToggleButton6 = CreateFrame("Button",nil, DUIQuestFrame, "UIPanelButtonTemplate");
-         QTR_ToggleButton6:SetWidth(220);
-         QTR_ToggleButton6:SetHeight(20);
-         QTR_ToggleButton6:SetText("Gossip-Hash=?");
-         QTR_ToggleButton6:ClearAllPoints();
-         QTR_ToggleButton6:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 120, -16);
-         QTR_ToggleButton6:SetScript("OnClick", gossipDUI_ON_OFF);
-         QTR_ToggleButton6:Disable();          -- nie można na razie przyciskać przycisku
+         QTR_ToggleButton6 = CreateFrame("Button", nil, DUIQuestFrame, "UIPanelButtonTemplate")
+         QTR_ToggleButton6:SetWidth(150)
+         QTR_ToggleButton6:SetHeight(20)
+         QTR_ToggleButton6:SetText("Gossip-Hash=?")
+         QTR_ToggleButton6:ClearAllPoints()
+         QTR_ToggleButton6:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 140, -16)
+         QTR_ToggleButton6:SetScript("OnClick", gossipDUI_ON_OFF)
+         QTR_ToggleButton6:Disable()          -- nie można na razie przyciskać przycisku
+
+         -- Set smaller font size by modifying the FontString
+         local font = QTR_ToggleButton6:GetFontString()
+         font:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
       end
-      if (QTR_ToggleButton7==nil) then    -- przycisk w oknie zadania
+
+      if (QTR_ToggleButton7 == nil) then    -- przycisk w oknie zadania
          -- przycisk z nr ID questu
-         QTR_ToggleButton7 = CreateFrame("Button",nil, DUIQuestFrame, "UIPanelButtonTemplate");
-         QTR_ToggleButton7:SetWidth(150);
-         QTR_ToggleButton7:SetHeight(20);
-         QTR_ToggleButton7:SetText("Quest ID=?");
-         QTR_ToggleButton7:ClearAllPoints();
-         QTR_ToggleButton7:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 150, -16);
-         QTR_ToggleButton7:SetScript("OnClick", DUI_ON_OFF);
-         QTR_ToggleButton7:Disable();          -- nie można na razie przyciskać przycisku
-         DUIQuestFrame:HookScript("OnHide", function() QTR_ToggleButton6:Hide(); QTR_ToggleButton7:Hide(); end);
+         QTR_ToggleButton7 = CreateFrame("Button", nil, DUIQuestFrame, "UIPanelButtonTemplate")
+         QTR_ToggleButton7:SetWidth(100)
+         QTR_ToggleButton7:SetHeight(20)
+         QTR_ToggleButton7:SetText("Quest ID=?")
+         QTR_ToggleButton7:ClearAllPoints()
+         QTR_ToggleButton7:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 180, -16)
+         QTR_ToggleButton7:SetScript("OnClick", DUI_ON_OFF)
+         QTR_ToggleButton7:Disable()          -- nie można na razie przyciskać przycisku
+
+         -- Set smaller font size by modifying the FontString
+         local font = QTR_ToggleButton7:GetFontString()
+         font:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
+         
+         DUIQuestFrame:HookScript("OnHide", function() QTR_ToggleButton6:Hide(); QTR_ToggleButton7:Hide(); end)
       end
-      if (QTR_PS["dialogueui"]=="0") then      -- jest aktywny DialogueUI, ale nie zezwolono na tłumaczenie
-         QTR_ToggleButton6:Hide();
-         QTR_ToggleButton7:Hide();
-         return false;
+
+      if (QTR_PS["dialogueui"] == "0") then      -- jest aktywny DialogueUI, ale nie zezwolono na tłumaczenie
+         QTR_ToggleButton6:Hide()
+         QTR_ToggleButton7:Hide()
+         return false
       else
-         QTR_ToggleButton6:Show();
-         QTR_ToggleButton7:Show();
-         return true;
+         QTR_ToggleButton6:Show()
+         QTR_ToggleButton7:Show()
+         return true
       end
    else
-      return false;
+      return false
    end
 end
+
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -1030,10 +1039,10 @@ function QTR_ObjectiveTracker_Check()
          ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetFont(WOWTR_Font2, 16);
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.campaignquests));
          ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.scenariodung));
-         --Make Center
-         ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetJustifyH("CENTER");
-         ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("CENTER");
-         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("CENTER");
+         --Make LEFT
+         ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetJustifyH("LEFT");
+         ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("LEFT");
+         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("LEFT");
       end
       ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
       for questID, block in pairs(QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate) do
@@ -1554,6 +1563,11 @@ function QTR_Translate_On(typ,event)
             QuestInfoObjectivesText:SetJustifyH("LEFT");
          end
          QuestProgressText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].progress,false,QuestProgressText,WOWTR_Font2));
+         if (WoWTR_Localization.lang == 'AR') then
+            QuestProgressText:SetJustifyH("RIGHT");
+         else
+            QuestProgressText:SetJustifyH("LEFT");
+         end
          QuestInfoRewardText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].completion,false,QuestInfoRewardText,WOWTR_Font2,-5));
       end
 --      if ((not isImmersion()) and (QuestInfoDescriptionText:GetText()~=QTR_quest_LG[QTR_quest_ID].details) and (QTR_first_show2 == 0)) then   -- nie wczytały się tłumaczenia
@@ -1629,6 +1643,11 @@ function QTR_Translate_Off(typ,event)
             QuestInfoObjectivesText:SetJustifyH("LEFT");
          end
          QuestProgressText:SetText(QTR_quest_EN[QTR_quest_ID].progress);
+         if (WoWTR_Localization.lang == 'AR') then
+            QuestProgressText:SetJustifyH("LEFT");
+         else
+            QuestProgressText:SetJustifyH("LEFT");
+         end
          QuestInfoRewardText:SetText(QTR_quest_EN[QTR_quest_ID].completion);
       end
    else   
@@ -2591,8 +2610,14 @@ function DUI_ON_OFF()
       countFontString = countFontString + 1;
       if (QTR_curr_dialog == "1") then   -- pokaż tłumaczenia
          fontString:SetText(dialogueUI_LN[countFontString]);
+         if (WoWTR_Localization.lang == 'AR') then
+            fontString:SetJustifyH("RIGHT");
+         else
+            fontString:SetJustifyH("LEFT");
+         end
       else                               -- pokaż tekst oryginalny
          fontString:SetText(dialogueUI_EN[countFontString]);
+         fontString:SetJustifyH("LEFT");
       end
    end
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(ProcessOnOff);
@@ -2654,15 +2679,15 @@ function QTR_DUIQuestFrame(event)
       fontString:SetFont(WOWTR_Font2,_size1);
       if (fontString:GetText() == "Objectives") then        -- nagłówek "Cele zadania:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
-         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.objectives,false,fontString,WOWTR_Font2,-5));
+         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.objectives,false,fontString,WOWTR_Font2,-15));
          objectivesNow = true;
       elseif ((fontString:GetText() == "Rewards") or (fontString:GetText() == "Reward")) then       -- nagłówek "Nagrody:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
-         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,fontString,WOWTR_Font2,-5));
+         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,fontString,WOWTR_Font2,-15));
          rewardsNow = true;
       elseif (fontString:GetText() == "Requirements") then       -- nagłówek "Wymagane przedmioty:"
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth());
-         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,fontString,WOWTR_Font2,-5));
+         fontString:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,fontString,WOWTR_Font2,-15));
       else
          local firstHeight = fontString:GetHeight();
          detailsX = details[countFontString];
@@ -2670,7 +2695,7 @@ function QTR_DUIQuestFrame(event)
          completionX = completion[countFontString];
          if (event=="QUEST_DETAIL" and detailsX) then
             if (WoWTR_Localization.lang == 'AR') then
-               fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
+               fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2,-15));
                fontString:SetJustifyH("RIGHT");
             else
                fontString:SetText(QTR_ExpandUnitInfo(detailsX,false,fontString,WOWTR_Font2));
@@ -2678,7 +2703,7 @@ function QTR_DUIQuestFrame(event)
             end
          elseif (event=="QUEST_PROGRESS" and progressX) then
             if (WoWTR_Localization.lang == 'AR') then
-               fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2));
+               fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2,-15));
                fontString:SetJustifyH("RIGHT");
             else
                fontString:SetText(QTR_ExpandUnitInfo(progressX,false,fontString,WOWTR_Font2));
@@ -2686,7 +2711,7 @@ function QTR_DUIQuestFrame(event)
             end
          elseif (event=="QUEST_COMPLETE" and completionX) then
             if (WoWTR_Localization.lang == 'AR') then
-               fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2));
+               fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2,-15));
                fontString:SetJustifyH("RIGHT");
             else
                fontString:SetText(QTR_ExpandUnitInfo(completionX,false,fontString,WOWTR_Font2));
@@ -2694,7 +2719,7 @@ function QTR_DUIQuestFrame(event)
             end
          elseif (objectivesNow) then
             if (WoWTR_Localization.lang == 'AR') then
-               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2));
+               fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives,false,fontString,WOWTR_Font2,-15));
                fontString:SetJustifyH("RIGHT");
                objectivesNow = false;        -- objectives is in one long rows?
             else
@@ -2774,7 +2799,7 @@ function gossipDUI_ON_OFF()
       if (QTR_curr_goss == "1") then   -- pokaż tłumaczenia
          if (WoWTR_Localization.lang == 'AR') then
             fontString:SetText(gossip2DUI_LN[count2FontString]);
-            fontString:SetJustifyH("RIGHT");
+            fontString:SetJustifyH("LEFT");
          else
             fontString:SetText(gossip2DUI_LN[count2FontString]);
             fontString:SetJustifyH("LEFT");
@@ -2827,10 +2852,8 @@ function QTR_DUIGossipFrame()
          gossipX = gossip[countFontString] or '';
          if (WoWTR_Localization.lang == 'AR') then
             fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2));
-            fontString:SetJustifyH("RIGHT");
          else
             fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2));
-            fontString:SetJustifyH("LEFT");
          end
          local secondHeight = fontString:GetHeight();
          offset = secondHeight - firstHeight;
@@ -2867,6 +2890,7 @@ function QTR_DUIGossipFrame()
       if (GS_Gossip[OptHash]) then               -- jest tłumaczenie
          local transLN = prefix .. QTR_ExpandUnitInfo(GS_Gossip[OptHash],false,fontString,WOWTR_Font2,-40) .. sufix .. " ";   -- twarda spacja na końcu
          fontString:SetText(transLN);
+         fontString:SetJustifyH("LEFT");
       end
       table.insert(gossip2DUI_LN, fontString:GetText());    -- translated version
    end
