@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A48) 2024.04.16
+-- Addon: WoW_Quests (version: 10.A49) 2024.04.17
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -2036,11 +2036,14 @@ function QTR_ResetQuestToOriginal()
    -- Reset Quest Info headers and text to original values
    QuestInfoObjectivesHeader:SetText(QTR_MessOrig.objectives);
    QuestInfoObjectivesHeader:SetFont(Original_Font1, 18);
+   QuestInfoObjectivesHeader:SetJustifyH("LEFT");
    QuestInfoObjectivesText:SetFont(Original_Font2, 13);
+   QuestInfoObjectivesText:SetJustifyH("LEFT");
    
    QuestInfoDescriptionHeader:SetText(QTR_MessOrig.details); 
    QuestInfoDescriptionHeader:SetFont(Original_Font1, 18);
    QuestInfoDescriptionText:SetFont(Original_Font2, 13);
+   QuestInfoDescriptionText:SetJustifyH("LEFT");
    
    QuestInfoRewardsFrame.Header:SetText(QTR_MessOrig.rewards);
    QuestInfoRewardsFrame.Header:SetFont(Original_Font1, 18);
@@ -2068,16 +2071,16 @@ function QTR_ResetQuestToOriginal()
    if (WoWTR_Localization.lang == 'AR') then
       -- For Arabic, set text justification to left
       QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT");
-      QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT");
+      QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoSpellObjectiveLearnLabel:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.XPFrame.ReceiveText:SetJustifyH("LEFT");
       MapQuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT");
-      MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT");
+      MapQuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT"); 
       QuestInfoRewardsFrame.PlayerTitleText:SetJustifyH("LEFT");
       QuestInfoRewardsFrame.QuestSessionBonusReward:SetJustifyH("LEFT");
-      QuestInfoObjectivesText:SetJustifyH("LEFT");
-      QuestInfoObjectivesHeader:SetJustifyH("LEFT");
-      QuestInfoDescriptionText:SetJustifyH("LEFT");
+      if (QTR_QuestDetail_ItemReceiveText) then         -- własne obiekty
+         QTR_QuestDetail_ItemReceiveText:Hide();
+      end
       if (QTR_QuestReward_ItemReceiveText) then
          QTR_QuestReward_ItemReceiveText:Hide();
       end
@@ -2109,15 +2112,11 @@ function QTR_ResetQuestToOriginal()
    QuestInfoRewardsFrame.QuestSessionBonusReward:SetFont(Original_Font2, 13);
    QuestInfoRewardsFrame.QuestSessionBonusReward:SetText(QTR_MessOrig.reward_bonus);
 
-   
    if (QTR_QuestDetail_ItemReceiveText) then
       QTR_QuestDetail_ItemReceiveText:Hide();
    end
    if (QTR_QuestDetail_InfoXP) then
       QTR_QuestDetail_InfoXP:Hide();
-   end
-   if (QTR_QuestReward_InfoXP) then
-      QTR_QuestReward_InfoXP:Hide(); 
    end
 
    if ( QuestInfoRewardsFrame:IsVisible() ) then
@@ -2915,11 +2914,6 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "{B}", "NEW_LINE");
       msg = string.gsub(msg, "{R}", "YOUR_RACE");
       msg = string.gsub(msg, "{C}", "YOUR_CLASS");
-      --Tutorial Color Codes
-      msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
-      msg = string.gsub(msg, "{FFFF00FFc}", "{cFF00FFFF}");
-      msg = string.gsub(msg, "{0000FFFFc}", "{cFFFF0000}");
-      --msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
 
    else
       msg = string.gsub(msg, "$b", "$B");
