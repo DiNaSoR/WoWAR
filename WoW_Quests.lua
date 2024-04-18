@@ -2915,6 +2915,12 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "{B}", "NEW_LINE");
       msg = string.gsub(msg, "{R}", "YOUR_RACE");
       msg = string.gsub(msg, "{C}", "YOUR_CLASS");
+      
+      --Tutorial Color Codes
+      msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
+      msg = string.gsub(msg, "{FFFF00FFc}", "{cFF00FFFF}");
+      msg = string.gsub(msg, "{0000FFFFc}", "{cFFFF0000}");
+      --msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
 
    else
       msg = string.gsub(msg, "$b", "$B");
