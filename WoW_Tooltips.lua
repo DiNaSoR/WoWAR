@@ -953,51 +953,52 @@ end
 -------------------------------------------------------------------------------------------------------
 
 function ST_updateSpellBookFrame()
-   local ST_titleTextFontString = SpellBookFrame:GetTitleText();
-   local text0 = QTR_ReverseIfAR(ST_titleTextFontString:GetText());
-   ST_titleTextFontString:SetText(ST_SetText(text0));
+   if (TT_PS["ui1"] == "1") then --Game Option UI
+      local ST_titleTextFontString = SpellBookFrame:GetTitleText();
+      local text0 = QTR_ReverseIfAR(ST_titleTextFontString:GetText());
+      ST_titleTextFontString:SetText(ST_SetText(text0));
 
-   local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
-   local fo = SpellBookFrameTabButton1:CreateFontString();
-   fo:SetFont(WOWTR_Font2, 9);
-   fo:SetText(text1);
-   SpellBookFrameTabButton1:SetFontString(fo);
-   SpellBookFrameTabButton1:SetText(text1);
-   
-   local text2 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
-   local fo = SpellBookFrameTabButton2:CreateFontString();
-   fo:SetFont(WOWTR_Font2, 9);
-   fo:SetText(text2);
-   SpellBookFrameTabButton2:SetFontString(fo);
-   SpellBookFrameTabButton2:SetText(text2);
-   
-   if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
-      local text3 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
-      local fo = SpellBookFrameTabButton3:CreateFontString();
+      local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
+      local fo = SpellBookFrameTabButton1:CreateFontString();
       fo:SetFont(WOWTR_Font2, 9);
-      fo:SetText(text3);
-      SpellBookFrameTabButton3:SetFontString(fo);
-      SpellBookFrameTabButton3:SetText(text3);
+      fo:SetText(text1);
+      SpellBookFrameTabButton1:SetFontString(fo);
+      SpellBookFrameTabButton1:SetText(text1);
+      
+      local text2 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
+      local fo = SpellBookFrameTabButton2:CreateFontString();
+      fo:SetFont(WOWTR_Font2, 9);
+      fo:SetText(text2);
+      SpellBookFrameTabButton2:SetFontString(fo);
+      SpellBookFrameTabButton2:SetText(text2);
+      
+      if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
+         local text3 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
+         local fo = SpellBookFrameTabButton3:CreateFontString();
+         fo:SetFont(WOWTR_Font2, 9);
+         fo:SetText(text3);
+         SpellBookFrameTabButton3:SetFontString(fo);
+         SpellBookFrameTabButton3:SetText(text3);
+      end
+      
+      local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
+      ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other");
+
+      local PrimaryProfession2Text = PrimaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
+      ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other");
+
+      local SecondaryProfession1Text = SecondaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
+      ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other", false, false, -2);
+
+      local SecondaryProfession2Text = SecondaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
+      ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -2);
+
+      local SecondaryProfession3Text = SecondaryProfession3.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
+      ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -2);
+
+      local SBPageText = SpellBookPageText;
+      ST_CheckAndReplaceTranslationText(SBPageText, true, "ui");
    end
-   
-   local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other");
-
-   local PrimaryProfession2Text = PrimaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other");
-
-   local SecondaryProfession1Text = SecondaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other", false, false, -2);
-
-   local SecondaryProfession2Text = SecondaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -2);
-
-   local SecondaryProfession3Text = SecondaryProfession3.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-   ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -2);
-
-   local SBPageText = SpellBookPageText;
-   ST_CheckAndReplaceTranslationText(SBPageText, true, "ui");
-
 end
 
 -------------------------------------------------------------------------------------------------------
@@ -2170,13 +2171,27 @@ function ST_SplashFrame()   -- https://imgur.com/80WLNbC       You can use FontF
       ST_CheckAndReplaceTranslationTextUI(SplashF02, true, "ui");
 
       local SplashF03 = SplashFrame.TopLeftFeature.Description;
+      if (WoWTR_Localization.lang == 'AR') then
+      ST_CheckAndReplaceTranslationText(SplashF03, true, "ui",false,false,-10);
+      SplashF03:SetJustifyH("RIGHT");
+      else
       ST_CheckAndReplaceTranslationTextUI(SplashF03, true, "ui");
+      end
 
       local SplashF04 = SplashFrame.BottomLeftFeature.Description;
+      if (WoWTR_Localization.lang == 'AR') then
+      ST_CheckAndReplaceTranslationText(SplashF04, true, "ui",false,false,-15);
+      SplashF04:SetJustifyH("RIGHT");
+      else
       ST_CheckAndReplaceTranslationTextUI(SplashF04, true, "ui");
+      end
 
       local SplashF05 = SplashFrame.RightFeature.Description;
+      if (WoWTR_Localization.lang == 'AR') then
+      ST_CheckAndReplaceTranslationText(SplashF05, true, "ui",false,false,-10);
+      else
       ST_CheckAndReplaceTranslationTextUI(SplashF05, true, "ui");
+      end
 
       local SplashF06 = SplashFrame.BottomCloseButton.Text;
       ST_CheckAndReplaceTranslationTextUI(SplashF06, true, "ui");

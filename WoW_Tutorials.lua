@@ -55,7 +55,7 @@ function TT_onTutorialShow()          -- główna funkcja wywoływana, gdy pojaw
       end
       TT_SprawdzFrames();
 
-      for i=1,20,1 do
+      for i=2,20,1 do
          obj = "TutorialPointerFrame_"..tostring(i).."Content";
          if (_G[obj]) then
             if (aktShow[i]==0) then
@@ -82,6 +82,34 @@ function TT_onTutorialShow()          -- główna funkcja wywoływana, gdy pojaw
             end
          end
       end
+      for i=1,1,1 do
+         obj = "TutorialPointerFrame_"..tostring(i).."Content";
+         if (_G[obj]) then
+            if (aktShow[i]==0) then
+               _G[obj]:SetScript("OnUpdate", TT_onTutorialShow);
+               aktShow[i] = 1;
+            end
+            if ((_G[obj]:IsVisible()) and (_G[obj].Text)) then
+               txt = _G[obj].Text:GetText();
+               if ((txt) and (string.find(txt," ")==nil)) then         -- nie jest to tekst po turecku (nie ma twardej spacji)
+                  id = StringHash(txt);
+                  if (Tut_Data7[id]) then         -- jest tureckie tłumaczenie w bazie tłumaczeń
+                     local _font5, _size5, _35 = _G[obj].Text:GetFont();
+                        if (WoWTR_Localization.lang == 'AR') then
+                           _G[obj].Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].Text,WOWTR_Font2,-20).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                           _G[obj].Text:SetJustifyH("LEFT");
+                           _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
+                        else
+                           _G[obj].Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                           _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
+                        end
+                  elseif (TT_PS["save"] == "1") then
+                     TT_TUTORIALS[tostring(id)] = txt;
+                  end
+               end
+            end
+         end
+      end
    end
 end
 
@@ -96,7 +124,11 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            if (WoWTR_Localization.lang == 'AR') then
+               _G[obj].ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].ContainerFrame.Text,WOWTR_Font2,-15).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            else
+               _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            end
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then
@@ -111,7 +143,11 @@ function TT_SprawdzFrames()
          id = StringHash(txt);
          if (Tut_Data7[id]) then                    -- jest tureckie tłumaczenie w bazie tłumaczeń
             local _font5, _size5, _35 = _G[obj].ContainerFrame.Text:GetFont();
-            _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            if (WoWTR_Localization.lang == 'AR') then
+               _G[obj].ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].ContainerFrame.Text,WOWTR_Font2).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            else
+               _G[obj].ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(Tut_Data7[id])).." ");  -- podmieniamy tekst na nasze tłumaczenie
+            end
             _G[obj].ContainerFrame.Text:SetFont(WOWTR_Font2, _size5);
             _G[obj].ContainerFrame.Text:SetHeight(150);
          elseif (TT_PS["save"] == "1") then

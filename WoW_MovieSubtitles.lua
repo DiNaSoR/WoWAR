@@ -43,7 +43,7 @@ function MF_ShowMovieSubtitles()       -- wyświetlanie napisów w MOVIES
       MF_last_ST = MF_readed_ST;             -- zapisz jako ostatni napis
       MF_hash2 = StringHash(MF_readed_HS);
       if (MF_Hash[MF_hash2] or BB_Bubbles[MF_hash2]) then   -- jest w bazie tłumaczenie napisu
-         SubtitlesFrame.Subtitle1:SetText(QTR_ReverseIfAR(MF_Hash[MF_hash2] or BB_Bubbles[MF_hash2]) .. " ");  -- twarda spacja na końcu
+         SubtitlesFrame.Subtitle1:SetText(QTR_ExpandUnitInfo(MF_Hash[MF_hash2],false,SubtitlesFrame.Subtitle1,WOWTR_Font2,-20 or BB_Bubbles[MF_hash2],false,SubtitlesFrame.Subtitle1,WOWTR_Font2,-20) .. " ");  -- twarda spacja na końcu
          SubtitlesFrame.Subtitle1:SetFont(WOWTR_Font2, MF_Size); 
       else           -- nie ma tego Hasha - zapisz dane
          if (MF_PM["save"] == "1") then
@@ -100,7 +100,8 @@ function MF_ShowCinematicSubtitles()            -- wyświetlanie napisów w CINE
                   end
                   local MF_output = MF_tekst.."";
                   local _font, _size, _3 = SubtitlesFrame.Subtitle1:GetFont();         -- odczytaj wielkość czcionki
-                  SubtitlesFrame.Subtitle1:SetText(QTR_ReverseIfAR(MF_output).." ");   -- podmień wyświetlany tekst dodając twardą spację
+                  SubtitlesFrame.Subtitle1:SetText(QTR_ExpandUnitInfo(MF_output,false,SubtitlesFrame.Subtitle1,WOWTR_Font1,-200).." ");   -- podmień wyświetlany tekst dodając twardą spację
+                  SubtitlesFrame.Subtitle1:SetJustifyH("CENTER");
                   MF_zapisz_EN = false;
                else
                   if ((MF_zapisz_EN) and (MF_PM["save"] == "1")) then             -- zapisz oryginalny tekst wraz z kodem Hash
