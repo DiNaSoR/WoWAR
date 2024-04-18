@@ -3353,6 +3353,9 @@ end
 -------------------------------------------------------------------------------------------------------------------
 
 function WOWTR_AnsiReverse(txt)
+   if not txt then
+      return ""
+   end
    local text = txt
    if (WoWTR_Localization.lang == 'AR') then
       text = string.reverse(text)
