@@ -3037,24 +3037,24 @@ function WOW_ZmienKody(message, target)
       local QTR_forma = "";
       local nr_poz, nr_poz2 = string.find(msg, "{G");    -- gdy nie znalazł, jest: nil
       while (nr_poz and nr_poz2>0) do
-         nr_1 = nr_poz2 + 1;   
+         nr_1 = nr_poz2 + 1;
          if (string.sub(msg, nr_1, nr_1) == " ") then    -- dopuszczam jedną spację po słowie kodowym
             nr_1 = nr_1 + 1;
          end
          nr_2 =  nr_1 + 1;
-         while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do
+         while ((string.sub(msg, nr_2, nr_2) ~= ";") and (nr_2 - nr_1 < 50)) do     -- szukaj średnika
             nr_2 = nr_2 + 1;
          end
          if (string.sub(msg, nr_2, nr_2) == ";") then
             nr_3 = nr_2 + 1;
-            while ((string.sub(msg, nr_3, nr_3) ~= "}") and (nr_3 - nr_2 < 50)) do
+            while ((string.sub(msg, nr_3, nr_3) ~= "}") and (nr_3 - nr_2 < 50)) do  -- szukaj końca kodu
                nr_3 = nr_3 + 1;
             end
             if (string.sub(msg, nr_3, nr_3) == "}") then
                if (WOWTR_player_sex==3) then   -- forma żeńska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
                else                            -- forma męska
-                  QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  QTR_forma = string.sub(msg,nr_1,nr_2-1);
                end
                if (nr_poz>1) then
                   msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
@@ -3092,7 +3092,7 @@ function WOW_ZmienKody(message, target)
                if (WOWTR_player_sex==3) then   -- forma żeńska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
                else                            -- forma męska
-                  QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  QTR_forma = string.sub(msg,nr_1,nr_2-1);
                end
                if (nr_poz>1) then
                   msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
@@ -3130,7 +3130,7 @@ function WOW_ZmienKody(message, target)
                if (WOWTR_player_sex==3) then   -- forma arabska
                   QTR_forma = string.sub(msg,nr_2+1,nr_3-1);
                else                            -- forma angielska
-                  QTR_forma = string.sub(msg,nr_1+1,nr_2-1);
+                  QTR_forma = string.sub(msg,nr_1,nr_2-1);
                end
                if (nr_poz>1) then
                   msg = string.sub(msg,1,nr_poz-1) .. QTR_forma .. string.sub(msg,nr_3+1);
