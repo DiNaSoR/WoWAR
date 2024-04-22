@@ -2949,8 +2949,16 @@ function WOW_ZmienKody(message, target)
    end
 
    if (WoWTR_Localization.lang == 'AR') then
-      msg = string.gsub(msg, "YOUR_RACE", AS_UTF8reverse(WOWTR_player_race));
-      msg = string.gsub(msg, "YOUR_CLASS", AS_UTF8reverse(WOWTR_player_class));
+      if (WOWTR_player_sex == 3) then   -- female, nominative case
+         msg = string.gsub(msg, "YOUR_CLASS", player_class_table.F);
+      else
+         msg = string.gsub(msg, "YOUR_CLASS", player_class_table.M);
+      end
+      if (WOWTR_player_sex == 3) then   -- female, nominative case
+         msg = string.gsub(msg, "YOUR_RACE", player_race_table.F);
+      else
+         msg = string.gsub(msg, "YOUR_RACE", player_race_table.M);
+      end
    else
       if (WOWTR_player_sex == 3) then   -- female, nominative case
          msg = string.gsub(msg, "YOUR_RACE1", WOWTR_AnsiReverse(player_race_table.M2));
