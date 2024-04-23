@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A50) 2024.04.18
+-- Addon: WoW_Quests (version: 10.A51) 2024.04.23
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -2656,14 +2656,17 @@ function QTR_DUIQuestFrame(event)
    local objectivesNow = false;
    local rewardsNow = false;
    local det = string.gsub(QTR_quest_LG[QTR_quest_ID].details or '', 'NEW_LINE', '\n');
-   local det = string.gsub(det, '$B', '\n');
-   local det = string.gsub(det, '{B}', '\n');
+   det = string.gsub(det, '$b', '$B');
+   det = string.gsub(det, '$B', '\n');
+   det = string.gsub(det, '{B}', '\n');
    local pro = string.gsub(QTR_quest_LG[QTR_quest_ID].progress or '', 'NEW_LINE', '\n');
-   local pro = string.gsub(pro, '$B', '\n');
-   local pro = string.gsub(pro, '{B}', '\n');
+   pro = string.gsub(pro, '$b', '$B');
+   pro = string.gsub(pro, '$B', '\n');
+   pro = string.gsub(pro, '{B}', '\n');
    local com = string.gsub(QTR_quest_LG[QTR_quest_ID].completion or '', 'NEW_LINE', '\n');
-   local com = string.gsub(com, '$B', '\n');
-   local com = string.gsub(com, '{B}', '\n');
+   com = string.gsub(com, '$b', '$B');
+   com = string.gsub(com, '$B', '\n');
+   com = string.gsub(com, '{B}', '\n');
    local details = SplitParagraph(det);
    local progress = SplitParagraph(pro);
    local completion = SplitParagraph(com);
@@ -2834,8 +2837,9 @@ function QTR_DUIGossipFrame()
    local offset = 0;
    local objectivesNow = false;
    local gos = string.gsub(GS_Gossip[QTR_curr_hash] or '', 'NEW_LINE', '\n');
-   local gos = string.gsub(gos, '$B', '\n');
-   local gos = string.gsub(gos, '{B}', '\n');
+   gos = string.gsub(gos, '$b', '$B');
+   gos = string.gsub(gos, '$B', '\n');
+   gos = string.gsub(gos, '{B}', '\n');
    local gossip = SplitParagraph(gos);
    gossipDUI_LN = { };
    gossipDUI_EN = { };
