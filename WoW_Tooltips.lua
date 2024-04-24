@@ -955,30 +955,48 @@ end
 function ST_updateSpellBookFrame()
    if (TT_PS["ui1"] == "1") then --Game Option UI
       local ST_titleTextFontString = SpellBookFrame:GetTitleText();
-      local text0 = QTR_ReverseIfAR(ST_titleTextFontString:GetText());
-      ST_titleTextFontString:SetText(ST_SetText(text0));
+      if (ST_titleTextFontString and ST_titleTextFontString:GetText()) then
+         local str_ID = StringHash(ST_UsunZbedneZnaki(ST_titleTextFontString:GetText()));
+         if (ST_TooltipsHS[str_ID]) then
+            local text0 = QTR_ReverseIfAR(ST_titleTextFontString:GetText());
+            ST_titleTextFontString:SetText(ST_SetText(text0));
+         end
+      end
 
-      local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
-      local fo = SpellBookFrameTabButton1:CreateFontString();
-      fo:SetFont(WOWTR_Font2, 9);
-      fo:SetText(text1);
-      SpellBookFrameTabButton1:SetFontString(fo);
-      SpellBookFrameTabButton1:SetText(text1);
+      if (SpellBookFrameTabButton1 and SpellBookFrameTabButton1:GetText()) then
+         local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton1:GetText()));
+         if (ST_TooltipsHS[str_ID]) then
+            local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
+            local fo = SpellBookFrameTabButton1:CreateFontString();
+            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetText(text1);
+            SpellBookFrameTabButton1:SetFontString(fo);
+            SpellBookFrameTabButton1:SetText(text1);
+         end
+      end
       
-      local text2 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
-      local fo = SpellBookFrameTabButton2:CreateFontString();
-      fo:SetFont(WOWTR_Font2, 9);
-      fo:SetText(text2);
-      SpellBookFrameTabButton2:SetFontString(fo);
-      SpellBookFrameTabButton2:SetText(text2);
+      if (SpellBookFrameTabButton2 and SpellBookFrameTabButton2:GetText()) then
+         local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton2:GetText()));
+         if (ST_TooltipsHS[str_ID]) then
+            local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
+            local fo = SpellBookFrameTabButton2:CreateFontString();
+            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetText(text1);
+            SpellBookFrameTabButton2:SetFontString(fo);
+            SpellBookFrameTabButton2:SetText(text1);
+         end
+      end
       
       if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
-         local text3 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
-         local fo = SpellBookFrameTabButton3:CreateFontString();
-         fo:SetFont(WOWTR_Font2, 9);
-         fo:SetText(text3);
-         SpellBookFrameTabButton3:SetFontString(fo);
-         SpellBookFrameTabButton3:SetText(text3);
+         local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton3:GetText()));
+         if (ST_TooltipsHS[str_ID]) then
+            local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
+            local fo = SpellBookFrameTabButton3:CreateFontString();
+            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetText(text1);
+            SpellBookFrameTabButton3:SetFontString(fo);
+            SpellBookFrameTabButton3:SetText(text1);
+         end
       end
       
       local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7

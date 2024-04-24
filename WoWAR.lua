@@ -416,16 +416,7 @@ function WOWTR_onEvent(self, event, name, ...)
       WOWTR_ToggleButtonS = CreateFrame("Button", nil, SpellBookFrame, "UIPanelButtonTemplate");
       WOWTR_ToggleButtonS:SetWidth(150);
       WOWTR_ToggleButtonS:SetHeight(22);
-      WOWTR_ToggleButtonS:SetFrameStrata("HIGH")
-      if (ST_PM["spell"] == "1") then
-         local fo = WOWTR_ToggleButtonS:CreateFontString();
-         fo:SetFont(WOWTR_Font2, 14);
-         fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
-         WOWTR_ToggleButtonS:SetFontString(fo);
-         WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
-      else
-         WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_enDESC);
-      end
+      WOWTR_ToggleButtonS:SetFrameStrata("HIGH");
       WOWTR_ToggleButtonS:ClearAllPoints();
       WOWTR_ToggleButtonS:SetPoint("TOPLEFT", SpellBookFrame, "TOPLEFT", 210, -1);
       WOWTR_ToggleButtonS:SetScript("OnClick", STspell_ON_OFF);
@@ -436,7 +427,20 @@ function WOWTR_onEvent(self, event, name, ...)
          else
             WOWTR_ToggleButtonS:Hide();
          end
+         STspell_ON_OFF(); -- Call the function to update the button's appearance
       end);
+
+      function STspell_ON_OFF()
+         if (ST_PM["spell"] == "1") then
+            WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
+            WOWTR_ToggleButtonS.Text:SetFont(WOWTR_Font2, 13);
+            WOWTR_ToggleButtonS.Text:SetPoint("CENTER", 0, 0);
+         else
+            WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_enDESC);
+            WOWTR_ToggleButtonS.Text:SetFont(Original_Font2, 12);
+            WOWTR_ToggleButtonS.Text:SetPoint("CENTER", 0, 0);
+         end
+      end
       
       StaticPopup1:HookScript("OnShow", ST_StaticPopup1);
       StaticPopup2:HookScript("OnShow", ST_StaticPopup1);
@@ -523,13 +527,13 @@ function STspell_ON_OFF()
    if (ST_PM["spell"] == "1") then
       ST_PM["spell"] = "0";
       WOWTR_ToggleButtonS:SetText(WoWTR_Localization.WoWTR_Spellbook_enDESC);
+      WOWTR_ToggleButtonS.Text:SetFont(Original_Font2, 12);
+      WOWTR_ToggleButtonS.Text:SetPoint("CENTER", 0, -1);
    else
       ST_PM["spell"] = "1";
-      local fo = WOWTR_ToggleButtonS:CreateFontString();
-      fo:SetFont(WOWTR_Font2, 14);
-      fo:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
-      WOWTR_ToggleButtonS:SetFontString(fo);
       WOWTR_ToggleButtonS:SetText(QTR_ReverseIfAR(WoWTR_Localization.WoWTR_Spellbook_trDESC));
+      WOWTR_ToggleButtonS.Text:SetFont(WOWTR_Font2, 13);
+      WOWTR_ToggleButtonS.Text:SetPoint("CENTER", 0, -1);
    end
 end
 
