@@ -1,4 +1,4 @@
-﻿-- Addon: WoWTR-Tooltips (version: 10.S51) 2024.04.02
+﻿-- Addon: WoWTR-Tooltips (version: 10.S52) 2024.04.26
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine, Hakan YILMAZ
 -- E-mail: platine.wow@gmail.com
@@ -2015,26 +2015,35 @@ end
 function ST_CharacterFrame() -- https://imgur.com/FV5MXvb
 --print("ST_CharacterFrame");
    if (TT_PS["ui2"] == "1") then
-      local ChFrame1 = CharacterStatsPane.ItemLevelCategory.Title; -- Item Level
+      local ChFrame1 = CharacterStatsPane.ItemLevelCategory.Title;    -- Item Level
       ST_CheckAndReplaceTranslationTextUI(ChFrame1, true, "ui");
 
-      local ChFrame2 = CharacterStatsPane.AttributesCategory.Title; -- Attributes
+      local ChFrame2 = CharacterStatsPane.AttributesCategory.Title;   -- Attributes
       ST_CheckAndReplaceTranslationTextUI(ChFrame2, true, "ui");
 
       local ChFrame3 = CharacterStatsPane.EnhancementsCategory.Title; -- Enhancements
       ST_CheckAndReplaceTranslationTextUI(ChFrame3, true, "ui");
 
-      local ChFrame4 = CharacterFrameTab1.Text; -- Character Tab
+      local ChFrame4 = CharacterFrameTab1.Text;                       -- Character Tab
       ST_CheckAndReplaceTranslationTextUI(ChFrame4, true, "ui");
 
-      local ChFrame5 = CharacterFrameTab2.Text; -- Reputation Tab
+      local ChFrame5 = CharacterFrameTab2.Text;                       -- Reputation Tab
       ST_CheckAndReplaceTranslationTextUI(ChFrame5, true, "ui");
 
-      local ChFrame6 = CharacterFrameTab3.Text; -- Currency Tab
+      local ChFrame6 = CharacterFrameTab3.Text;                       -- Currency Tab
       ST_CheckAndReplaceTranslationTextUI(ChFrame6, true, "ui");
 
-      local ChFrame7 = ReputationDetailFactionDescription; -- https://imgur.com/A77RwLM
-      ST_CheckAndReplaceTranslationTextUI(ChFrame7, true, "other");
+      local ChFrame7 = ReputationDetailFactionDescription;            -- https://imgur.com/A77RwLM
+      ST_CheckAndReplaceTranslationTextUI(ChFrame7, true, "faction");
+
+      local ChFrame8 = ReputationDetailAtWarCheckBoxText;             -- Check Box Text - At War
+      ST_CheckAndReplaceTranslationTextUI(ChFrame8, true, "ui");
+
+      local ChFrame9 = ReputationDetailInactiveCheckBoxText;          -- Check Box Text - Move to Inactive
+      ST_CheckAndReplaceTranslationTextUI(ChFrame9, true, "ui");
+
+      local ChFrame10 = ReputationDetailMainScreenCheckBoxText;       -- Check Box Text - Show as Experience Bar
+      ST_CheckAndReplaceTranslationTextUI(ChFrame10, true, "ui");
    end
    
    if (not WOWTR_wait(0.01, ST_CharacterFrameTekrar)) then
