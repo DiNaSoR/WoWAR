@@ -645,7 +645,7 @@ function ST_GameTooltipOnShow()
                   ST_tlumaczenie = ST_TranslatePrepare(ST_leftText, ST_tlumaczenie);
                   _font1, _size1, _1 = _G["GameTooltipTextLeft"..i]:GetFont();    -- odczytaj aktualną czcionkę i rozmiar    
                   _G["GameTooltipTextLeft"..i]:SetFont(WOWTR_Font2, _size1);      -- ustawiamy czcionkę turecką
-                  _G["GameTooltipTextLeft"..i]:SetText(QTR_ExpandUnitInfo(ST_tlumaczenie,false,_G["GameTooltipTextLeft"..i],WOWTR_Font2,-10).." ");      -- dodajemy twardą spacje na końcu
+                  _G["GameTooltipTextLeft"..i]:SetText(QTR_ExpandUnitInfo(ST_tlumaczenie,false,_G["GameTooltipTextLeft"..i],WOWTR_Font2).." ");      -- dodajemy twardą spacje na końcu
                   _G["GameTooltipTextLeft"..i].wrap = true;
                   if (GameTooltip.processingInfo and GameTooltip.processingInfo.tooltipData.id and (GameTooltip.processingInfo.tooltipData.id == 6948)) then   -- wyjątek na Kamień Powrotu
                      break;
@@ -968,7 +968,7 @@ function ST_updateSpellBookFrame()
          if (ST_TooltipsHS[str_ID]) then
             local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()));
             local fo = SpellBookFrameTabButton1:CreateFontString();
-            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetFont(WOWTR_Font2, 11);
             fo:SetText(text1);
             SpellBookFrameTabButton1:SetFontString(fo);
             SpellBookFrameTabButton1:SetText(text1);
@@ -980,7 +980,7 @@ function ST_updateSpellBookFrame()
          if (ST_TooltipsHS[str_ID]) then
             local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()));
             local fo = SpellBookFrameTabButton2:CreateFontString();
-            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetFont(WOWTR_Font2, 11);
             fo:SetText(text1);
             SpellBookFrameTabButton2:SetFontString(fo);
             SpellBookFrameTabButton2:SetText(text1);
@@ -992,7 +992,7 @@ function ST_updateSpellBookFrame()
          if (ST_TooltipsHS[str_ID]) then
             local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()));
             local fo = SpellBookFrameTabButton3:CreateFontString();
-            fo:SetFont(WOWTR_Font2, 9);
+            fo:SetFont(WOWTR_Font2, 11);
             fo:SetText(text1);
             SpellBookFrameTabButton3:SetFontString(fo);
             SpellBookFrameTabButton3:SetText(text1);
@@ -1000,19 +1000,39 @@ function ST_updateSpellBookFrame()
       end
       
       local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-      ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other");
+      ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other",false, false, -15);
+      if (WoWTR_Localization.lang == 'AR') then
+      PrimaryProfession1Text:SetFont(WOWTR_Font2, 11);
+      PrimaryProfession1Text:SetJustifyH("RIGHT");
+      end
 
       local PrimaryProfession2Text = PrimaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-      ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other");
+      ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other",false, false, -15);
+      if (WoWTR_Localization.lang == 'AR') then
+      PrimaryProfession2Text:SetFont(WOWTR_Font2, 11);
+      PrimaryProfession2Text:SetJustifyH("RIGHT");
+      end
 
       local SecondaryProfession1Text = SecondaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-      ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other", false, false, -2);
+      ST_CheckAndReplaceTranslationText(SecondaryProfession1Text, true, "Profession:Other", false, false, -15);
+      if (WoWTR_Localization.lang == 'AR') then
+         SecondaryProfession1Text:SetFont(WOWTR_Font2, 10);
+         SecondaryProfession1Text:SetJustifyH("RIGHT");
+         end
 
       local SecondaryProfession2Text = SecondaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-      ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -2);
+      ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -15);
+      if (WoWTR_Localization.lang == 'AR') then
+         SecondaryProfession2Text:SetFont(WOWTR_Font2, 10);
+         SecondaryProfession2Text:SetJustifyH("RIGHT");
+         end
 
       local SecondaryProfession3Text = SecondaryProfession3.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
-      ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -2);
+      ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -15);
+      if (WoWTR_Localization.lang == 'AR') then
+         SecondaryProfession3Text:SetFont(WOWTR_Font2, 10);
+         SecondaryProfession3Text:SetJustifyH("RIGHT");
+         end
 
       local SBPageText = SpellBookPageText;
       ST_CheckAndReplaceTranslationText(SBPageText, true, "ui");

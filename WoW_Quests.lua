@@ -2923,6 +2923,7 @@ function WOW_ZmienKody(message, target)
       msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
       msg = string.gsub(msg, "{FFFF00FFc}", "{cFF00FFFF}");
       msg = string.gsub(msg, "{0000FFFFc}", "{cFFFF0000}");
+      msg = string.gsub(msg, "{ffffffffc}", "{cffffffff}");
       --msg = string.gsub(msg, "{002DFFFFc}", "{cFFFFD200}");
 
    else
