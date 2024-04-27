@@ -1,4 +1,4 @@
--- Addon: WoW_Quests (version: 10.A51) 2024.04.23
+-- Addon: WoW_Quests (version: 10.A52) 2024.04.27
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -735,7 +735,7 @@ function QTR_START()
    hooksecurefunc("QuestMapFrame_ShowQuestDetails", QTR_PrepareReload);
    
    -- funkcja wywoływana po wyświetleniu się obiektu GreetingText w oknie QuestFrame
-   QuestFrame:SetScript("OnShow", GossipOnQuestFrame);
+   QuestFrame:HookScript("OnShow", GossipOnQuestFrame);
    QuestFrameAcceptButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick);
    QuestFrameCompleteQuestButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick);
    QuestLogPopupDetailFrame:HookScript("OnShow", QTR_QuestLogPopupShow);
