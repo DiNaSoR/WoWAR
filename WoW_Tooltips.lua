@@ -1002,15 +1002,15 @@ function ST_updateSpellBookFrame()
       local PrimaryProfession1Text = PrimaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
       ST_CheckAndReplaceTranslationText(PrimaryProfession1Text, true, "Profession:Other",false, false, -15);
       if (WoWTR_Localization.lang == 'AR') then
-      PrimaryProfession1Text:SetFont(WOWTR_Font2, 11);
-      PrimaryProfession1Text:SetJustifyH("RIGHT");
+         PrimaryProfession1Text:SetFont(WOWTR_Font2, 11);
+         PrimaryProfession1Text:SetJustifyH("RIGHT");
       end
 
       local PrimaryProfession2Text = PrimaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
       ST_CheckAndReplaceTranslationText(PrimaryProfession2Text, true, "Profession:Other",false, false, -15);
       if (WoWTR_Localization.lang == 'AR') then
-      PrimaryProfession2Text:SetFont(WOWTR_Font2, 11);
-      PrimaryProfession2Text:SetJustifyH("RIGHT");
+         PrimaryProfession2Text:SetFont(WOWTR_Font2, 11);
+         PrimaryProfession2Text:SetJustifyH("RIGHT");
       end
 
       local SecondaryProfession1Text = SecondaryProfession1.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
@@ -1018,21 +1018,21 @@ function ST_updateSpellBookFrame()
       if (WoWTR_Localization.lang == 'AR') then
          SecondaryProfession1Text:SetFont(WOWTR_Font2, 10);
          SecondaryProfession1Text:SetJustifyH("RIGHT");
-         end
+      end
 
       local SecondaryProfession2Text = SecondaryProfession2.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
       ST_CheckAndReplaceTranslationText(SecondaryProfession2Text, true, "Profession:Other", false, false, -15);
       if (WoWTR_Localization.lang == 'AR') then
          SecondaryProfession2Text:SetFont(WOWTR_Font2, 10);
          SecondaryProfession2Text:SetJustifyH("RIGHT");
-         end
+      end
 
       local SecondaryProfession3Text = SecondaryProfession3.missingText; -- Çevirisi Yapılan Kısım - Przetłumaczona sekcja - https://imgur.com/amgQ7K7
       ST_CheckAndReplaceTranslationText(SecondaryProfession3Text, true, "Profession:Other", false, false, -15);
       if (WoWTR_Localization.lang == 'AR') then
          SecondaryProfession3Text:SetFont(WOWTR_Font2, 10);
          SecondaryProfession3Text:SetJustifyH("RIGHT");
-         end
+      end
 
       local SBPageText = SpellBookPageText;
       ST_CheckAndReplaceTranslationText(SBPageText, true, "ui");
@@ -2054,7 +2054,8 @@ function ST_CharacterFrame() -- https://imgur.com/FV5MXvb
       ST_CheckAndReplaceTranslationTextUI(ChFrame6, true, "ui");
 
       local ChFrame7 = ReputationDetailFactionDescription;            -- https://imgur.com/A77RwLM
-      ST_CheckAndReplaceTranslationTextUI(ChFrame7, true, "faction");
+      local RDFactionName = ReputationDetailFactionName:GetText();    -- Faction Name
+      ST_CheckAndReplaceTranslationTextUI(ChFrame7, true, "Factions:"..ST_RenkKoduSil(RDFactionName));
 
       local ChFrame8 = ReputationDetailAtWarCheckBoxText;             -- Check Box Text - At War
       ST_CheckAndReplaceTranslationTextUI(ChFrame8, true, "ui");
