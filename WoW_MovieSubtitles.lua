@@ -1,4 +1,4 @@
--- Addon: WoWTR-Movies (version: 10.C14) 2024.01.22
+-- Addon: WoWTR-Movies (version: 10.C15) 2024.05.08
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -153,8 +153,8 @@ function MF_PlayMovie(movieID)      -- fired by PLAY_MOVIE event
    if (MF_pytanie1 == nil) then
       MF_pytanie1 = MovieFrame.CloseDialog:CreateFontString(nil, "ARTWORK");
       MF_pytanie1:SetFontObject(GameFontNormal);
-      MF_pytanie1:SetJustifyH("CENTER");
-      MF_pytanie1:SetJustifyV("CENTER");
+--      MF_pytanie1:SetJustifyH("CENTER");
+--      MF_pytanie1:SetJustifyV("CENTER");
       MF_pytanie1:ClearAllPoints();
       MF_pytanie1:SetPoint("CENTER", MovieFrame.CloseDialog, "CENTER", 0, 6);
       MF_pytanie1:SetFont(WOWTR_Font2, 13);
@@ -196,8 +196,8 @@ function MF_CinematicStart()             -- fired by CINEMATIC_START event
    if (MF_pytanie2 == nil) then
       MF_pytanie2 = CinematicFrameCloseDialog:CreateFontString(nil, "ARTWORK");
       MF_pytanie2:SetFontObject(GameFontNormal);
-      MF_pytanie2:SetJustifyH("CENTER");
-      MF_pytanie2:SetJustifyV("CENTER");
+--      MF_pytanie2:SetJustifyH("CENTER");
+--      MF_pytanie2:SetJustifyV("CENTER");
       MF_pytanie2:ClearAllPoints();
       MF_pytanie2:SetPoint("CENTER", CinematicFrameCloseDialog, "CENTER", 0, 6);
       MF_pytanie2:SetFont(WOWTR_Font2, 13);
