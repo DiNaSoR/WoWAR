@@ -1010,7 +1010,7 @@ objectiveSpecials = {
             for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online) do
                qtr_obj = string.gsub(qtr_obj, qtr_en, qtr_pl);
             end
-            fontString:SetText(QTR_ReverseIfAR(qtr_obj).." ");            -- może: QTR_ExpandUnitInfo ?
+            fontString:SetText((qtr_obj).." ");            -- może: QTR_ExpandUnitInfo ?
             fontString:SetFont(WOWTR_Font2, 12);
             QTR_ResizeBlock(fontString);
          end
