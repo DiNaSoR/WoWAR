@@ -1,10 +1,10 @@
-﻿## Interface: 100206
+﻿## Interface: 100207, 110000
+## Version: v10.02
 ## Title: WoWAR |cff8080ff10.02|r
-## Version: 10.02
 ## Notes: World of Warcraft in Arabic.
 ## Author: Platine & Dragonarab
 ## E-mail: Dragonarab@gmail.com
-## WWW: https://www.wowinarabic.com
+## WWW: https://www.wowar.co
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## IconTexture: Interface\AddOns\WoWAR\Fonts\images\wia.blp
