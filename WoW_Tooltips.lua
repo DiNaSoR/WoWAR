@@ -2317,5 +2317,8 @@ if ((GetLocale()=="enUS") or (GetLocale()=="enGB")) then
 
 -------------------------------------------------------------------------------------------------------
 
-   hooksecurefunc("SpellBookFrame_Update", ST_updateSpellBookFrame);
+   if SpellBookFrame_Update then
+      hooksecurefunc("SpellBookFrame_Update", ST_updateSpellBookFrame);
+   end
+
 end

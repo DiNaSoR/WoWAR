@@ -6,6 +6,7 @@
 
 local CH_on_debug = false;
 -- General Variables
+local GetAddOnMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 local CH_version = GetAddOnMetadata("WoWinArabic_Chat", "Version");
 local CH_ctrFrame = CreateFrame("FRAME", "WoWinArabic-Chat");
 local CH_ED_mode = 0;           -- włączony tryb arabski, wyrównanie do prawej strony

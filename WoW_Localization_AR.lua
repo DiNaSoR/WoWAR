@@ -9,7 +9,7 @@ WoWTR_Localization = {
    lang = "AR",
    started = "started",                                              -- addon was started
    mainFolder = "Interface\\AddOns\\WoWAR",                          -- main folder for addon files
-   addonName = "WoWAR",                                              -- short name of the addon
+   addonName = "WoWAR",                                              -- short name of the addon                                       -- version of the addon
    addonIconDesc = "ﺍﻧﻘﺮ , ﻟﻔﺘﺢ ﻗﺎﺋﻤﺔ ﺍﻹﻋﺪﺍﺩﺍﺕ.",                    -- Click to open the settings menu
    optionName = "WoWAR - Options",                                   -- WoWAR - options
    optionTitle = "ﺇﺿﺎﻓﺔ ﻭﺍﻭ ﺑﺎﻟﻌﺮﺑﻲ",                                -- WoWAR Patch
@@ -357,4 +357,5 @@ end
 WOWTR_Font1 = WoWTR_Localization.mainFolder.."\\Fonts\\font1.ttf";
 WOWTR_Font2 = WoWTR_Localization.mainFolder.."\\Fonts\\font2.ttf";
 WOWTR_Fonts = {"font2.ttf"};
+local GetAddOnMetadata = (C_AddOns and C_AddOns.GetAddOnMetadata) or GetAddOnMetadata
 WOWTR_version = GetAddOnMetadata(WoWTR_Localization.addonName, "Version");

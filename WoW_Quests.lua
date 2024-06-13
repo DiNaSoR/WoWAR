@@ -634,122 +634,140 @@ end
 
 -- Pierwsza funkcja wywoływana po załadowaniu dodatku
 function QTR_START()
-   -- przycisk z nr ID questu w QuestFrame (NPC)
-   QTR_ToggleButton0 = CreateFrame("Button",nil, QuestFrame, "UIPanelButtonTemplate");
-   QTR_ToggleButton0:SetWidth(150);
-   QTR_ToggleButton0:SetHeight(20);
-   QTR_ToggleButton0:SetText("Quest ID=?");
-   QTR_ToggleButton0:Show();
-   QTR_ToggleButton0:ClearAllPoints();
-   QTR_ToggleButton0:SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", 105, -20);
-   QTR_ToggleButton0:SetScript("OnClick", QTR_ON_OFF);
-   
-   -- przycisk z nr ID questu w QuestLogPopupDetailFrame
-   QTR_ToggleButton1 = CreateFrame("Button",nil, QuestLogPopupDetailFrame, "UIPanelButtonTemplate");
-   QTR_ToggleButton1:SetWidth(150);
-   QTR_ToggleButton1:SetHeight(20);
-   QTR_ToggleButton1:SetText("Quest ID=?");
-   QTR_ToggleButton1:Show();
-   QTR_ToggleButton1:ClearAllPoints();
-   QTR_ToggleButton1:SetPoint("TOPLEFT", QuestLogPopupDetailFrame, "TOPLEFT", 45, -31);
-   QTR_ToggleButton1:SetScript("OnClick", QTR_ON_OFF);
+   -- Create a frame to listen for events
+   local QTR_EventFrame = CreateFrame("Frame")
 
-   -- przycisk z nr ID questu w QuestMapDetailsScrollFrame
-   QTR_ToggleButton2 = CreateFrame("Button",nil, QuestMapDetailsScrollFrame, "UIPanelButtonTemplate");
-   QTR_ToggleButton2:SetWidth(150);
-   QTR_ToggleButton2:SetHeight(22);
-   QTR_ToggleButton2:SetText("Quest ID=?");
-   QTR_ToggleButton2:Show();
-   QTR_ToggleButton2:ClearAllPoints();
-   QTR_ToggleButton2:SetPoint("TOPLEFT", QuestMapDetailsScrollFrame, "TOPLEFT", 96, 30);
-   QTR_ToggleButton2:SetScript("OnClick", QTR_ON_OFF);
-   
-   -- przycisk z nr HASH gossip w GossipFrame
-   QTR_ToggleButtonGS1 = CreateFrame("Button",nil, GossipFrame, "UIPanelButtonTemplate");
-   QTR_ToggleButtonGS1:SetWidth(220);
-   QTR_ToggleButtonGS1:SetHeight(20);
-   QTR_ToggleButtonGS1:SetText("Gossip-Hash=?");
-   QTR_ToggleButtonGS1:ClearAllPoints();
-   QTR_ToggleButtonGS1:SetPoint("TOPLEFT", GossipFrame, "TOPLEFT", 75, -20);
-   QTR_ToggleButtonGS1:Disable();
-   QTR_ToggleButtonGS1:Show();
-   QTR_ToggleButtonGS1:SetScript("OnClick", GS_ON_OFF);
+   -- Function to handle events
+   local function QTR_OnEvent(self, event, ...)
+      if event == "QUEST_LOG_UPDATE" then
+         QTR_QuestScrollFrame_OnShow()
+         print("QTR_OnEvent: "..event)
+      end
+   end
 
-   QTR_IconAI = GossipFrame:CreateTexture(nil, "OVERLAY");
-   QTR_IconAI:ClearAllPoints();
-   QTR_IconAI:SetPoint("TOPRIGHT", QTR_ToggleButtonGS1, "TOPRIGHT", 40, 0);
-   QTR_IconAI:SetWidth(24);
-   QTR_IconAI:SetHeight(24);
-   QTR_IconAI:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\icon_ai.png");
+   -- Register the events and set the event handler
+   QTR_EventFrame:RegisterEvent("QUEST_LOG_UPDATE")
+   QTR_EventFrame:SetScript("OnEvent", QTR_OnEvent)
+
+
+   -- Button in QuestFrame (NPC)
+   QTR_ToggleButton0 = CreateFrame("Button", nil, QuestFrame, "UIPanelButtonTemplate")
+   QTR_ToggleButton0:SetWidth(150)
+   QTR_ToggleButton0:SetHeight(20)
+   QTR_ToggleButton0:SetText("Quest ID=?")
+   QTR_ToggleButton0:Show()
+   QTR_ToggleButton0:ClearAllPoints()
+   QTR_ToggleButton0:SetPoint("TOPLEFT", QuestFrame, "TOPLEFT", 105, -20)
+   QTR_ToggleButton0:SetScript("OnClick", QTR_ON_OFF)
+
+   -- Button in QuestLogPopupDetailFrame
+   QTR_ToggleButton1 = CreateFrame("Button", nil, QuestLogPopupDetailFrame, "UIPanelButtonTemplate")
+   QTR_ToggleButton1:SetWidth(150)
+   QTR_ToggleButton1:SetHeight(20)
+   QTR_ToggleButton1:SetText("Quest ID=?")
+   QTR_ToggleButton1:Show()
+   QTR_ToggleButton1:ClearAllPoints()
+   QTR_ToggleButton1:SetPoint("TOPLEFT", QuestLogPopupDetailFrame, "TOPLEFT", 45, -31)
+   QTR_ToggleButton1:SetScript("OnClick", QTR_ON_OFF)
+
+   -- Button in QuestMapDetailsScrollFrame
+   QTR_ToggleButton2 = CreateFrame("Button", nil, QuestMapDetailsScrollFrame, "UIPanelButtonTemplate")
+   QTR_ToggleButton2:SetWidth(150)
+   QTR_ToggleButton2:SetHeight(22)
+   QTR_ToggleButton2:SetText("Quest ID=?")
+   QTR_ToggleButton2:Show()
+   QTR_ToggleButton2:ClearAllPoints()
+   QTR_ToggleButton2:SetPoint("TOPLEFT", QuestMapDetailsScrollFrame, "TOPLEFT", 96, 30)
+   QTR_ToggleButton2:SetScript("OnClick", QTR_ON_OFF)
+
+   -- Button in GossipFrame
+   QTR_ToggleButtonGS1 = CreateFrame("Button", nil, GossipFrame, "UIPanelButtonTemplate")
+   QTR_ToggleButtonGS1:SetWidth(220)
+   QTR_ToggleButtonGS1:SetHeight(20)
+   QTR_ToggleButtonGS1:SetText("Gossip-Hash=?")
+   QTR_ToggleButtonGS1:ClearAllPoints()
+   QTR_ToggleButtonGS1:SetPoint("TOPLEFT", GossipFrame, "TOPLEFT", 75, -20)
+   QTR_ToggleButtonGS1:Disable()
+   QTR_ToggleButtonGS1:Show()
+   QTR_ToggleButtonGS1:SetScript("OnClick", GS_ON_OFF)
+
+   QTR_IconAI = GossipFrame:CreateTexture(nil, "OVERLAY")
+   QTR_IconAI:ClearAllPoints()
+   QTR_IconAI:SetPoint("TOPRIGHT", QTR_ToggleButtonGS1, "TOPRIGHT", 40, 0)
+   QTR_IconAI:SetWidth(24)
+   QTR_IconAI:SetHeight(24)
+   QTR_IconAI:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\icon_ai.png")
    QTR_IconAI:SetScript("OnEnter", function(self)
       GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-      GameTooltip:ClearLines();
+      GameTooltip:ClearLines()
       if (GS_Gossip[1975795450]) then
-         GameTooltip:AddLine(QTR_ExpandUnitInfo(GS_Gossip[1975795450],false,GameTooltip,WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
-         getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+         GameTooltip:AddLine(QTR_ExpandUnitInfo(GS_Gossip[1975795450], false, GameTooltip, WOWTR_Font2).." ", 1, 1, 1, true)   -- white color, wrap
+         getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13)
       end
       GameTooltip:Show() -- Show the tooltip
-      end);
+   end)
    QTR_IconAI:SetScript("OnLeave", function(self)
       GameTooltip:Hide() -- Hide the tooltip
-      end);
-   QTR_IconAI:Hide();
+   end)
+   QTR_IconAI:Hide()
 
-   GoQ_IconAI = QuestFrame:CreateTexture(nil, "OVERLAY");
-   GoQ_IconAI:ClearAllPoints();
-   GoQ_IconAI:SetPoint("TOPRIGHT", QTR_ToggleButton0, "TOPRIGHT", 72, 0);
-   GoQ_IconAI:SetWidth(24);
-   GoQ_IconAI:SetHeight(24);
-   GoQ_IconAI:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\icon_ai.png");
+   GoQ_IconAI = QuestFrame:CreateTexture(nil, "OVERLAY")
+   GoQ_IconAI:ClearAllPoints()
+   GoQ_IconAI:SetPoint("TOPRIGHT", QTR_ToggleButton0, "TOPRIGHT", 72, 0)
+   GoQ_IconAI:SetWidth(24)
+   GoQ_IconAI:SetHeight(24)
+   GoQ_IconAI:SetTexture(WoWTR_Localization.mainFolder.."\\Fonts\\images\\icon_ai.png")
    GoQ_IconAI:SetScript("OnEnter", function(self)
       GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT")
-      GameTooltip:ClearLines();
+      GameTooltip:ClearLines()
       if (GS_Gossip[1975795450]) then
-         GameTooltip:AddLine(QTR_ExpandUnitInfo(GS_Gossip[1975795450],false,GameTooltip,WOWTR_Font2).." ", 1, 1, 1, true);   -- white color, wrap
-         getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13);
+         GameTooltip:AddLine(QTR_ExpandUnitInfo(GS_Gossip[1975795450], false, GameTooltip, WOWTR_Font2).." ", 1, 1, 1, true)   -- white color, wrap
+         getglobal("GameTooltipTextLeft1"):SetFont(WOWTR_Font2, 13)
       end
       GameTooltip:Show() -- Show the tooltip
-      end);
+   end)
    GoQ_IconAI:SetScript("OnLeave", function(self)
       GameTooltip:Hide() -- Hide the tooltip
-      end);
-   GoQ_IconAI:Hide();
+   end)
+   GoQ_IconAI:Hide()
 
-   -- funkcja wywoływana po kliknięciu na nazwę questu w QuestTracker   
-   hooksecurefunc(QUEST_TRACKER_MODULE, "OnBlockHeaderClick", QTR_PrepareReload);
-   -- a ta funkcja wywoływana przy aktualizacji QuestTrackera
-   hooksecurefunc(QUEST_TRACKER_MODULE, "EnumQuestWatchData", QTR_ObjectiveTracker_Check);
+   -- Ensure QUEST_TRACKER_MODULE exists before hooking functions
+   if QUEST_TRACKER_MODULE then
+      -- Function called on clicking a quest name in QuestTracker   
+      hooksecurefunc(QUEST_TRACKER_MODULE, "OnBlockHeaderClick", QTR_PrepareReload)
+      -- Function called on updating QuestTracker
+      hooksecurefunc(QUEST_TRACKER_MODULE, "EnumQuestWatchData", QTR_ObjectiveTracker_Check)
+   end
+
    WorldMapFrame:HookScript("OnHide", function() 
       if (not WOWTR_wait(0.1, QTR_ObjectiveTracker_QuestHeader)) then
-      -- opóźnienie 0.1 sek
+      -- Delay of 0.1 sec
       end
-   end );
-   WorldMapFrame:HookScript("OnShow", function() 
-      if (not WOWTR_wait(0.2, QTR_QuestScrollFrame_OnShow)) then
-      -- opóźnienie 0.2 sek
-      end
-   end );
-   hooksecurefunc("QuestLogQuests_Update", QTR_QuestLogQuests_Update);
+   end)
    
-   -- funkcja wywoływana po kliknięciu na nazwę questu w QuestMapFrame
-   hooksecurefunc("QuestMapFrame_ShowQuestDetails", QTR_PrepareReload);
+   hooksecurefunc("QuestLogQuests_Update", QTR_QuestLogQuests_Update)
    
-   -- funkcja wywoływana po wyświetleniu się obiektu GreetingText w oknie QuestFrame
-   QuestFrame:HookScript("OnShow", GossipOnQuestFrame);
-   QuestFrameAcceptButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick);
-   QuestFrameCompleteQuestButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick);
-   QuestLogPopupDetailFrame:HookScript("OnShow", QTR_QuestLogPopupShow);
+   -- Function called on clicking a quest name in QuestMapFrame
+   hooksecurefunc("QuestMapFrame_ShowQuestDetails", QTR_PrepareReload)
+   
+   -- Function called on showing GreetingText in QuestFrame
+   QuestFrame:HookScript("OnShow", GossipOnQuestFrame)
+   QuestFrameAcceptButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick)
+   QuestFrameCompleteQuestButton:HookScript("OnClick", QTR_QuestFrameButton_OnClick)
+   QuestLogPopupDetailFrame:HookScript("OnShow", QTR_QuestLogPopupShow)
    
    QuestMapFrame.CampaignOverview:HookScript("OnShow", function() 
       if (not WOWTR_wait(0.1, TT_CampaignOverview)) then
-      -- opóźnienie 0.1 sek
+      -- Delay of 0.1 sec
       end
-   end );
+   end)
    
-   isClassicQuestLog();
-   isImmersion();
-   isStoryline();
+   isClassicQuestLog()
+   isImmersion()
+   isStoryline()
 end
+
+
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -763,26 +781,35 @@ end
 
 function QTR_ObjectiveTracker_QuestHeader()
    if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
-      local _font1, _size1, _3 = ObjectiveTrackerBlocksFrame.QuestHeader.Text:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
-      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(WoWTR_Localization.quests);
-      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, _size1);
+      local _font1, _size1, _3 = QuestObjectiveTracker.Header.Text:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
+      QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));
+      QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, _size1);
    end
 end
 
 -------------------------------------------------------------------------------------------------------------------
 
 function QTR_QuestScrollFrame_OnShow()
-   if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
+   if (QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1") then   -- translations enabled
       if (QuestScrollFrame.Contents.StoryHeader.Progress and QuestScrollFrame.Contents.StoryHeader.Progress:GetText()) then
          local txt = QuestScrollFrame.Contents.StoryHeader.Progress:GetText();
-         txt = string.gsub(txt, "Story Progress", WoWTR_Localization.storyLineProgress);
-         txt = string.gsub(txt, "Chapters", WoWTR_Localization.storyLineChapters);
-         local _font1, _size1, _3 = QuestScrollFrame.Contents.StoryHeader.Progress:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
+         txt = string.gsub(txt, "Story Progress", QTR_ReverseIfAR(WoWTR_Localization.storyLineProgress));
+         txt = string.gsub(txt, "Chapters", QTR_ReverseIfAR(WoWTR_Localization.storyLineChapters));
+
+         local _font1, _size1, _3 = QuestScrollFrame.Contents.StoryHeader.Progress:GetFont();   -- get current font and size
          QuestScrollFrame.Contents.StoryHeader.Progress:SetText(QTR_ReverseIfAR(txt));
          QuestScrollFrame.Contents.StoryHeader.Progress:SetFont(WOWTR_Font2, _size1);
+         if (WoWTR_Localization.lang == 'AR') then
+            -- Set text alignment to right using anchors
+            QuestScrollFrame.Contents.StoryHeader.Progress:ClearAllPoints();
+            QuestScrollFrame.Contents.StoryHeader.Progress:SetPoint("TOPRIGHT", QuestScrollFrame.Contents.StoryHeader, "TOPRIGHT", -10, -40);
+            QuestScrollFrame.Contents.StoryHeader.Progress:SetJustifyH("RIGHT");
+         end
       end
    end
 end
+
+
 
 -------------------------------------------------------------------------------------------------------------------
 
@@ -1029,10 +1056,10 @@ objectiveSpecials = {
 -------------------------------------------------------------------------------------------------------------------
 
 function QTR_ObjectiveTracker_Check()
-   if ( QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate and QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
-      ObjectiveTrackerFrame.HeaderMenu.Title:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
-      ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 16);
-      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 16);
+   if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
+      ObjectiveTrackerFrame.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
+      ObjectiveTrackerFrame.Header.Text:SetFont(WOWTR_Font2, 16);
+      QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 16);
       if (WoWTR_Localization.lang == 'AR') then
          --Added New Translation Campaign and Scenario for Arabic only
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetFont(WOWTR_Font2, 16);
@@ -1042,9 +1069,9 @@ function QTR_ObjectiveTracker_Check()
          --Make LEFT
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetJustifyH("LEFT");
          ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("LEFT");
-         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("LEFT");
+         QuestObjectiveTracker.Header.Text:SetJustifyH("LEFT");
       end
-      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
+      QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
       for questID, block in pairs(QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate) do
          local str_ID = tostring(questID);
          if (str_ID and QTR_PS["transtitle"]=="1" and QTR_QuestData[str_ID] and block.HeaderText) then  -- tłumaczenie tytułu
@@ -1477,8 +1504,8 @@ function QTR_QuestPrepare(zdarzenie)
       end
    end   -- tłumaczenia są włączone
    
-   if (TT_PS["ui1"] == "1") then
-      local QuestMFrame01 = QuestMapFrame.DetailsFrame.BackButton.Text;
+   if (TT_PS["ui1"] == "1") then 
+      local QuestMFrame01 = QuestMapFrame.DetailsFrame.BackFrame.BackButton.Text;
       ST_CheckAndReplaceTranslationTextUI(QuestMFrame01, true, "ui");
 
       local QuestMFrame02 = QuestMapFrame.DetailsFrame.AbandonButton.Text;
@@ -1526,30 +1553,30 @@ function QTR_Translate_On(typ,event)
             QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")");
             QTR_ToggleButton7:Enable();
          end
-         local WOW_width = 265;
+         local WOW_width = 320;
          if (WorldMapFrame:IsVisible()) then
-            WOW_width = 245;
+            WOW_width = 320;
          end
          if (QTR_PS["transtitle"]=="1") then
-            QuestInfoTitleHeader:SetWidth(WOW_width+30);
-            QuestProgressTitleText:SetWidth(WOW_width+10);
-            QuestInfoTitleHeader:SetFont(WOWTR_Font1,  IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-            QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+            QuestInfoTitleHeader:SetWidth(WOW_width);
+            QuestProgressTitleText:SetWidth(WOW_width);
+            QuestInfoTitleHeader:SetFont(WOWTR_Font1,  C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+            QuestProgressTitleText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
             if (WorldMapFrame:IsVisible()) then
                QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-50));
             else
-               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-30));
+               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-50));
             end
-            QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-10));
+            QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-50));
          end
-         QuestInfoDescriptionText:SetWidth(WOW_width+5);
-         QuestInfoObjectivesText:SetWidth(WOW_width+5);
-         QuestProgressText:SetWidth(WOW_width);
-         QuestInfoRewardText:SetWidth(WOW_width+5);
-         QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
-         QuestInfoObjectivesText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
-         QuestProgressText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
-         QuestInfoRewardText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
+         QuestInfoDescriptionText:SetWidth(WOW_width-50);
+         QuestInfoObjectivesText:SetWidth(WOW_width-50);
+         QuestProgressText:SetWidth(WOW_width-50);
+         QuestInfoRewardText:SetWidth(WOW_width);
+         QuestInfoDescriptionText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+         QuestInfoObjectivesText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+         QuestProgressText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+         QuestInfoRewardText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
          QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,QuestInfoDescriptionText,WOWTR_Font2,-5));
          if (WoWTR_Localization.lang == 'AR') then
             QuestInfoDescriptionText:SetJustifyH("RIGHT");
@@ -1622,14 +1649,14 @@ function QTR_Translate_Off(typ,event)
             QTR_ToggleButton5:SetText("Quest ID="..QTR_quest_ID.." (EN)");
             QTR_Storyline_OFF(1);
          end
-         QuestInfoTitleHeader:SetFont(Original_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-         QuestProgressTitleText:SetFont(Original_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+         QuestInfoTitleHeader:SetFont(Original_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+         QuestProgressTitleText:SetFont(Original_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
          QuestInfoTitleHeader:SetText(QTR_quest_EN[QTR_quest_ID].title);
          QuestProgressTitleText:SetText(QTR_quest_EN[QTR_quest_ID].title);
-         QuestInfoDescriptionText:SetFont(Original_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
-         QuestInfoObjectivesText:SetFont(Original_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
-         QuestProgressText:SetFont(Original_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
-         QuestInfoRewardText:SetFont(Original_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
+         QuestInfoDescriptionText:SetFont(Original_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
+         QuestInfoObjectivesText:SetFont(Original_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
+         QuestProgressText:SetFont(Original_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
+         QuestInfoRewardText:SetFont(Original_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13);
          QuestInfoDescriptionText:SetText(QTR_quest_EN[QTR_quest_ID].details);
          if (WoWTR_Localization.lang == 'AR') then
             QuestInfoDescriptionText:SetJustifyH("LEFT");
@@ -1670,22 +1697,22 @@ function QTR_display_constants(lg)
          WOW_width = 245;
       end
       QuestInfoObjectivesHeader:SetWidth(WOW_width+10);
-      QuestInfoDescriptionHeader:SetWidth(WOW_width+10);
+      QuestInfoDescriptionHeader:SetWidth(WOW_width+40);
       QuestInfoRewardsFrame.Header:SetWidth(WOW_width+10);
       QuestProgressRequiredItemsText:SetWidth(WOW_width+7);
-      QuestInfoObjectivesHeader:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      QuestInfoObjectivesHeader:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestInfoObjectivesHeader:SetText(QTR_ExpandUnitInfo(QTR_Messages.objectives,false,QuestInfoObjectivesHeader,WOWTR_Font1,-10));
-      QuestInfoDescriptionHeader:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      QuestInfoDescriptionHeader:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestInfoDescriptionHeader:SetText(QTR_ExpandUnitInfo(QTR_Messages.details,false,QuestInfoDescriptionHeader,WOWTR_Font1,-10));
-      QuestInfoRewardsFrame.Header:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      QuestInfoRewardsFrame.Header:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestInfoRewardsFrame.Header:SetText(QTR_ExpandUnitInfo(QTR_Messages.rewards,false,QuestInfoRewardsFrame.Header,WOWTR_Font1,-12));
-      QuestProgressRequiredItemsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      QuestProgressRequiredItemsText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       QuestProgressRequiredItemsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.reqitems,false,QuestProgressRequiredItemsText,WOWTR_Font1,-10));
-      CurrentQuestsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      CurrentQuestsText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       CurrentQuestsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.currquests,false,CurrentQuestsText,WOWTR_Font1,-30));
-      AvailableQuestsText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+      AvailableQuestsText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       AvailableQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.avaiquests));
-      local regions = { QuestMapFrame.DetailsFrame.RewardsFrame:GetRegions() };
+      local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
       for index = 1, #regions do
          local region = regions[index];
          if ((region:GetObjectType() == "FontString") and (region:GetText() == QUEST_REWARDS)) then
@@ -2058,7 +2085,7 @@ function QTR_ResetQuestToOriginal()
    AvailableQuestsText:SetFont(Original_Font1, 18);
 
    -- Reset Quest Map rewards text
-   local regions = { QuestMapFrame.DetailsFrame.RewardsFrame:GetRegions() };
+   local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
    for index = 1, #regions do
       local region = regions[index];
       if ((region:GetObjectType() == "FontString") and (region:GetText() == QTR_Messages.rewards)) then

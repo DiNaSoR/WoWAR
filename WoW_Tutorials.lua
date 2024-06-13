@@ -96,7 +96,7 @@ function TT_onTutorialShow()          -- główna funkcja wywoływana, gdy pojaw
                   if (Tut_Data7[id]) then         -- jest tureckie tłumaczenie w bazie tłumaczeń
                      local _font5, _size5, _35 = _G[obj].Text:GetFont();
                         if (WoWTR_Localization.lang == 'AR') then
-                           _G[obj].Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].Text,WOWTR_Font2,-20).." ");  -- podmieniamy tekst na nasze tłumaczenie
+                           _G[obj].Text:SetText(QTR_ExpandUnitInfo(Tut_Data7[id],false,_G[obj].Text,WOWTR_Font2,-30).." ");  -- podmieniamy tekst na nasze tłumaczenie
                            _G[obj].Text:SetJustifyH("LEFT");
                            _G[obj].Text:SetFont(WOWTR_Font2, _size5);      -- na końcu dodajemy twardą spację, jako znacznik tekstu tureckiego
                         else

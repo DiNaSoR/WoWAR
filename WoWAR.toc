@@ -1,5 +1,5 @@
 ﻿## Interface: 100207, 110000
-## Version: v10.02
+## Version: v10.03
 ## Title: WoWAR |cff8080ff10.02|r
 ## Notes: World of Warcraft in Arabic.
 ## Author: Platine & Dragonarab
