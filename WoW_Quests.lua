@@ -4,6 +4,12 @@
 -- E-mail: platine.wow@gmail.com
 
 -------------------------------------------------------------------------------------------------------------------
+-- Test both version 11.00 and 10.2.7 will be delete it after testing
+local version, build, date, tocversion = GetBuildInfo()
+local qtrmajor, qtrminor, qtrpatch = strsplit(".", version)
+qtrmajor = tonumber(qtrmajor)
+qtrminor = tonumber(qtrminor)
+qtrpatch = tonumber(qtrpatch)
 
 -- Global Variables
 QTR_MessOrig = {
@@ -717,12 +723,12 @@ function QTR_START()
    GoQ_IconAI:Hide()
 
    -- Ensure QUEST_TRACKER_MODULE exists before hooking functions
-   --if QUEST_TRACKER_MODULE then
+   if QUEST_TRACKER_MODULE then
       -- Function called on clicking a quest name in QuestTracker   
       hooksecurefunc(QUEST_TRACKER_MODULE, "OnBlockHeaderClick", QTR_PrepareReload)
       -- Function called on updating QuestTracker
       hooksecurefunc(QUEST_TRACKER_MODULE, "EnumQuestWatchData", QTR_ObjectiveTracker_Check)
-   --end
+   end
 
    WorldMapFrame:HookScript("OnHide", function() 
       if (not WOWTR_wait(0.1, QTR_ObjectiveTracker_QuestHeader)) then
@@ -1563,31 +1569,63 @@ function QTR_Translate_On(typ,event)
             QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")");
             QTR_ToggleButton7:Enable();
          end
-         local WOW_width = 320;
-         if (WorldMapFrame:IsVisible()) then
-            WOW_width = 320;
-         end
-         if (QTR_PS["transtitle"]=="1") then
-            QuestInfoTitleHeader:SetWidth(WOW_width);
-            QuestProgressTitleText:SetWidth(WOW_width);
-            QuestInfoTitleHeader:SetFont(WOWTR_Font1,  C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
-            QuestProgressTitleText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+         if qtrmajor == 10 and qtrminor == 2 and qtrpatch == 7 then
+            -- Code for version 10.2.7
+            local WOW_width = 265;
             if (WorldMapFrame:IsVisible()) then
-               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-50));
-            else
-               QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestInfoTitleHeader,WOWTR_Font1,-50));
+                WOW_width = 245;
             end
-            QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title,false,QuestProgressTitleText,WOWTR_Font1,-50));
-         end
-         QuestInfoDescriptionText:SetWidth(WOW_width-50);
-         QuestInfoObjectivesText:SetWidth(WOW_width-50);
-         QuestProgressText:SetWidth(WOW_width-50);
-         QuestInfoRewardText:SetWidth(WOW_width);
-         QuestInfoDescriptionText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
-         QuestInfoObjectivesText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
-         QuestProgressText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
-         QuestInfoRewardText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
-         QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details,false,QuestInfoDescriptionText,WOWTR_Font2,-5));
+            if (QTR_PS["transtitle"] == "1") then
+                QuestInfoTitleHeader:SetWidth(WOW_width + 30);
+                QuestProgressTitleText:SetWidth(WOW_width + 10);
+                QuestInfoTitleHeader:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+                QuestProgressTitleText:SetFont(WOWTR_Font1, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+                if (WorldMapFrame:IsVisible()) then
+                    QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestInfoTitleHeader, WOWTR_Font1, -50));
+                else
+                    QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestInfoTitleHeader, WOWTR_Font1, -30));
+                end
+                QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestProgressTitleText, WOWTR_Font1, -10));
+            end
+            QuestInfoDescriptionText:SetWidth(WOW_width + 5);
+            QuestInfoObjectivesText:SetWidth(WOW_width + 5);
+            QuestProgressText:SetWidth(WOW_width);
+            QuestInfoRewardText:SetWidth(WOW_width + 5);
+            QuestInfoDescriptionText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
+            QuestInfoObjectivesText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
+            QuestProgressText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
+            QuestInfoRewardText:SetFont(WOWTR_Font2, IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 13)
+            QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details, false, QuestInfoDescriptionText, WOWTR_Font2, -5));
+        elseif qtrmajor == 11 then
+            -- Code for version 11.x.x
+            local WOW_width = 320;
+            if (WorldMapFrame:IsVisible()) then
+                WOW_width = 320;
+            end
+            if (QTR_PS["transtitle"] == "1") then
+                QuestInfoTitleHeader:SetWidth(WOW_width);
+                QuestProgressTitleText:SetWidth(WOW_width);
+                QuestInfoTitleHeader:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+                QuestProgressTitleText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
+                if (WorldMapFrame:IsVisible()) then
+                    QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestInfoTitleHeader, WOWTR_Font1, -50));
+                else
+                    QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestInfoTitleHeader, WOWTR_Font1, -50));
+                end
+                QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestProgressTitleText, WOWTR_Font1, -50));
+            end
+            QuestInfoDescriptionText:SetWidth(WOW_width - 50);
+            QuestInfoObjectivesText:SetWidth(WOW_width - 50);
+            QuestProgressText:SetWidth(WOW_width - 50);
+            QuestInfoRewardText:SetWidth(WOW_width);
+            QuestInfoDescriptionText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+            QuestInfoObjectivesText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+            QuestProgressText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+            QuestInfoRewardText:SetFont(WOWTR_Font2, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtext.size or 14)
+            QuestInfoDescriptionText:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].details, false, QuestInfoDescriptionText, WOWTR_Font2, -5));
+        else
+            -- Handle other versions if necessary
+        end
          if (WoWTR_Localization.lang == 'AR') then
             QuestInfoDescriptionText:SetJustifyH("RIGHT");
          else
