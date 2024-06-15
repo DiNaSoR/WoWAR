@@ -634,21 +634,6 @@ end
 
 -- Pierwsza funkcja wywoływana po załadowaniu dodatku
 function QTR_START()
-   -- Create a frame to listen for events
-   local QTR_EventFrame = CreateFrame("Frame")
-
-   -- Function to handle events
-   local function QTR_OnEvent(self, event, ...)
-      if event == "QUEST_LOG_UPDATE" then
-         QTR_QuestScrollFrame_OnShow()
-         print("QTR_OnEvent: "..event)
-      end
-   end
-
-   -- Register the events and set the event handler
-   QTR_EventFrame:RegisterEvent("QUEST_LOG_UPDATE")
-   QTR_EventFrame:SetScript("OnEvent", QTR_OnEvent)
-
 
    -- Button in QuestFrame (NPC)
    QTR_ToggleButton0 = CreateFrame("Button", nil, QuestFrame, "UIPanelButtonTemplate")
@@ -732,18 +717,23 @@ function QTR_START()
    GoQ_IconAI:Hide()
 
    -- Ensure QUEST_TRACKER_MODULE exists before hooking functions
-   if QUEST_TRACKER_MODULE then
+   --if QUEST_TRACKER_MODULE then
       -- Function called on clicking a quest name in QuestTracker   
       hooksecurefunc(QUEST_TRACKER_MODULE, "OnBlockHeaderClick", QTR_PrepareReload)
       -- Function called on updating QuestTracker
       hooksecurefunc(QUEST_TRACKER_MODULE, "EnumQuestWatchData", QTR_ObjectiveTracker_Check)
-   end
+   --end
 
    WorldMapFrame:HookScript("OnHide", function() 
       if (not WOWTR_wait(0.1, QTR_ObjectiveTracker_QuestHeader)) then
-      -- Delay of 0.1 sec
+      -- opóźnienie 0.1 sek
       end
-   end)
+   end );
+   WorldMapFrame:HookScript("OnShow", function() 
+      if (not WOWTR_wait(0.2, QTR_QuestScrollFrame_OnShow)) then
+      -- opóźnienie 0.2 sek
+      end
+   end );
    
    hooksecurefunc("QuestLogQuests_Update", QTR_QuestLogQuests_Update)
    
@@ -781,9 +771,14 @@ end
 
 function QTR_ObjectiveTracker_QuestHeader()
    if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
+      --10.2.7
       local _font1, _size1, _3 = QuestObjectiveTracker.Header.Text:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
       QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));
       QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, _size1);
+      --11.00
+      --local _font1, _size1, _3 = QuestObjectiveTracker.Header.Text:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
+      --QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));
+      --QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, _size1);
    end
 end
 
@@ -1056,10 +1051,16 @@ objectiveSpecials = {
 -------------------------------------------------------------------------------------------------------------------
 
 function QTR_ObjectiveTracker_Check()
-   if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
-      ObjectiveTrackerFrame.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
-      ObjectiveTrackerFrame.Header.Text:SetFont(WOWTR_Font2, 16);
-      QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 16);
+   --10.2.7
+   if ( QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate and QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
+      ObjectiveTrackerFrame.HeaderMenu.Title:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
+      ObjectiveTrackerFrame.HeaderMenu.Title:SetFont(WOWTR_Font2, 16);
+      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(WOWTR_Font2, 16);
+   --11.00   
+   --if ( QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1" ) then   -- tłumaczenia włączone
+   --   ObjectiveTrackerFrame.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives));
+   --   ObjectiveTrackerFrame.Header.Text:SetFont(WOWTR_Font2, 16);
+   --   QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 16);
       if (WoWTR_Localization.lang == 'AR') then
          --Added New Translation Campaign and Scenario for Arabic only
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetFont(WOWTR_Font2, 16);
@@ -1069,9 +1070,15 @@ function QTR_ObjectiveTracker_Check()
          --Make LEFT
          ObjectiveTrackerBlocksFrame.CampaignQuestHeader.Text:SetJustifyH("LEFT");
          ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetJustifyH("LEFT");
-         QuestObjectiveTracker.Header.Text:SetJustifyH("LEFT");
+         --10.2.7
+         ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetJustifyH("LEFT");
+         --11.00
+         --QuestObjectiveTracker.Header.Text:SetJustifyH("LEFT");
       end
-      QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
+      --10.2.7
+      ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
+      --11.00
+      --QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests));   -- może: QTR_ExpandUnitInfo ?
       for questID, block in pairs(QUEST_TRACKER_MODULE.usedBlocks.ObjectiveTrackerBlockTemplate) do
          local str_ID = tostring(questID);
          if (str_ID and QTR_PS["transtitle"]=="1" and QTR_QuestData[str_ID] and block.HeaderText) then  -- tłumaczenie tytułu
@@ -1504,8 +1511,11 @@ function QTR_QuestPrepare(zdarzenie)
       end
    end   -- tłumaczenia są włączone
    
-   if (TT_PS["ui1"] == "1") then 
-      local QuestMFrame01 = QuestMapFrame.DetailsFrame.BackFrame.BackButton.Text;
+   if (TT_PS["ui1"] == "1") then
+      --10.2.7
+      local QuestMFrame01 = QuestMapFrame.DetailsFrame.BackButton.Text;
+      --11.00
+      --local QuestMFrame01 = QuestMapFrame.DetailsFrame.BackFrame.BackButton.Text;
       ST_CheckAndReplaceTranslationTextUI(QuestMFrame01, true, "ui");
 
       local QuestMFrame02 = QuestMapFrame.DetailsFrame.AbandonButton.Text;
@@ -1712,7 +1722,10 @@ function QTR_display_constants(lg)
       CurrentQuestsText:SetText(QTR_ExpandUnitInfo(QTR_Messages.currquests,false,CurrentQuestsText,WOWTR_Font1,-30));
       AvailableQuestsText:SetFont(WOWTR_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18);
       AvailableQuestsText:SetText(QTR_ReverseIfAR(QTR_Messages.avaiquests));
-      local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
+      --10.2.7
+      local regions = { QuestMapFrame.DetailsFrame.RewardsFrame:GetRegions() };
+      --11.00
+      --local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
       for index = 1, #regions do
          local region = regions[index];
          if ((region:GetObjectType() == "FontString") and (region:GetText() == QUEST_REWARDS)) then
@@ -2085,7 +2098,10 @@ function QTR_ResetQuestToOriginal()
    AvailableQuestsText:SetFont(Original_Font1, 18);
 
    -- Reset Quest Map rewards text
-   local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
+   --10.2.7
+   local regions = { QuestMapFrame.DetailsFrame.RewardsFrame:GetRegions() };
+   --11.00
+   --local regions = { QuestMapFrame.DetailsFrame.RewardsFrameContainer.RewardsFrame:GetRegions() };
    for index = 1, #regions do
       local region = regions[index];
       if ((region:GetObjectType() == "FontString") and (region:GetText() == QTR_Messages.rewards)) then
