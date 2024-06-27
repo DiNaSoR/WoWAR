@@ -169,10 +169,10 @@ function WOWTR_BlizzardOptions()
 local WOWTR_Options = CreateFrame("FRAME", "WOWTR_Options", SettingsPanel);
 WOWTR_Options.refresh = function (self) WOWTR_SetCheckButtonState() end;
 WOWTR_Options:SetScript("OnHide", WOWTR_HideOptionsFrame);
---WOWTR_Options.name = WoWTR_Localization.optionName;
---InterfaceOptions_AddCategory(WOWTR_Options);
-local category = Settings.RegisterCanvasLayoutCategory(WOWTR_Options, WoWTR_Localization.optionName);
-Settings.RegisterAddOnCategory(category);
+WOWTR_Options.name = WoWTR_Localization.optionName;
+InterfaceOptions_AddCategory(WOWTR_Options);
+--local category = Settings.RegisterCanvasLayoutCategory(WOWTR_Options, WoWTR_Localization.optionName);
+--Settings.RegisterAddOnCategory(category);
 
 local WOWTR_OptionsHeader = WOWTR_Options:CreateFontString(nil, "ARTWORK");
 
