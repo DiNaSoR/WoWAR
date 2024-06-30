@@ -1,4 +1,4 @@
--- Addon: WoWTR-Books (version: 10.E7) 2024.02.12
+-- Addon: WoWTR-Books (version: 10.E8) 2024.06.30
 -- Description: The AddOn displays the translated text information in chosen language
 -- Author: Platine
 -- E-mail: platine.wow@gmail.com
@@ -23,7 +23,7 @@ function BookTranslator_ShowTranslation()
       BT_tekst_en=ItemTextGetText();
       BT_nr_str=tostring(ItemTextGetPage());
       BT_bookID = 0;
-      local par1, par2, par3 = GetItemInfo(ItemTextGetItem());
+      local par1, par2, par3 =  C_Item.GetItemInfo(ItemTextGetItem());
       if (par2) then
          local pa1, itemID, pa3 = strsplit(":",par2);
          BT_bookID = itemID;
