@@ -1,0 +1,21 @@
+# IDE and Editor Files
+.vscode/
+.idea/
+.cursorignore
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Lua Environment
+.luarocks/
+lua_modules/
+
+.vscode/settings.json
+
+Docs/
+Tools/

@@ -1,350 +1,413 @@
--- Addon: WoWAR (version: 10.L10) 2024.01.30
 -- Description: Texts in the selected localization language
--- Autor: Platine
--- E-mail: platine.wow@gmail.com
-
----------------------------------------------------------------------------------------------------------
+-- Authors: Platine, Dragonarab[DiNaSoR]
+-------------------------------------------------------------------------------------------------------
 
 WoWTR_Localization = {
    lang = "AR",
-   started = "started",                                              -- addon was started
-   mainFolder = "Interface\\AddOns\\WoWAR",                          -- main folder for addon files
-   addonName = "WoWAR",                                              -- short name of the addon
-   addonIconDesc = "انقر , لفتح قائمة الإعدادات.",                    -- Click to open the settings menu
-   optionName = "WoWAR - Options",                                   -- WoWAR - options
-   optionTitle = "إضافة واو بالعربي",                                -- WoWAR Patch
-   optionTitleAR = "ملحق WOW باللغة العربية، baranogarD & enitalP، (C) 4202-3202",  -- Main title of addon in Arabic
-   addressWWW = "https://www.WoWinArabic.com",                       -- address of project page
-   addressDiscord = "https://discord.gg/uW5NJ6y",                    -- address of discord page
-   addressTwitch = "",                                               -- address of Twitch page 
-   addressFanPage = "",                                              -- address of FanPage 
-   addressEmail = "dragonarab@gmail.com",                            -- address of project e-mail
-   addressCurse = "https://www.curseforge.com/wow/addons/wowinarabic-quests",         -- address of CurseForge page
-   addressPayPal = "https://www.paypal.com/donate/?hosted_button_id=FC2NVQ5DN7GVA",   -- address of PayPal page
-   addressBlik = "",                                                 -- telephon number for BLIK payment
-   gossipText = "نص الشائعات",                                       -- gossip text
-   quests = "المهام",                                                -- Quests
-   campaignquests = "الحملات",
-   scenariodung = "الدهليز",
-   objectives = "أهداف",                                             -- Objectives
-   rewards = "مكافئات",                                              -- Rewards
-   storyLineProgress = "مراحل تقدم القصة",                           -- StoryLine Progress
-   storyLineChapters = "فصول القصة",                                 -- StoryLine Chapters
-   choiceQuestFirst = "أختر المهمة أولا",                             -- choose a quest first
-   readyForTurnIn = "جاهزة للتسليم",                                 -- Ready for turn-in
-   clickToComplete = "انقر للإكمال",                                  -- click to complete
-   failed = "فشل",                                                   -- Failed
-   optional = "اختياري",                                             -- Optional
-   emptyProgress = "أنت تقوم بعمل جيد, YOUR_NAME",                   -- You are doing well, $N
-   bookID = "رقم الكتاب:",                                           -- Book ID:
-   stopTheMovie = "تريد إيقاف الفيديو ؟",                            -- Do you want to stop the video?
-   stopTheMovieYes = "نعم",                                          -- Yes
-   stopTheMovieNo = "لا",                                             -- No
-   reopenBoard = "إعادة فتح لوحة الإعلانات",                           -- Reopen the Bulletin Board
-   sellPrice = ":سعر البيع",                                         -- Sell price:
-   currentlyEquipped = "مرتدي حاليا",                                -- Currently Equipped
-   additionalEquipped = "مرتدي معدات إضافية",                        -- Equipped with additional Equipment
-   WoWTR_Talent_arDESC = "المهارات: بالعربي",                        -- Talents: Arabic
-   WoWTR_Talent_enDESC = "Talents: English",                         -- Talents: English
-   WoWTR_Spellbook_arDESC = "القدرات: بالعربي",                      -- Spell Book: Arabic
-   WoWTR_Spellbook_enDESC = "Spell Book: English",                   -- Spell Book: English
-   your_home = "منزلك",                                              -- 'your home' (if the Hearthstone location fails to be read)
-   welcomeIconPos = 255,                                             -- position of welcome icon on the welcom panel; 0 = disabled to display
-   resetButton1 = "مسح السجلات المخزنة في ملف aul.RAWoW",             -- مسح النصوص غير المترجمة المحفوظة (بدون خط عربي)
-   resetButton2 = "إعادة ضبط إعدادات الإضافة",                        -- إعادة الإضافة إلى إعداداتها الافتراضية (بدون خط عربي)
-   resetButton1Opis = "مسح النصوص غير المترجمة المحفوظة",            -- مسح النصوص غير المترجمة المحفوظة (كتلميح)
-   resetButton1OpisDESC = "سيتم حذف جميع البيانات المحفوظة في اللعبة",  -- مسح النصوص غير المترجمة المحفوظة (كتلميح)
-   resetButton2Opis = "إعادة الإضافة إلى إعداداتها الافتراضية",           -- إعادة الإضافة إلى إعداداتها الافتراضية (كتلميح)
-   resetButton2OpisDESC = "سيتم إعادة إعدادات الإضافة إلى الوضع الافتراضي \n(وسيتم إعادة تحميل الواجهة)",
-   resultButton1 = "تم مسح النصوص المخزنة",                             -- تم تنظيف النصوص المحفوظة
-   confirmationHeader = "تأكيد",                                        -- عنوان التأكيد
-   confirmationText1 = "هل ترغب في مسح جميع السجلات المحفوظة؟",          -- هل تود مسح جميع النصوص غير المترجمة المحفوظة؟
-   confirmationText2 = "هل ترغب في إعادة تحميل الإضافة إلى إعداداتها الافتراضية؟\n(سيتم إعادة تحميل الواجهة)",   -- هل تود استعادة إعدادات الإضافة الافتراضية؟
-   moveFrameUpDown = "حرك النافذة لأعلى أو لأسفل",                        -- Move the window up or down
+   started = "|cFF87CEEBﻲﻔﻜﺗ ﻢﻜﺗﺍﻮﻋﺩ ..ﻢﻜﻴﻓ ﷲ ﻙﺭﺎﺑ|r |T524354:16:16:0:0|t", -- addon was started
+   mainFolder = "Interface\\AddOns\\WoWAR", -- main folder for addon files
+   addonFolder = "WoWAR", -- name of the folder where the addon was installed
+   addonName = "WoWAR", -- short name of the addon
+   addonIconDesc = "ﺍﻧﻘﺮ , ﻟﻔﺘﺢ ﻗﺎﺋﻤﺔ ﺍﻹﻋﺪﺍﺩﺍﺕ.", -- Click to open the settings menu
+   optionName = "WoWAR - Options", -- WoWAR - options
+   optionTitle = "ﺇﺿﺎﻓﺔ ﻭﺍﻭ ﺑﺎﻟﻌﺮﺑﻲ", -- WoWAR Patch
+   optionTitleAR = "ﻣﻠﺤﻖ RAWoW ﺑﺎﻟﻠﻐﺔ ﺍﻟﻌﺮﺑﻴﺔ، baranogarD & enitalP، (C) 5202-3202", -- Main title of addon in Arabic
+   addressWWW = "https://www.WoWAR.co", -- address of project page
+   addressDiscord = "https://discord.gg/uW5NJ6y", -- address of discord page
+   addressTwitch = "", -- address of Twitch page
+   addressFanPage = "", -- address of FanPage
+   addressEmail = "dragonarab@gmail.com", -- address of project e-mail
+   addressCurse = "https://www.curseforge.com/wow/addons/wowar-arabic", -- address of CurseForge page
+   addressPayPal = "https://www.paypal.com/donate/?hosted_button_id=4Z5ARNRNNBYJJ", -- address of PayPal page
+   addressBlik = "", -- telephon number for BLIK payment
+   gossipText = "ﻧﺺ ﺍﻟﺸﺎﺋﻌﺎﺕ", -- gossip text
+   quests = "اﻟﻤﻬﺎم", -- Quests
+   worldquests = "اﻟﻤﻬﺎم اﻟﻌﺎﻟﻤﻴﺔ", -- World Quests
+   campaignquests = "اﻟﺤﻤﻼت", -- Campaign Quests
+   scenariodung = "اﻟﺪﻫﻠﻴﺰ", -- Scenario/Dungeon
+   objectives = "اﻷﻫﺪاف", -- Objectives
+   bonusobjective = "ﻫﺪف اﻟﻤﻜﺎﻓﺄة", -- Bonus Objective
+   travelerlog = "ﺳﺠﻞ اﻟﻤﺴﺎﻓﺮ", -- Traveler's Log
+   rewards = "اﻟﻤﻜﺎﻓﺌﺔ", -- Rewards
+   storyLineProgress = "ﻣﺮﺍﺣﻞ ﺗﻘﺪﻡ ﺍﻟﻘﺼﺔ", -- StoryLine Progress
+   storyLineChapters = "ﻓﺼﻮﻝ ﺍﻟﻘﺼﺔ", -- StoryLine Chapters
+   choiceQuestFirst = "ﺃﺧﺘﺮ ﺍﻟﻤﻬﻤﺔ ﺃﻭﻻ", -- choose a quest first
+   readyForTurnIn = "ﺟﺎﻫﺰﺓ ﻟﻠﺘﺴﻠﻴﻢ", -- Ready for turn-in
+   clickToComplete = "ﺍﻧﻘﺮ ﻟﻺﻛﻤﺎﻝ", -- click to complete
+   failed = "ﻓﺸﻞ", -- Failed
+   optional = "ﺍﺧﺘﻴﺎﺭﻱ", -- Optional
+   bookID = "ﺭﻗﻢ ﺍﻟﻜﺘﺎﺏ:", -- Book ID:
+   stopTheMovie = "ﺗﺮﻳﺪ ﺇﻳﻘﺎﻑ ﺍﻟﻔﻴﺪﻳﻮ ؟", -- Do you want to stop the video?
+   stopTheMovieYes = "ﻧﻌﻢ", -- Yes
+   stopTheMovieNo = "ﻻ", -- No
+   reopenBoard = "ﺇﻋﺎﺩﺓ ﻓﺘﺢ ﻟﻮﺣﺔ ﺍﻹﻋﻼﻧﺎﺕ", -- Reopen the Bulletin Board
+   sellPrice = ": اﻟﻘﻴﻤﺔ", -- Sell price:
+   currentlyEquipped = "ﻣﺮﺗﺪﻱ ﺣﺎﻟﻴﺎ", -- Currently Equipped
+   additionalEquipped = "ﻣﺮﺗﺪﻱ ﻣﻌﺪﺍﺕ ﺇﺿﺎﻓﻴﺔ", -- Equipped with additional Equipment
+   WoWTR_trDESC = "ﺑﺎﻟﻌﺮﺑﻲ", -- Arabic
+   WoWTR_enDESC = "English", -- English
+   WoWTR_Spellbook_trDESC = "ﺑﺎﻟﻌﺮﺑﻲ", -- Spell Book: Arabic
+   WoWTR_Spellbook_enDESC = "English", -- Spell Book: English
+   your_home = "ﻣﻨﺰﻟﻚ", -- 'your home' (if the Hearthstone location fails to be read)
+   welcomeIconPos = 255, -- position of welcome icon on the welcom panel; 0 = disabled to display
+   resetButton1 = "ﻣﺴﺢ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺨﺰﻧﺔ ﻓﻲ ﻣﻠﻒ aul.RAWoW", -- Clear saved untranslated texts (no Arabic font)
+   resetButton2 = "ﺇﻋﺎﺩﺓ ﺿﺒﻂ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ", -- Restore the extension to its default settings (no Arabic font)
+   resetButton1Opis = "ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ ﺍﻟﻤﺤﻔﻮﻇﺔ", -- Clear saved untranslated text (as a hint)
+   resetButton1OpisDESC = "ﺳﻴﺘﻢ ﺣﺬﻑ ﺟﻤﻴﻊ ﺍﻟﺒﻴﺎﻧﺎﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ ﻓﻲ ﺍﻟﻠﻌﺒﺔ", -- Clear saved untranslated texts (as a hint)
+   resetButton2Opis = "ﺇﻋﺎﺩﺓ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ", -- Restore the extension to its default settings (as a tip)
+   resetButton2OpisDESC = "ﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺍﻟﻮﺿﻊ ﺍﻻﻓﺘﺮﺍﺿﻲ \n(ﻭﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻟﻮﺍﺟﻬﺔ)",
+   resultButton1 = "ﺗﻢ ﻣﺴﺢ ﺍﻟﻨﺼﻮﺹ ﺍﻟﻤﺨﺰﻧﺔ", -- Saved texts have been erased
+   confirmationHeader = "ﺗﺄﻛﻴﺪ", -- Confirmation
+   confirmationText1 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﻣﺴﺢ ﺟﻤﻴﻊ ﺍﻟﺴﺠﻼﺕ ﺍﻟﻤﺤﻔﻮﻇﺔ؟", -- Do you want to clear all saved untranslated texts?
+   confirmationText2 = "ﻫﻞ ﺗﺮﻏﺐ ﻓﻲ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻹﺿﺎﻓﺔ ﺇﻟﻰ ﺇﻋﺪﺍﺩﺍﺗﻬﺎ ﺍﻻﻓﺘﺮﺍﺿﻴﺔ؟\n)ﺳﻴﺘﻢ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﺍﻟﻮﺍﺟﻬﺔ(", -- Do you want to restore the addon's default settings?
+   moveFrameUpDown = "ﺣﺮﻙ ﺍﻟﻨﺎﻓﺬﺓ ﻷﻋﻠﻰ ﺃﻭ ﻷﺳﻔﻞ", -- Move the window up or down
+   newVersionAvailable = "إﺻﺪار ﺟﺪﻳﺪ ﻣﻦ اﻟﻮﻇﻴﻔﺔ اﻹﺿﺎﻓﻴﺔ ﻣﺘﺎح:", -- new version of addon is available
 };
 
 ---------------------------------------------------------------------------------------------------------
 
 QTR_Messages = {
-   isactive          = "فعال", -- jest aktywny (is active)
-   isinactive        = "غير فعال", -- jest nieaktywny (is inactive)
-   missing           = "بدون ترجمة", -- brak tłumaczenia (no translation)
-   details           = "الوصف", -- Opis (Description)
-   progress          = "تقدم", -- Postęp (Progress)
-   objectives        = "الأهداف", -- Cele zadania (Objectives)
-   completion        = "إكمال", -- Zakończenie (Completion)
-   translator        = "مترجم", -- Tłumaczenie (Translator)
-   rewards           = "المكافئات", -- Nagrody (Rewards)
-   experience        = "الخبرة:", -- Doświadczenie (Experience)
-   reqmoney          = "المال المطلوب", -- Wymagane pieniądze (Required money)
-   reqitems          = "العناصر المطلوبة", -- Wymagane przedmioty (Required items)
-   itemchoose0       = "ستستلم:", -- Otrzymasz: (You will receive:)
-   itemchoose1       = "ستتمكن من اختيار إحدى هذه المكافآت", -- Możesz wybrać jedną z nagród: (You will be able to choose one of these rewards:)
-   itemchoose2       = "اختر إحدى هذه المكافآت", -- Wybierz jedną z nagród: (Choose one of these rewards:)
-   itemchoose3       = "أنت تتلقى المكافأة", -- Otrzymujesz nagrodę: (You receiving the reward:)
-   itemreceiv0       = "ستستلم", -- Otrzymasz: (You will receive:)
-   itemreceiv1       = "أيضا سوف تأخذ:", -- Otrzymasz również: (You will also receive:)
-   itemreceiv2       = "ستأخذ المكافئة:", -- Otrzymujesz nagrodę: (You receiving the reward:)
-   itemreceiv3       = "أنت أيضا ستأخذ المكافئة:", -- Otrzymujesz również nagrodę: (You also receiving the reward:)
-   learnspell        = "تعلم السحر:", -- Naucz się zaklęcia: (Learn Spell:)
-   currquests        = "المهام الحالية:", -- Bieżące zadania (Current Quests)
-   avaiquests        = "المهام المتوفرة:", -- Dostępne zadania (Available Quests)
-   reward_aura       = "ما يلي سوف يلقي عليك:", -- Otrzymasz efekt: (The following will be cast on you:)
-   reward_spell      = "سوف تتعلم ما يلي:", -- Nauczysz się: (You will learn the following:)
-   reward_companion  = "ستنال هؤلاء الرفاق:", -- Zyskasz towarzyszy: (You will gain these Companions:)
-   reward_follower   = "سوف تأخذ هؤلاء التابعين:", -- Zyskasz zwolenników: (You will gain these followers:)
-   reward_reputation = "جوائز السمعة:", -- Wzrost reputacji: (Reputation awards:)
-   reward_title      = "سوف تحصل على اللقب:", -- Otrzymasz tytuł: (You shall be granted the title:)
-   reward_tradeskill = "سوف تتعلم كيفية إنشاء:", -- Nauczysz się wytwarzania: (You will learn how to create:)
-   reward_unlock     = "ستفتح الوصول إلى التالي:", -- Odblokujesz: (You will unlock access to the following:)
-   reward_bonus      = "قد يكافئ إكمال هذه المهمة أثناء وجودك في الفريق:", -- Ukończenie tego zadania, gdy jesteś w grupie, może cię nagrodzić: (Completing this quest while in Party Sync may reward:)
+   isactive          = "ﻓﻌﺎﻝ", -- is active
+   isinactive        = "ﻏﻴﺮ ﻓﻌﺎﻝ", -- is inactive
+   missing           = "ﺑﺪﻭﻥ ﺗﺮﺟﻤﺔ", -- no translation
+   details           = "اﻟﻮﺻﻒ", -- Description
+   progress          = "ﺗﻘﺪﻡ", -- Progress
+   objectives        = "اﻷﻫﺪاف", -- Objectives
+   completion        = "ﺇﻛﻤﺎﻝ", -- Completion
+   translator        = "ﻣﺘﺮﺟﻢ", -- Translator
+   rewards           = "اﻟﻤﻜﺎﻓﺌﺎت", -- Rewards
+   -- Questline reward headers (QuestMapFrame rewards pane)
+   -- NOTE: Kept as normal Arabic text; we shape/reverse using AS_UTF8reverseRS in code.
+   questline_unlocking    = "ﺳﻠﺴﻠﺔ ﻫﺬﻩ اﻟﻤﻬﻤﺔ ﺟﺰء ﻣﻦ ﻓﺘﺢ:", -- This quest line is part of unlocking:
+   questline_rewards_end  = "ﻧﻬﺎﻳﺔ ﺳﻠﺴﻠﺔ ﻫﺬﻩ اﻟﻤﻬﻤﺔ ﺗﻜﺎﻓﺊ:", -- The end of this quest line rewards:
+   experience        = "ﺍﻟﺨﺒﺮﺓ:", -- Experience
+   reqmoney          = "ﺍﻟﻤﺎﻝ ﺍﻟﻤﻄﻠﻮﺏ", -- Required money
+   reqitems          = "اﻟﻌﻨﺎﺻﺮ اﻟﻤﻄﻠﻮﺑﺔ", -- Required items
+   itemchoose0       = "ﺳﺘﺴﺘﻠﻢ:", -- You will receive:
+   itemchoose1       = "اﺧﺘﺮ اﻟﻤﻜﺎﻓﺄة:", -- You will be able to choose one of these rewards:
+   itemchoose2       = "اﺧﺘﺮ اﻟﻤﻜﺎﻓﺄة:", -- Choose one of these rewards:
+   itemchoose3       = "ﺳﺘﺄﺧﺬ اﻟﻤﻜﺎﻓﺄة:", -- You receiving the reward:
+   itemreceiv0       = "ﺳﺘﺴﺘﻠﻢ:", -- You will receive:
+   itemreceiv1       = "ﺃﻳﻀﺎ ﺳﻮﻑ ﺗﺄﺧﺬ:", -- You will also receive:
+   itemreceiv2       = "اﻟﻤﻜﺎﻓﺄة:", -- You receiving the reward:
+   itemreceiv3       = "اﻟﻤﻜﺎﻓﺄة:", -- You also receiving the reward:
+   learnspell        = "ﺗﻌﻠﻢ ﺍﻟﺴﺤﺮ:", -- Learn Spell:
+   currquests        = "اﻟﻤﻬﺎم اﻟﺤﺎﻟﻴﺔ:", -- Current Quests
+   avaiquests        = "اﻟﻤﻬﺎم اﻟﻤﺘﻮﻓﺮة:", -- Available Quests
+   reward_aura       = "ﻣﺎ ﻳﻠﻲ ﺳﻮﻑ ﻳﻠﻘﻲ ﻋﻠﻴﻚ:", -- The following will be cast on you:
+   reward_spell      = "ﺳﻮﻑ ﺗﺘﻌﻠﻢ ﻣﺎ ﻳﻠﻲ:", -- You will learn the following:
+   reward_companion  = "ﺳﺘﻨﺎﻝ ﻫﺆﻻﺀ ﺍﻟﺮﻓﺎﻕ:", -- You will gain these Companions:
+   reward_follower   = "ﺳﻮﻑ ﺗﺄﺧﺬ ﻫﺆﻻﺀ ﺍﻟﺘﺎﺑﻌﻴﻦ:", -- You will gain these followers:
+   reward_reputation = "ﺟﻮﺍﺋﺰ ﺍﻟﺴﻤﻌﺔ:", -- Reputation awards:
+   reward_title      = "ﺳﻮﻑ ﺗﺤﺼﻞ ﻋﻠﻰ ﺍﻟﻠﻘﺐ:", -- You shall be granted the title:
+   reward_tradeskill = "ﺳﻮﻑ ﺗﺘﻌﻠﻢ ﻛﻴﻔﻴﺔ ﺇﻧﺸﺎﺀ:", -- You will learn how to create:
+   reward_unlock     = "ﺳﺘﻔﺘﺢ ﺍﻟﻮﺻﻮﻝ ﺇﻟﻰ ﺍﻟﺘﺎﻟﻲ:", -- You will unlock access to the following:
+   reward_bonus      = "ﻗﺪ ﻳﻜﺎﻓﺊ ﺇﻛﻤﺎﻝ ﻫﺬﻩ ﺍﻟﻤﻬﻤﺔ ﺃﺛﻨﺎﺀ ﻭﺟﻮﺩﻙ ﻓﻲ ﺍﻟﻔﺮﻳﻖ:", -- Completing this quest while in Party Sync may reward:
 };
 
 ---------------------------------------------------------------------------------------------------------
 
 WoWTR_Config_Interface = {
-   showMinimapIcon = "عرض رمز إعدادات الإضافة بجانب الخريطة المصغرة",
-   showMinimapIconDESC = "عند التفعيل, سيظهر رمز إعدادات الإضافة بجوار الخريطة المصغرة.",
+   showMinimapIcon = "ﻋﺮﺽ ﺭﻣﺰ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ ﺑﺠﺎﻧﺐ ﺍﻟﺨﺮﻳﻄﺔ ﺍﻟﻤﺼﻐﺮﺓ",
+   showMinimapIconDESC = "ﻣﻠﺨﺺ: ﻳﻈﻬﺮ أﻳﻘﻮﻧﺔ اﻹﺿﺎﻓﺔ ﺑﺠﺎﻧﺐ اﻟﺨﺮﻳﻄﺔ اﻟﻤﺼﻐﺮة.\nﻧﺼﻴﺤﺔ: اﺿﻐﻂ ﻋﻠﻰ اﻷﻳﻘﻮﻧﺔ ﻟﻔﺘﺢ اﻹﻋﺪادات ﺑﺴﺮﻋﺔ.",
+   minimap = "اﻟﺨﺮﻳﻄﺔ ﺍﻟﻤﺼﻐﺮﺓ",
 
-   titleTab1 = "المهام",
-   generalMainHeaderQS = "ترجمات المهام - stseuQ",
-   activateQuestsTranslations = "تفعيل ترجمات المهام",
-   activateQuestsTranslationsDESC = "عند الإغلاق, ستظهر الترجمات باللغة الأصلية",
-   translateQuestTitles = "عرض عناوين المهام بالعربية",
-   translateQuestTitlesDESC = "عند الإغلاق, ستظهر العناوين فقط باللغة الأصلية",
-   translateGossipTexts = "عرض نصوص الحوارات CPN بالعربية",
-   translateGossipTextsDESC = "عند الإغلاق, ستظهر باللغة الأصلية",
-   translateTrackObjectives = "عرض ترجمة قائمة تتبع المهام بالعربية",
-   translateTrackObjectivesDESC = "عند الإغلاق, ستظهر بحالتها الأصلية",
-   translateOwnNames = "666666FFC| عرض أسماء الأماكن بالعربية - (غير نشط الآن)r|",
-   translateOwnNamesDESC = "عند التفعيل, ستظهر أسماء المدن والأماكن بالعربية.",
-   savingUntranslatedQuests = "خيارات الحفظ",
-   saveUntranslatedQuests = "حفظ المهام غير المترجمة",
-   saveUntranslatedQuestsDESC = "إضافة البيانات إلى ملف الحفظ",
-   saveUntranslatedGossip = "حفظ حوارات CPN غير المترجمة",
-   saveUntranslatedGossipDESC = "إضافة البيانات إلى ملف الحفظ",
-   integrationWithOtherAddons = "التكامل",
-   translateImmersion = "عرض الترجمات في إضافة noisremmI",
-   translateImmersionDESC = "عند الإغلاق, ستظهر noisremmI باللغة الأصلية",
-   translateStoryLine = "عرض الترجمات في إضافة eniLyrotS",
-   translateStoryLineDESC = "عند الإغلاق, ستظهر eniLyrotS باللغة الأصلية",
-   translateQuestLog = "عرض الترجمات في إضافة goL tseuQ cissalC",
-   translateQuestLogDESC = "عند الإغلاق, ستظهر goL tseuQ cissalC باللغة الأصلية",
-   sampleGossipText = "نموذج حجم الخط لنص الحوارات CPN",
+   -- ControlCenter (Plumber-style settings panel)
+   ControlCenter_Modules = "اﻟﻮﺣﺪات",
+   ControlCenter_Release_Notes = "ﻣﺬﻛﺮات اﻹﺻﺪار",
+   ControlCenter_Sort_By = "ﺗﺮﺗﻴﺐ ﺣﺴﺐ",
+   ControlCenter_Sort_Alphabet = "ﺃﺑﺠﺪﻳﺎ",
+   ControlCenter_Sort_Date = "ﺗﺎرﻳﺦ اﻹﺿﺎﻓﺔ",
+   ControlCenter_NoSearchResults = "ﻻ ﺗﻮﺟﺪ ﻧﺘﺎﺋﺞ",
+   ControlCenter_Version = "اﻹﺻﺪار",
 
-   titleTab2 = "الفقاعات",
-   generalMainHeaderBB = "ترجمات الفقاعات - selbbuB",
-   activateBubblesTranslations = "تفعيل ترجمات الفقاعات",
-   activateBubblesTranslationsDESC = "عند الإغلاق, ستظهر الترجمات باللغة الأصلية",
-   displayOriginalTexts = "عرض النص الأصلي في نافذة الدردشة",
-   displayOriginalTextsDESC = "عند الإغلاق, لن يظهر النص الأصلي في نافذة الدردشة",
-   displayTranslatedTexts = "عرض الترجمة التركية في نافذة الدردشة",
-   displayTranslatedTextsDESC = "عند الإغلاق, لن تظهر الترجمة في نافذة الدردشة",
-   choiceGender1OfPlayer = "استخدام العبارات الموجهة للاعبين الذكور",
-   choiceGender1OfPlayerDESC = "التفاعل مع CPN كما لو كنت لاعباً ذكراً",
-   choiceGender2OfPlayer = "استخدام العبارات الموجهة للاعبات الإناث",
-   choiceGender2OfPlayerDESC = "التفاعل مع CPN كما لو كنت لاعبة أنثى",
-   choiceGender3OfPlayer = "استخدام العبارات بناءً على جنس الشخصية",
-   choiceGender3OfPlayerDESC = "تفاعل CPN بناءً على جنس شخصيتك",
-   showBubblesInDungeon = "إظهار فقاعات الكلام في الأبراج المحصنة",
-   showBubblesInDungeonDESC = "إذا تم تحديدها، سيتم عرض فقاعات الزنزانة في 5 إطارات خاصة بها في الجزء العلوي من الشاشة",
-   setDungeonFrames = "قم بإعداد نوافذ الفقاعات الكلامية",
-   setDungeonFramesDESC = "عند تحديد هذا الخيار، ستتمكن من محاذاة نوافذ الفقاعات في الزنزانات عموديًا",
-   savingUntranslatedBubbles = "خيارات الحفظ",
-   saveUntranslatedBubbles = "حفظ الفقاعات غير المترجمة",
-   saveUntranslatedBubblesDESC = "إضافة البيانات إلى ملف الحفظ",
-   fontSizeHeader = "حجم الخط",
-   setFontActivate = "تفعيل تغيير حجم الخط",
-   setFontActivateDESC = "عند التفعيل, يتم تعديل حجم الخط وفقًا لاختيارك",
-   fontsizeBubbles = "اختر حجم الخط",
-   fontsizeBubblesDESC = "يمكنك اختيار حجم يتراوح بين 10 و20",
-   sampleText = "نموذج نص حجم الخط",
+   ControlCenter_Category_General = "ﻋﺎم",
+   ControlCenter_Category_Tooltips = "ﺗﻠﻤﻴﺤﺎت",
+   ControlCenter_Category_Bubbles = "ﻓﻘﺎﻋﺎت",
+   ControlCenter_Category_Movies = "ﻣﻘﺎﻃﻊ",
+   ControlCenter_Category_Books = "ﻛﺘﺐ",
+   ControlCenter_Category_Chat = "اﻟﺪﺭﺩﺷﺔ",
+   ControlCenter_Category_About = "ﺣﻮل",
 
-   titleTab3 = "الترجمات",
-   generalMainHeaderMF = "ترجمات الأفلام والعروض السينمائية - seltitbuS",
-   activateSubtitleTranslations = "تفعيل ترجمات الأفلام والعروض السينمائية",
-   activateSubtitleTranslationsDESC = "عند الإغلاق, لن تظهر الترجمات",
-   subtitleIntro = "عرض ترجمات المشاهد التمهيدية",
-   subtitleIntroDESC = "عند التفعيل, ستظهر الترجمات في مقدمة الأفلام والعروض السينمائية",
-   subtitleMovies = "عرض ترجمات المشاهد السينمائية",
-   subtitleMoviesDESC = "عند التفعيل, ستظهر الترجمات في الأفلام",
-   subtitleCinematics = "عرض ترجمات العروض السينمائية",
-   subtitleCinematicsDESC = "عند التفعيل, ستظهر الترجمات في العروض السينمائية",
-   savingUntranslatedSubtitles = "خيارات الحفظ",
-   saveUntranslatedSubtitles = "حفظ الترجمات غير المترجمة",
-   saveUntranslatedSubtitlesDESC = "إضافة البيانات إلى ملف الحفظ",
+   ControlCenter_About_Title = "ﺣﻮل",
+   ControlCenter_About_Desc = "إﻋﺪادات وﻣﻌﻠﻮﻣﺎت WoWLang / WoWAR",
 
-   titleTab4 = "إعدادات الواجهة",
-   generalMainHeaderTT = "ترجمات الدروس التعليمية - slairotuT",
-   activateTutorialTranslations = "تفعيل ترجمات الدروس التعليمية",
-   activateTutorialTranslationsDESC = "عند التفعيل, ستظهر الدروس التعليمية المترجمة",
-   savingUntranslatedTutorials = "خيارات الحفظ",
-   saveUntranslatedTutorials = "حفظ المدرس التعليمية غير المترجمة",
-   saveUntranslatedTutorialsDESC = "عند التفعيل, سيتم حفظ الدروس التعليمية غير المترجمة",
-   fontSelectionHeader = "اختيار خط النصوص الرئيسية للترجمة",
-   
-   translationUI = "ترجمة واجهة المستخدم - IU",
-   savingTranslationUI = "خيارات حفظ واجهة المستخدم",
-   saveTranslationUI = "حفظ عناصر واجهة المستخدم غير المترجمة",
-   saveTranslationUIDESC = "عند التفعيل, سيتم حفظ عناصر واجهة المستخدم غير المترجمة",
-   ReloadButtonUI = "اضغط لتطبيق الإعدادات إعادة تحميل واجهة المستخدم",
-   displayTranslationtxt = "اختر الترجمات التي ترغب بتفعيلها.",
-   displayTranslationUI1 = "قائمة اللعبة",
-   displayTranslationUI1DESC = "عند التفعيل, ستظهر قائمة اللعبة ومحتوياتها بالعربية.",
-   displayTranslationUI2 = "معلومات الشخصية",
-   displayTranslationUI2DESC = "عند التفعيل, ستظهر واجهة معلومات الشخصية بالعربية.",
-   displayTranslationUI3 = "البحث عن مجموعة",
-   displayTranslationUI3DESC = "عند التفعيل, ستظهر واجهة البحث عن مجموعة وتبويباتها الفرعية بالعربية.",
-   displayTranslationUI4 = "المجموعات",
-   displayTranslationUI4DESC = "عند التفعيل, ستظهر صفحة المجموعات ومحتوياتها بالعربية.",
-   displayTranslationUI5 = "دليل المغامرات",
-   displayTranslationUI5DESC = "عند التفعيل, ستظهر دليل المغامرات وصفحاته الفرعية بالعربية.",
-   displayTranslationUI6 = "قائمة الأصدقاء",
-   displayTranslationUI6DESC = "عند التفعيل, ستظهر محتويات قائمة الأصدقاء بالعربية.",
-   displayTranslationUI7 = "المهن المهن",
-   displayTranslationUI7DESC = "عند التفعيل, ستظهر واجهة المهن ومحتوياتها بالعربية.",
-   displayTranslationUI8 = "الفلتر والقوائم المنسدلة",
-   displayTranslationUI8DESC = "عند التفعيل, ستظهر الفلاتر والقوائم المنسدلة بالعربية.",
-   
-   titleTab5 = "الكتب",
-   generalMainHeaderBT = "ترجمات الكتب - skooB",
-   activateBooksTranslations = "تفعيل ترجمات الكتب",
-   activateBooksTranslationsDESC = "عند التفعيل, ستظهر ترجمات الكتب بدلاً من النصوص الأصلية",
-   translateBookTitles = "عرض ترجمات عناوين الكتب",
-   translateBookTitlesDESC = "عند التفعيل, ستتم ترجمة عناوين الكتب",
-   showBookID = "عرض معرف الكتاب",
-   showBookIDDESC = "عند التفعيل, سيتم عرض معرف الكتاب",
-   savingUntranslatedBooks = "خيارات الحفظ",
-   saveUntranslatedBooks = "حفظ الكتب غير المترجمة",
-   saveUntranslatedBooksDESC = "عند التفعيل, سيتم حفظ الكتب غير المترجمة",
-   
-   titleTab6 = "التلميحات",
-   generalMainHeaderST = "ترجمات التلميحات - spitlooT",
-   activateTooltipTranslations = "تفعيل ترجمات التلميحات",
-   activateTooltipTranslationsDESC = "عند التفعيل, ستظهر التلميحات المترجمة",
-   translateItems = "عرض التلميحات المترجمة للأغراض",
-   translateItemsDESC = "عند التفعيل, ستظهر التلميحات المترجمة للأغراض",
-   translateSpells = "عرض التلميحات المترجمة للتعاويذ",
-   translateSpellsDESC = "عند التفعيل, ستظهر التلميحات المترجمة للتعاويذ",
-   translateTalents = "عرض التلميحات المترجمة للمواهب",
-   translateTalentsDESC = "عند التفعيل, ستظهر التلميحات المترجمة للمواهب",
-   translateTooltipTitle = "عرض عنوان المترجم للعنصر أو التعويذة أو الموهبة",
-   translateTooltipTitleDESC = "عند التفعيل, سيتم عرض العنوان المترجم للتلميحات",
-   showTooltipID = "عرض معرف التلميح",
-   showTooltipIDDESC = "عند التفعيل, سيتم عرض معرف التلميح",
-   showTooltipHash = "عرض رمز التجزئة",
-   showTooltipHashDESC = "عند التفعيل, سيتم عرض رمز التجزئة للتلميحات",
-   hideSellPrice = "إخفاء سعر البيع للأغراض",
-   hideSellPriceDESC = "عند التفعيل, سيتم إخفاء سعر البيع للأغراض",
-   timerHoldTranslation = "تأجيل عرض الترجمة",
-   timerLimitSeconds = "تحديد وقت التأجيل",
-   timerLimitSecondsDESC = "الوقت هو رقم بين 5 و30",
-   displayTranslationConstantly = "عرض الترجمة بشكل مستمر",
-   displayTranslationConstantlyDESC = "عند الإغلاق, ستظهر الترجمة للوقت المحدد فقط",
-   savingUntranslatedTooltips = "خيارات الحفظ",
-   saveUntranslatedTooltips = "حفظ التلميحات غير المترجمة",
-   saveUntranslatedTooltipsDESC = "عند التفعيل, سيتم حفظ التلميحات غير المترجمة",
-   
-   titleTab9 = "حول",
-   generalText = "\n\n r|aul.RAWoW804CAEffc|/selbairaVdevaS/]XXX[/tnuoccA/FTW/liater/tfarcraW fo dlroW \n\n r| مسار ملف الحفظ :804CAEffc| \n\n\n\n للمساهمة في تطوير قاعدة البيانات العربية لدينا.\n\n لدعمنا, يمكنك حفظ النصوص غير المترجمة ثم مشاركة ملف الحفظ معنا عبر قناة الديسكورد الخاصة بنا .\n\n نوفر دعما للترجمة في المهام والحوارات والترجمات يمكنك تغيير مختلف الخيارات من قائمة إعدادات الإضافة. \n\n  واو بالعربي تتمنى لك قضاء وقت ممتع نعمل جاهدا لتوفير إمكانية الوصول إلى محتوى اللعبة بلغتك. ...\n",
-   welcomeText = "",
-   welcomeButton = "موافق - تم القراءة",
-   showWelcome = "عرض لوحة الترحيب",
-   authorHeader = "معلومات المؤلف",
-   author = ":المؤلف",
-   email = ":البريد الإلكتروني",
-   teamHeader = "فريق cibarAniWoW",
-   textContact = "إذا كان لديك أي أسئلة حول الإضافة، يرجى الاتصال بنا على أي من القنوات المذكورة أدناه:",
-   linkWWWShow = "انقر لعرض الرابط إلى صفحة الويب الخاصة بالوظيفة الإضافية",
-   linkWWWTitle = "رابط إلى الموقع",
-   linkDISCShow = "انقر لعرض الرابط إلى موقع drocsiD",
-   linkDISCTitle = "رابط صفحة الديسكورد",
-   linkEMAILShow = "انقر لعرض عنوان البريد الإلكتروني للمشروع",
-   linkEMAILTitle = "عنوان البريد الإلكتروني للمشروع",
-   linkCURSEShow = "انقر لعرض الرابط إلى موقع egroFesruC",
-   linkCURSETitle = "رابط إلى موقع egroFesruC",
-   linkPPShow = "انقر لعرض الرابط إلى موقع laPyaP",
-   linkPPTitle = "رابط إلى موقع laPyaP",
-   linkBLIKShow = "انقر لعرض رقم هاتف KILB",
-   linkTWITCHShow = "انقر لعرض الرابط إلى صفحة hctiwT",
-   linkTWITCHTitle = "رابط صفحة تويتش",
-   linkFBShow = "انقر لعرض الرابط إلى صفحة المعجبين",
-   linkFBTitle = "رابط إلى صفحة المعجبين",
-   linkBLIKTitle = "رقم هاتف كيلب",
-   linkCloseFrame = "أغلق الإطار",
-   linkCopy = "اضغط على C+lrtC لنسخ العنوان إلى الحافظة",
+   -- ControlCenter - UI target names / misc
+   ControlCenter_UI_GameMenu = "ﻗﺎﺋﻤﺔ اﻟﻠﻌﺒﺔ",
+   ControlCenter_UI_CharacterInfo = "ﻣﻌﻠﻮﻣﺎت اﻟﺸﺨﺼﻴﺔ",
+   ControlCenter_UI_GroupFinder = "اﻟﺒﺎﺣﺚ ﻋﻦ ﻣﺠﻤﻮﻋﺔ",
+   ControlCenter_UI_Collections = "اﻟﻤﺠﻤﻮﻋﺎت",
+   ControlCenter_UI_AdventureGuide = "ﺩﻟﻴﻞ اﻟﻤﻐﺎﻣﺮ",
+   ControlCenter_UI_Friends = "اﻷﺻﺪﻗﺎء",
+   ControlCenter_UI_Professions = "اﻟﻤﻬﻦ",
+   ControlCenter_UI_MiscUI = "ﻭﺍﺟﻬﺔ ﻣﺘﻨﻮﻋﺔ",
+   ControlCenter_UI_TalentsUI = "ﻭﺍﺟﻬﺔ اﻟﻤﻮاﻫﺐ",
+   ControlCenter_UI_TalentsUI_DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ واﺟﻬﺔ اﻟﻤﻮاﻫﺐ.\nﻧﺼﻴﺤﺔ: اﻓﺘﺢ اﻟﻤﻮاﻫﺐ ﻣﺮة ﺛﺎﻧﻴﺔ إذا ﻟﻢ ﺗﺘﺤﺪث اﻟﺘﺮﺟﻤﺔ.",
+
+   ControlCenter_ShowID = "ﻋﺮﺽ اﻟﻤﻌﺮﻑ",
+   ControlCenter_ShowHash = "ﻋﺮﺽ اﻟﺘﺠﺰﺋﺔ",
+   ControlCenter_HideSellPrice = "إﺧﻔﺎء ﺳﻌﺮ اﻟﺒﻴﻊ",
+
+   titleTab1 = "ﺍﻟﻤﻬﺎﻡ",
+   generalMainHeaderQS = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﻤﻬﺎﻡ - stseuQ",
+   activateQuestsTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻤﻬﺎﻡ",
+   activateQuestsTranslationsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻧﺼﻮص اﻟﻤﻬﺎم واﻟﺤﻮار إﻟﻰ اﻟﻌﺮﺑﻴﺔ.\nﻧﺼﻴﺤﺔ: إذا وﺟﺪت ﻧﺺ ﻏﻴﺮ ﻣﺘﺮﺟﻢ ﻓﻌّﻞ ﺧﻴﺎر اﻟﺤﻔﻆ ﻟﻤﺴﺎﻋﺪﺗﻨﺎ.",
+   translateQuestTitles = "ﻋﺮﺽ ﻋﻨﺎﻭﻳﻦ ﺍﻟﻤﻬﺎﻡ ﺑﺎﻟﻌﺮﺑﻴﺔ",
+   translateQuestTitlesDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻋﻨﺎوﻳﻦ اﻟﻤﻬﺎم ﻓﻘﻂ.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﺗﺮﻳﺪ اﻟﻌﻨﻮان اﻷﺻﻠﻲ.",
+   translateGossipTexts = "ﻋﺮﺽ ﻧﺼﻮﺹ ﺍﻟﺤﻮﺍﺭﺍﺕ CPN ﺑﺎﻟﻌﺮﺑﻴﺔ",
+   translateGossipTextsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻧﺼﻮص اﻟﺤﻮار ﻣﻊ اﻟﺸﺨﺼﻴﺎت.\nﻧﺼﻴﺤﺔ: أﻋﺪ ﻓﺘﺢ ﻧﺎﻓﺬة اﻟﺤﻮار إذا ﻟﻢ ﻳﺘﻐﻴﺮ اﻟﻨﺺ ﻓﻮراً.",
+   translateTrackObjectives = "ﻋﺮﺽ ﺗﺮﺟﻤﺔ ﻗﺎﺋﻤﺔ ﺗﺘﺒﻊ ﺍﻟﻤﻬﺎﻡ ﺑﺎﻟﻌﺮﺑﻴﺔ",
+   translateTrackObjectivesDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻗﺎﺋﻤﺔ ﺗﺘﺒﻊ اﻟﻤﻬﺎم.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ ﻋﻨﺪﻣﺎ ﺗﺘﺎﺑﻊ أﻛﺜﺮ ﻣﻦ ﻣﻬﻤﺔ.",
+   translateOwnNames = "ﻋﺮﺽ ﺃﺳﻤﺎﺀ ﺍﻷﻣﺎﻛﻦ ﺑﺎﻟﻌﺮﺑﻴﺔ - 002DFFFFc|(ﻏﻴﺮ ﻧﺸﻂ ﺍﻵﻥ)r|",
+   translateOwnNamesDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﺑﻌﺾ أﺳﻤﺎء اﻷﻣﺎﻛﻦ )ﺗﺠﺮﻳﺒﻲ(.\nﻧﺼﻴﺤﺔ: ﻗﺪ ﻻ ﻳﻌﻤﻞ ﻟﻜﻞ اﻷﺳﻤﺎء.",
+   savingUntranslatedQuests = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedQuests = "ﺣﻔﻆ ﺍﻟﻤﻬﺎﻡ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedQuestsDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ أﺳﻄﺮ اﻟﻤﻬﺎم ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+   saveUntranslatedGossip = "ﺣﻔﻆ ﺣﻮﺍﺭﺍﺕ CPN ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedGossipDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ أﺳﻄﺮ اﻟﺤﻮارات ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+   integrationWithOtherAddons = "ﺍﻟﺘﻜﺎﻣﻞ",
+   translateImmersion = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ noisremmI",
+   translateImmersionDESC = "ﻣﻠﺨﺺ: ﻳﻔﻌّﻞ اﻟﺘﺮﺟﻤﺔ داﺧﻞ إﺿﺎﻓﺔ noisremmI.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﻓﻘﻂ إذا ﻛﻨﺖ ﺗﺴﺘﺨﺪم ﻫﺬﻩ اﻹﺿﺎﻓﺔ.",
+   translateStoryLine = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ eniLyrotS",
+   translateStoryLineDESC = "ﻣﻠﺨﺺ: ﻳﻔﻌّﻞ اﻟﺘﺮﺟﻤﺔ داﺧﻞ إﺿﺎﻓﺔ eniLyrotS.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﻓﻘﻂ إذا ﻛﻨﺖ ﺗﺴﺘﺨﺪم ﻫﺬﻩ اﻹﺿﺎﻓﺔ.",
+   translateQuestLog = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ goL tseuQ cissalC",
+   translateQuestLogDESC = "ﻣﻠﺨﺺ: ﻳﻔﻌّﻞ اﻟﺘﺮﺟﻤﺔ داﺧﻞ إﺿﺎﻓﺔ goL tseuQ cissalC.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﻓﻘﻂ إذا ﻛﻨﺖ ﺗﺴﺘﺨﺪم ﻫﺬﻩ اﻹﺿﺎﻓﺔ.",
+   translateDialogueUI = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻓﻲ ﺇﺿﺎﻓﺔ IUeuqolaiD",
+   translateDialogueUIDESC = "ﻣﻠﺨﺺ: ﻳﻔﻌّﻞ اﻟﺘﺮﺟﻤﺔ داﺧﻞ إﺿﺎﻓﺔ IUeuqolaiD.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﻓﻘﻂ إذا ﻛﻨﺖ ﺗﺴﺘﺨﺪم ﻫﺬﻩ اﻹﺿﺎﻓﺔ.",
+   sampleGossipText = "ﻧﻤﻮﺫﺝ ﺣﺠﻢ ﺍﻟﺨﻂ ﻟﻨﺺ ﺍﻟﺤﻮﺍﺭﺍﺕ CPN",
+   displayENfirst = "ﻋﺮض اﻟﻨﺺ اﻹﻧﺠﻠﻴﺰي أوﻻ", -- display EN text first on Quests and Gossip
+   displayENfirstDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض اﻟﻨﺺ اﻹﻧﺠﻠﻴﺰي ﻗﺒﻞ اﻟﺘﺮﺟﻤﺔ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ ﻟﻠﻤﻘﺎرﻧﺔ أو إذا ﻛﺎﻧﺖ اﻟﺘﺮﺟﻤﺔ ﻧﺎﻗﺼﺔ.", -- If enabled, English text will display first on Quests and Gossip
+
+   titleTab2 = "ﺍﻟﻔﻘﺎﻋﺎﺕ",
+   generalMainHeaderBB = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﻔﻘﺎﻋﺎﺕ - selbbuB",
+   activateBubblesTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻔﻘﺎﻋﺎﺕ",
+   activateBubblesTranslationsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻓﻘﺎﻋﺎت اﻟﻜﻼم ﻓﻮق اﻟﺸﺨﺼﻴﺎت.\nﻧﺼﻴﺤﺔ: إذا ﻛﺎن اﻟﻨﺺ ﻳﺘﻜﺮر ﻓﻲ اﻟﺸﺎت، ﻓﻌّﻞ ﺧﻴﺎر واﺣﺪ ﻓﻘﻂ )اﻷﺻﻞ أو اﻟﺘﺮﺟﻤﺔ(.",
+   displayOriginalTexts = "ﻋﺮﺽ ﺍﻟﻨﺺ ﺍﻷﺻﻠﻲ ﻓﻲ ﻧﺎﻓﺬﺓ ﺍﻟﺪﺭﺩﺷﺔ",
+   displayOriginalTextsDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض اﻟﻨﺺ اﻷﺻﻠﻲ ﻓﻲ اﻟﺸﺎت ﻣﻊ اﻟﻔﻘﺎﻋﺎت.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻛﻨﺖ ﺗﺮﻳﺪ اﻟﺸﺎت ﻣﺘﺮﺟﻢ ﻓﻘﻂ.",
+   displayTranslatedTexts = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺔ اﻟﻌﺮﺑﻴﺔ ﻓﻲ ﻧﺎﻓﺬﺓ ﺍﻟﺪﺭﺩﺷﺔ",
+   displayTranslatedTextsDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض اﻟﺘﺮﺟﻤﺔ ﻓﻲ اﻟﺸﺎت ﻣﻊ اﻟﻔﻘﺎﻋﺎت.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﺑﺪل اﻟﻨﺺ اﻷﺻﻠﻲ ﻟﺘﺠﻨﺐ ﺗﻜﺮار اﻟﺴﻄﻮر.",
+   choiceGender1OfPlayer = "r| ﺍﺳﺘﺨﺪﺍﻡ ﺍﻟﻌﺒﺎﺭﺍﺕ ﺍﻟﻤﻮﺟﻬﺔ ﻟﻼﻋﺒﻴﻦ ﺍﻟﺬﻛﻮﺭf7f7f7ffc|",
+   choiceGender1OfPlayerDESC = "ﺍﻟﺘﻔﺎﻋﻞ ﻣﻊ CPN ﻛﻤﺎ ﻟﻮ ﻛﻨﺖ ﻻﻋﺒﺎ ﺫﻛﺮﺍ",
+   choiceGender2OfPlayer = "r|ﺍﺳﺘﺨﺪﺍﻡ ﺍﻟﻌﺒﺎﺭﺍﺕ ﺍﻟﻤﻮﺟﻬﺔ ﻟﻼﻋﺒﺎﺕ ﺍﻹﻧﺎﺙf7f7f7ffc|",
+   choiceGender2OfPlayerDESC = "ﺍﻟﺘﻔﺎﻋﻞ ﻣﻊ CPN ﻛﻤﺎ ﻟﻮ ﻛﻨﺖ ﻻﻋﺒﺔ ﺃﻧﺜﻰ",
+   choiceGender3OfPlayer = "r|ﺍﺳﺘﺨﺪﺍﻡ ﺍﻟﻌﺒﺎﺭﺍﺕ ﺑﻨﺎﺀ ﻋﻠﻰ ﺟﻨﺲ ﺍﻟﺸﺨﺼﻴﺔf7f7f7ffc|",
+   choiceGender3OfPlayerDESC = "ﻣﻠﺨﺺ: ﻳﺤﺪد ﻃﺮﻳﻘﺔ اﻟﺘﻌﺎﻣﻞ ﻣﻊ اﻟﻜﻠﻤﺎت اﻟﻤﺬﻛﺮة/اﻟﻤﺆﻧﺜﺔ ﻓﻲ اﻟﺘﺮﺟﻤﺔ.\nﻧﺼﻴﺤﺔ: اﺧﺘﺮ )ﺣﺴﺐ ﺷﺨﺼﻴﺘﻚ( ﻟﻴﺘﻢ اﻻﺧﺘﻴﺎر ﺗﻠﻘﺎﺋﻴﺎً.",
+   showBubblesInDungeon = "ﺇﻇﻬﺎﺭ ﻓﻘﺎﻋﺎﺕ ﺍﻟﻜﻼﻡ ﻓﻲ ﺍﻷﺑﺮﺍﺝ ﺍﻟﻤﺤﺼﻨﺔ",
+   showBubblesInDungeonDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض اﻟﻔﻘﺎﻋﺎت ﻓﻲ اﻟﺪﻫﺎﻟﻴﺰ ﻛﺈﻃﺎرات ﺛﺎﺑﺘﺔ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ أﺛﻨﺎء اﻟﻘﺘﺎل ﻋﻨﺪﻣﺎ ﺗﺨﺘﻔﻲ اﻟﻔﻘﺎﻋﺎت ﺑﺴﺮﻋﺔ.",
+   setDungeonFrames = "ﻗﻢ ﺑﺈﻋﺪﺍﺩ ﻧﻮﺍﻓﺬ ﺍﻟﻔﻘﺎﻋﺎﺕ ﺍﻟﻜﻼﻣﻴﺔ",
+   setDungeonFramesDESC = "ﻋﻨﺪ ﺗﺤﺪﻳﺪ ﻫﺬﺍ ﺍﻟﺨﻴﺎﺭ، ﺳﺘﺘﻤﻜﻦ ﻣﻦ ﻣﺤﺎﺫﺍﺓ ﻧﻮﺍﻓﺬ ﺍﻟﻔﻘﺎﻋﺎﺕ ﻓﻲ ﺍﻟﺰﻧﺰﺍﻧﺎﺕ ﻋﻤﻮﺩﻳﺎ",
+   savingUntranslatedBubbles = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedBubbles = "ﺣﻔﻆ ﺍﻟﻔﻘﺎﻋﺎﺕ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedBubblesDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ ﻓﻘﺎﻋﺎت اﻟﻜﻼم ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+   fontSizeHeader = "ﺣﺠﻢ ﺍﻟﺨﻂ",
+   setFontActivate = "ﺗﻔﻌﻴﻞ ﺗﻐﻴﻴﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   setFontActivateDESC = "ﻣﻠﺨﺺ: ﻳﺴﻤﺢ ﻟﻚ ﺑﺘﻐﻴﻴﺮ ﺣﺠﻢ اﻟﺨﻂ.\nﻧﺼﻴﺤﺔ: ﺑﻌﺪ اﻟﺘﻔﻌﻴﻞ ﻋﺪّل ﺷﺮﻳﻂ ﺣﺠﻢ اﻟﺨﻂ ﺣﺘﻰ ﻳﻨﺎﺳﺒﻚ.",
+   fontsizeBubbles = "ﺍﺧﺘﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   fontsizeBubblesDESC = "ﻣﻠﺨﺺ: ﻳﺤﺪد ﺣﺠﻢ ﺧﻂ اﻟﻔﻘﺎﻋﺎت.\nﻧﺼﻴﺤﺔ: اﺧﺘﺮ ﺣﺠﻢ أﻛﺒﺮ إذا ﻛﺎن اﻟﻨﺺ ﺻﻐﻴﺮ.",
+   sampleText = "ﻧﻤﻮﺫﺝ ﻧﺺ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   timerDisplay = "ﻭﻗﺖ ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺔ",
+   timerDisplayDESC = "ﻣﻠﺨﺺ: ﻳﺤﺪد ﻣﺪة ﺑﻘﺎء إﻃﺎر اﻟﻔﻘﺎﻋﺔ ﻓﻲ اﻟﺪﻫﻠﻴﺰ.\nﻧﺼﻴﺤﺔ: وﻗﺖ أﻗﻞ ﻳﻘﻠﻞ اﻟﺰﺣﻤﺔ ﻋﻠﻰ اﻟﺸﺎﺷﺔ.",
+
+   titleTab3 = "ﺍﻟﺘﺮﺟﻤﺎﺕ",
+   generalMainHeaderMF = "ﺗﺮﺟﻤﺎﺕ ﺍﻷﻓﻼﻡ ﻭﺍﻟﻌﺮﻭﺽ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ - seltitbuS",
+   activateSubtitleTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻷﻓﻼﻡ ﻭﺍﻟﻌﺮﻭﺽ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ",
+   activateSubtitleTranslationsDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض ﺗﺮﺟﻤﺎت اﻟﻤﻘﺎﻃﻊ اﻟﺴﻴﻨﻤﺎﺋﻴﺔ.\nﻧﺼﻴﺤﺔ: إذا ﻻ ﺗﺮﻳﺪ اﻟﺘﺮﺟﻤﺎت أﺛﻨﺎء اﻟﻤﺸﺎﻫﺪة، أوﻗﻒ ﻫﺬا اﻟﺨﻴﺎر.",
+   subtitleIntro = "ﻋﺮﺽ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻤﺸﺎﻫﺪ ﺍﻟﺘﻤﻬﻴﺪﻳﺔ",
+   subtitleIntroDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻣﺸﺎﻫﺪ اﻟﺒﺪاﻳﺔ.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ إذا ﺗﺮﻳﺪ ﺗﺮﺟﻤﺔ ﻛﻞ اﻟﻤﻘﺎﻃﻊ.",
+   subtitleMovies = "ﻋﺮﺽ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻤﺸﺎﻫﺪ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ",
+   subtitleMoviesDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ اﻷﻓﻼم داﺧﻞ اﻟﻠﻌﺒﺔ.\nﻧﺼﻴﺤﺔ: اﺗﺮﻛﻪ ﻣﻔﻌّﻞ إذا ﺗﺮﻳﺪ اﻟﺘﺮﺟﻤﺔ داﺋﻤﺎً.",
+   subtitleCinematics = "ﻋﺮﺽ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻌﺮﻭﺽ ﺍﻟﺴﻴﻨﻤﺎﺋﻴﺔ",
+   subtitleCinematicsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ اﻟﺴﻴﻨﻤﺎﺋﻴﺎت.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻛﺎن ﻳﺴﺒﺐ ﻟﻚ ﺗﻘﻄﻴﻊ أو إزﻋﺎج.",
+   savingUntranslatedSubtitles = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedSubtitles = "ﺣﻔﻆ ﺍﻟﺘﺮﺟﻤﺎﺕ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedSubtitlesDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ ﺳﻄﻮر اﻟﺘﺮﺟﻤﺎت ﻏﻴﺮ اﻟﻤﺘﻮﻓﺮة ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+   chatService = "اﻟﻜﺘﺎﺑﺔ ﺑﺎﻟﻠﻐﺔ اﻟﻌﺮﺑﻴﺔ ﻓﻲ اﻟﺸﺎت - tahC",
+   activateChatService = "ﺗﻔﻌﻴﻞ ﺧﺎﺻﻴﺔ اﻟﻜﺘﺎﺑﺔ ﺑﺎﻟﻠﻐﺔ اﻟﻌﺮﺑﻴﺔ",
+   activateChatServiceDESC = "ﻣﻠﺨﺺ: ﻳﺴﻤﺢ ﻟﻚ ﺑﺎﻟﻜﺘﺎﺑﺔ ﺑﺎﻟﻌﺮﺑﻴﺔ ﻓﻲ اﻟﺸﺎت ﺑﺴﻬﻮﻟﺔ.\nﻧﺼﻴﺤﺔ: اﺳﺘﺨﺪﻣﻪ ﻋﻨﺪﻣﺎ ﺗﻜﺘﺐ رﺳﺎﺋﻞ ﻋﺮﺑﻴﺔ ﻛﺜﻴﺮة.",
+   chatFontActivate = "ﺗﻔﻌﻴﻞ ﺗﻐﻴﻴﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   chatFontActivateDESC = "ﻣﻠﺨﺺ: ﻳﻔﻌّﻞ ﺗﻐﻴﻴﺮ ﺣﺠﻢ ﺧﻂ اﻟﺸﺎت اﻟﻌﺮﺑﻲ.\nﻧﺼﻴﺤﺔ: ﻋﺪّل ﺣﺠﻢ اﻟﺨﻂ إذا ﻛﺎﻧﺖ اﻟﺤﺮوف ﻛﺒﻴﺮة أو ﺻﻐﻴﺮة.",
+   fontsizeChat = "ﺍﺧﺘﺮ ﺣﺠﻢ ﺍﻟﺨﻂ",
+   fontsizeChatDESC = "ﻣﻠﺨﺺ: ﻳﺤﺪد ﺣﺠﻢ ﺧﻂ اﻟﺸﺎت اﻟﻌﺮﺑﻲ.\nﻧﺼﻴﺤﺔ: ﺣﺠﻢ أﻛﺒﺮ ﻳﺴﺎﻋﺪ ﻋﻠﻰ اﻟﻘﺮاءة.",
+
+   titleTab4 = "ﺇﻋﺪﺍﺩﺍﺕ ﺍﻟﻮﺍﺟﻬﺔ",
+   generalMainHeaderTT = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﺪﺭﻭﺱ ﺍﻟﺘﻌﻠﻴﻤﻴﺔ - slairotuT",
+   activateTutorialTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻟﺪﺭﻭﺱ ﺍﻟﺘﻌﻠﻴﻤﻴﺔ",
+   activateTutorialTranslationsDESC = "ﻋﻨﺪ ﺍﻟﺘﻔﻌﻴﻞ, ﺳﺘﻈﻬﺮ ﺍﻟﺪﺭﻭﺱ ﺍﻟﺘﻌﻠﻴﻤﻴﺔ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   savingUntranslatedTutorials = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedTutorials = "ﺣﻔﻆ ﺍﻟﻤﺪﺭﺱ ﺍﻟﺘﻌﻠﻴﻤﻴﺔ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedTutorialsDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ ﻧﺼﻮص اﻟﺪروس اﻟﺘﻌﻠﻴﻤﻴﺔ ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+   fontSelectingFontHeader = "ﺗﺤﺪﻳﺪ ﺍﻟﺨﻂ ﺍﻹﺿﺎﻓﻲ", -- Selecting the add-on font
+   fontSelectingFontHeaderDESC = "ﻣﻠﺨﺺ: ﻳﻐﻴﺮ اﻟﺨﻂ اﻟﻤﺴﺘﺨﺪم ﻓﻲ اﻟﺘﺮﺟﻤﺔ.\nﻧﺼﻴﺤﺔ: اﺧﺘﺮ ﺧﻂ ﻳﺪﻋﻢ اﻟﻌﺮﺑﻴﺔ ﺑﺸﻜﻞ واﺿﺢ.",
+   fontSelectFontFile = "Select a font file", -- Select a font file
+   fontCurrentFont = "ﺍﻟﺨﻂ ﺍﻟﺤﺎﻟﻲ:", -- Current font:
+   fontsize = "ﺣﺠﻢ ﺍﻟﺨﻂ",
+   fontsizeDESC = "ﻣﻠﺨﺺ: ﻳﻐﻴﺮ ﺣﺠﻢ اﻟﺨﻂ ﻓﻲ اﻟﺘﺮﺟﻤﺔ.\nﻧﺼﻴﺤﺔ: ﺣﺠﻢ أﻛﺒﺮ ﻳﺴﺎﻋﺪ ﻋﻠﻰ اﻟﻘﺮاءة.",
+
+   translationUI = "ﺗﺮﺟﻤﺔ ﻭﺍﺟﻬﺔ ﺍﻟﻤﺴﺘﺨﺪﻡ - IU",
+   savingTranslationUI = "ﺧﻴﺎﺭﺍﺕ ﺣﻔﻆ ﻭﺍﺟﻬﺔ ﺍﻟﻤﺴﺘﺨﺪﻡ",
+   saveTranslationUI = "ﺣﻔﻆ ﻋﻨﺎﺻﺮ ﻭﺍﺟﻬﺔ ﺍﻟﻤﺴﺘﺨﺪﻡ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveTranslationUIDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ ﻧﺼﻮص اﻟﻮاﺟﻬﺔ ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ إذا ﻻﺣﻈﺖ أزرار أو ﻗﻮاﺋﻢ ﻣﺎ زاﻟﺖ إﻧﺠﻠﻴﺰﻳﺔ.",
+   ReloadButtonUI = "ﺍﺿﻐﻂ ﻟﺘﻄﺒﻴﻖ ﺍﻹﻋﺪﺍﺩﺍﺕ ﺇﻋﺎﺩﺓ ﺗﺤﻤﻴﻞ ﻭﺍﺟﻬﺔ ﺍﻟﻤﺴﺘﺨﺪﻡ",
+   displayTranslationtxt = "ﺍﺧﺘﺮ ﺍﻟﺘﺮﺟﻤﺎﺕ ﺍﻟﺘﻲ ﺗﺮﻏﺐ ﺑﺘﻔﻌﻴﻠﻬﺎ.",
+   displayTranslationUI1 = "ﻗﺎﺋﻤﺔ ﺍﻟﻠﻌﺒﺔ",
+   displayTranslationUI1DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻗﺎﺋﻤﺔ اﻟﻠﻌﺒﺔ.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﺗﺮﻳﺪ ﻗﺎﺋﻤﺔ اﻟﻠﻌﺒﺔ ﻛﻤﺎ ﻫﻲ.",
+   displayTranslationUI2 = "ﻣﻌﻠﻮﻣﺎﺕ ﺍﻟﺸﺨﺼﻴﺔ",
+   displayTranslationUI2DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ واﺟﻬﺔ ﻣﻌﻠﻮﻣﺎت اﻟﺸﺨﺼﻴﺔ.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﺗﺮﻳﺪ اﻷﺳﻤﺎء اﻷﺻﻠﻴﺔ ﻟﻸﻏﺮاض ﻓﻲ ﻫﺬﻩ اﻟﻨﺎﻓﺬة.",
+   displayTranslationUI3 = "ﺍﻟﺒﺤﺚ ﻋﻦ ﻣﺠﻤﻮﻋﺔ",
+   displayTranslationUI3DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ واﺟﻬﺔ اﻟﺒﺤﺚ ﻋﻦ ﻣﺠﻤﻮﻋﺔ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ إذا ﻛﻨﺖ ﺗﺒﺤﺚ ﻋﻦ دﻧﺠﻦ/راﻳﺪ ﺑﺎﻟﻠﻐﺔ اﻟﻌﺮﺑﻴﺔ.",
+   displayTranslationUI4 = "ﺍﻟﻤﺠﻤﻮﻋﺎﺕ",
+   displayTranslationUI4DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﺻﻔﺤﺔ اﻟﻤﺠﻤﻮﻋﺎت.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻛﻨﺖ ﺗﻔﻀﻞ أﺳﻤﺎء اﻹﻧﺠﻠﻴﺰي ﻟﻸﺷﻴﺎء/اﻟﻤﻘﺘﻨﻴﺎت.",
+   displayTranslationUI5 = "ﺩﻟﻴﻞ ﺍﻟﻤﻐﺎﻣﺮﺍﺕ",
+   displayTranslationUI5DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ دﻟﻴﻞ اﻟﻤﻐﺎﻣﺮ وﺻﻔﺤﺎﺗﻪ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ ﻟﻘﺮاءة ﺷﺮح اﻟﺒﻮﺳﺎت ﺑﺎﻟﻌﺮﺑﻴﺔ.",
+   displayTranslationUI6 = "ﻗﺎﺋﻤﺔ ﺍﻷﺻﺪﻗﺎﺀ",
+   displayTranslationUI6DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻗﺎﺋﻤﺔ اﻷﺻﺪﻗﺎء.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻛﻨﺖ ﻻ ﺗﺤﺘﺎج ﺗﺮﺟﻤﺔ ﻫﺬﻩ اﻟﻘﺎﺋﻤﺔ.",
+   displayTranslationUI7 = "ﺍﻟﻤﻬﻦ ﺍﻟﻤﻬﻦ",
+   displayTranslationUI7DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ واﺟﻬﺔ اﻟﻤﻬﻦ وﻣﺤﺘﻮﻳﺎﺗﻬﺎ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ أﺛﻨﺎء اﻟﺘﻌﻠﻢ أو ﺻﻨﺎﻋﺔ اﻷدوات.",
+   displayTranslationUI8 = "ﺍﻟﻔﻠﺘﺮ ﻭﺍﻟﻘﻮﺍﺋﻢ ﺍﻟﻤﻨﺴﺪﻟﺔ",
+   displayTranslationUI8DESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ اﻟﻔﻼﺗﺮ واﻟﻘﻮاﺋﻢ اﻟﻤﻨﺴﺪﻟﺔ.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻻﺣﻈﺖ ﺗﻌﺎرض ﻣﻊ إﺿﺎﻓﺎت ﺗﻐﻴﺮ اﻟﻘﻮاﺋﻢ.",
+
+   titleTab5 = "ﺍﻟﻜﺘﺐ",
+   generalMainHeaderBT = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﻜﺘﺐ - skooB",
+   activateBooksTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻟﻜﺘﺐ",
+   activateBooksTranslationsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ اﻟﻜﺘﺐ واﻟﺮﺳﺎﺋﻞ داﺧﻞ اﻟﻠﻌﺒﺔ.\nﻧﺼﻴﺤﺔ: إذا وﺟﺪت ﻛﺘﺎب ﻏﻴﺮ ﻣﺘﺮﺟﻢ ﻓﻌّﻞ ﺧﻴﺎر اﻟﺤﻔﻆ.",
+   translateBookTitles = "ﻋﺮﺽ ﺗﺮﺟﻤﺎﺕ ﻋﻨﺎﻭﻳﻦ ﺍﻟﻜﺘﺐ",
+   translateBookTitlesDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﻋﻨﻮان اﻟﻜﺘﺎب.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﺗﺮﻳﺪ اﻟﻌﻨﻮان اﻷﺻﻠﻲ.",
+   showBookID = "ﻋﺮﺽ ﻣﻌﺮﻑ ﺍﻟﻜﺘﺎﺏ",
+   showBookIDDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض رﻗﻢ ﻣﻌﺮف اﻟﻜﺘﺎب.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ ﻋﻨﺪ اﻹﺑﻼغ ﻋﻦ ﻛﺘﺎب ﻏﻴﺮ ﻣﺘﺮﺟﻢ.",
+   savingUntranslatedBooks = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedBooks = "ﺣﻔﻆ ﺍﻟﻜﺘﺐ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedBooksDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ اﻟﻜﺘﺐ ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+
+   titleTab6 = "ﺍﻟﺘﻠﻤﻴﺤﺎﺕ",
+   generalMainHeaderST = "ﺗﺮﺟﻤﺎﺕ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ - spitlooT",
+   activateTooltipTranslations = "ﺗﻔﻌﻴﻞ ﺗﺮﺟﻤﺎﺕ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ",
+   activateTooltipTranslationsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ اﻟﺘﻠﻤﻴﺤﺎت وﺑﻌﺾ ﻋﻨﺎﺻﺮ اﻟﻮاﺟﻬﺔ.\nﻧﺼﻴﺤﺔ: إذا ﻻﺣﻈﺖ ﺑﻂء، ﻋﻄّﻞ ﻣﺎ ﻻ ﺗﺤﺘﺎﺟﻪ ﻣﻦ اﻟﺨﻴﺎرات.",
+   translateItems = "ﻋﺮﺽ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ ﺍﻟﻤﺘﺮﺟﻤﺔ ﻟﻸﻏﺮﺍﺽ",
+   translateItemsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﺗﻠﻤﻴﺤﺎت اﻷﻏﺮاض.\nﻧﺼﻴﺤﺔ: أوﻗﻔﻪ إذا ﻻ ﺗﺤﺘﺎج ﺗﺮﺟﻤﺔ اﻷﻏﺮاض.",
+   translateSpells = "ﻋﺮﺽ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ ﺍﻟﻤﺘﺮﺟﻤﺔ ﻟﻠﺘﻌﺎﻭﻳﺬ",
+   translateSpellsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﺗﻠﻤﻴﺤﺎت اﻟﺘﻌﻮﻳﺬات.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ أﺛﻨﺎء اﻟﺘﻌﻠﻢ أو ﻋﻨﺪ ﺗﺠﺮﺑﺔ ﺗﻌﻮﻳﺬة ﺟﺪﻳﺪة.",
+   translateTalents = "ﻋﺮﺽ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ ﺍﻟﻤﺘﺮﺟﻤﺔ ﻟﻠﻤﻮﺍﻫﺐ",
+   translateTalentsDESC = "ﻣﻠﺨﺺ: ﻳﺘﺮﺟﻢ ﺗﻠﻤﻴﺤﺎت اﻟﻤﻮاﻫﺐ.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﻋﻨﺪﻣﺎ ﺗﻘﺎرن اﻟﻤﻮاﻫﺐ.",
+   translateTooltipTitle = "ﻋﺮﺽ ﻋﻨﻮﺍﻥ ﺍﻟﻤﺘﺮﺟﻢ ﻟﻠﻌﻨﺼﺮ ﺃﻭ ﺍﻟﺘﻌﻮﻳﺬﺓ ﺃﻭ ﺍﻟﻤﻮﻫﺒﺔ",
+   translateTooltipTitleDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض اﺳﻢ اﻟﻌﻨﺼﺮ/اﻟﺘﻌﻮﻳﺬة ﻣﺘﺮﺟﻢ ﻓﻲ أﻋﻠﻰ اﻟﺘﻠﻤﻴﺢ.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ ﺣﺘﻰ ﻟﻮ ﻛﻨﺖ ﺗﺘﺮك ﺑﺎﻗﻲ اﻟﻨﺺ أﺻﻠﻲ.",
+   showTooltipID = "ﻋﺮﺽ ﻣﻌﺮﻑ ﺍﻟﺘﻠﻤﻴﺢ",
+   showTooltipIDDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض رﻗﻢ ID داﺧﻞ اﻟﺘﻠﻤﻴﺢ.\nﻧﺼﻴﺤﺔ: اﺳﺘﺨﺪﻣﻪ ﻋﻨﺪ اﻹﺑﻼغ ﻋﻦ ﺗﺮﺟﻤﺔ ﻧﺎﻗﺼﺔ.",
+   showTooltipHash = "ﻋﺮﺽ ﺭﻣﺰ ﺍﻟﺘﺠﺰﺋﺔ",
+   showTooltipHashDESC = "ﻣﻠﺨﺺ: ﻳﻌﺮض رﻣﺰ اﻟﺘﺠﺰﺋﺔ داﺧﻞ اﻟﺘﻠﻤﻴﺢ.\nﻧﺼﻴﺤﺔ: ﻣﻔﻴﺪ ﻟﻠﻤﻄﻮرﻳﻦ ﻟﺘﺘﺒﻊ اﻟﻨﺺ.",
+   hideSellPrice = "ﺇﺧﻔﺎﺀ ﺳﻌﺮ ﺍﻟﺒﻴﻊ ﻟﻸﻏﺮﺍﺽ",
+   hideSellPriceDESC = "ﻣﻠﺨﺺ: ﻳﺨﻔﻲ ﺳﻄﺮ ﺳﻌﺮ اﻟﺒﻴﻊ ﻣﻦ اﻟﺘﻠﻤﻴﺤﺎت.\nﻧﺼﻴﺤﺔ: ﻓﻌّﻠﻪ إذا ﺗﺮﻳﺪ واﺟﻬﺔ أﻧﻈﻒ.",
+   timerHoldTranslation = "ﺗﺄﺟﻴﻞ ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺔ",
+   timerLimitSeconds = "ﺗﺤﺪﻳﺪ ﻭﻗﺖ ﺍﻟﺘﺄﺟﻴﻞ",
+   timerLimitSecondsDESC = "ﻣﻠﺨﺺ: ﻣﺪة ﻇﻬﻮر اﻟﺘﺮﺟﻤﺔ ﻋﻨﺪ إﻳﻘﺎف )ﻋﺮض اﻟﺘﺮﺟﻤﺔ ﺑﺸﻜﻞ ﻣﺴﺘﻤﺮ(.\nﻧﺼﻴﺤﺔ: اﺧﺘﺮ وﻗﺖ أﻗﻞ إذا ﺗﺮﻳﺪ اﻟﺘﻠﻤﻴﺤﺎت أﺳﺮع.",
+   displayTranslationConstantly = "ﻋﺮﺽ ﺍﻟﺘﺮﺟﻤﺔ ﺑﺸﻜﻞ ﻣﺴﺘﻤﺮ",
+   displayTranslationConstantlyDESC = "ﻣﻠﺨﺺ: ﻳﺠﻌﻞ اﻟﺘﺮﺟﻤﺔ ﺗﻈﻬﺮ داﺋﻤﺎً ﺑﺪون ﻣﺆﻗﺖ.\nﻧﺼﻴﺤﺔ: ﻋﻄّﻠﻪ إذا ﺗﺮﻳﺪ اﻟﺘﺮﺟﻤﺔ ﺗﻈﻬﺮ ﻟﺜﻮاﻧﻲ ﻓﻘﻂ.",
+   savingUntranslatedTooltips = "ﺧﻴﺎﺭﺍﺕ ﺍﻟﺤﻔﻆ",
+   saveUntranslatedTooltips = "ﺣﻔﻆ ﺍﻟﺘﻠﻤﻴﺤﺎﺕ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ",
+   saveUntranslatedTooltipsDESC = "ﻣﻠﺨﺺ: ﻳﺤﻔﻆ اﻟﺘﻠﻤﻴﺤﺎت ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ ﻓﻲ ﻣﻠﻒ اﻟﺤﻔﻆ.\nﻧﺼﻴﺤﺔ: ﺷﺎرك ﻣﻠﻒ اﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻟﻨﻀﻴﻒ اﻟﺘﺮﺟﻤﺔ.",
+
+   titleTab9 = "ﺣﻮﻝ",
+   generalText =
+   "\n\nﻭﺍﻭ ﺑﺎﻟﻌﺮﺑﻲ ﺗﺘﻤﻨﻰ ﻟﻚ ﻗﻀﺎﺀ ﻭﻗﺖ ﻣﻤﺘﻊ ﻧﻌﻤﻞ ﺟﺎﻫﺪﺍ ﻟﺘﻮﻓﻴﺮ ﺇﻣﻜﺎﻧﻴﺔ ﺍﻟﻮﺻﻮﻝ ﺇﻟﻰ ﻣﺤﺘﻮﻯ ﺍﻟﻠﻌﺒﺔ ﺑﻠﻐﺘﻚ. ...\n\nﻧﻮﻓﺮ ﺩﻋﻤﺎ ﻟﻠﺘﺮﺟﻤﺔ ﻓﻲ ﺍﻟﻤﻬﺎﻡ ﻭﺍﻟﺤﻮﺍﺭﺍﺕ ﻭﺍﻟﺘﺮﺟﻤﺎﺕ ﻳﻤﻜﻨﻚ ﺗﻐﻴﻴﺮ ﻣﺨﺘﻠﻒ ﺍﻟﺨﻴﺎﺭﺍﺕ ﻣﻦ ﻗﺎﺋﻤﺔ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ. \n\n  ﻟﺪﻋﻤﻨﺎ, ﻳﻤﻜﻨﻚ ﺣﻔﻆ ﺍﻟﻨﺼﻮﺹ ﻏﻴﺮ ﺍﻟﻤﺘﺮﺟﻤﺔ ﺛﻢ ﻣﺸﺎﺭﻛﺔ ﻣﻠﻒ ﺍﻟﺤﻔﻆ ﻣﻌﻨﺎ ﻋﺒﺮ ﻗﻨﺎﺓ ﺍﻟﺪﻳﺴﻜﻮﺭﺩ ﺍﻟﺨﺎﺻﺔ ﺑﻨﺎ .\n\n ﻟﻠﻤﺴﺎﻫﻤﺔ ﻓﻲ ﺗﻄﻮﻳﺮ ﻗﺎﻋﺪﺓ ﺍﻟﺒﻴﺎﻧﺎﺕ ﺍﻟﻌﺮﺑﻴﺔ ﻟﺪﻳﻨﺎ.\n\n\n\n r| ﻣﺴﺎﺭ ﻣﻠﻒ ﺍﻟﺤﻔﻆ :804CAEffc| \n\n r|aul.RAWoW804CAEffc|/selbairaVdevaS/]XXX[/tnuoccA/FTW/liater/tfarcraW fo dlroW",
+   welcomeText =
+   "أﻫﻼ ﺑﻚ ﻓﻲ إﺿﺎﻓﺔ WoWAR! ﻣﻬﻤﺘﻨﺎ ﻫﻲ ﺗﻮﻓﻴﺮ ﺗﺠﺮﺑﺔ World of Warcraft ﺑﺎﻟﻠﻐﺔ اﻟﻌﺮﺑﻴﺔ. ﺗﻌﻤﻞ اﻹﺿﺎﻓﺔ ﻋﻠﻰ ﺗﺮﺟﻤﺔ اﻟﻤﻬﺎم، واﺟﻬﺔ اﻟﻤﺴﺘﺨﺪم، ﻓﻘﺎﻋﺎت اﻟﺪردﺷﺔ، اﻟﺘﻠﻤﻴﺤﺎت، اﻟﻜﺘﺐ، واﻟﻤﺰﻳﺪ. ﻳﻤﻜﻨﻚ اﻟﻮﺻﻮل إﻟﻰ اﻹﻋﺪادات وﺗﺨﺼﻴﺺ ﺗﺠﺮﺑﺘﻚ ﻋﺒﺮ اﻷﻳﻘﻮﻧﺔ ﺑﺠﺎﻧﺐ اﻟﺨﺮﻳﻄﺔ اﻟﻤﺼﻐﺮة. ﻧﺮﺣﺐ ﺑﻤﺴﺎﻫﻤﺎﺗﻚ ﻟﺘﺤﺴﻴﻦ اﻟﺘﺮﺟﻤﺔ ﻋﺒﺮ ﺣﻔﻆ اﻟﻨﺼﻮص ﻏﻴﺮ اﻟﻤﺘﺮﺟﻤﺔ وﻣﺸﺎرﻛﺘﻬﺎ ﻣﻌﻨﺎ ﻋﻠﻰ دﻳﺴﻜﻮرد. ﻧﺘﻤﻨﻰ ﻟﻚ وﻗﺘﺎ ﻣﻤﺘﻌﺎ ﻓﻲ ﻋﺎﻟﻢ أزﻳﺮوث ﺑﺎﻟﻠﻐﺔ اﻟﻌﺮﺑﻴﺔ!",
+   welcomeButton = "ﻣﻮﺍﻓﻖ - ﺗﻢ ﺍﻟﻘﺮﺍﺀﺓ",
+   showWelcome = "ﻋﺮﺽ ﻟﻮﺣﺔ ﺍﻟﺘﺮﺣﻴﺐ",
+   authorHeader = "ﻣﻌﻠﻮﻣﺎﺕ ﺍﻟﻤﺆﻟﻒ",
+   author = "ﺍﻟﻤﺆﻟﻒ:",
+   email = "ﺍﻟﺒﺮﻳﺪ ﺍﻹﻟﻜﺘﺮﻭﻧﻲ:",
+   teamHeader = "ﻓﺮﻳﻖ ARWoW",
+   textContact = "ﺇﺫﺍ ﻛﺎﻥ ﻟﺪﻳﻚ ﺃﻱ ﺃﺳﺌﻠﺔ ﺣﻮﻝ ﺍﻹﺿﺎﻓﺔ، ﻳﺮﺟﻰ ﺍﻻﺗﺼﺎﻝ ﺑﻨﺎ ﻋﻠﻰ ﺃﻱ ﻣﻦ ﺍﻟﻘﻨﻮﺍﺕ ﺍﻟﻤﺬﻛﻮﺭﺓ ﺃﺩﻧﺎﻩ:",
+   linkWWWShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﺻﻔﺤﺔ ﺍﻟﻮﻳﺐ ﺍﻟﺨﺎﺻﺔ ﺑﺎﻟﻮﻇﻴﻔﺔ ﺍﻹﺿﺎﻓﻴﺔ",
+   linkWWWTitle = "ﺭﺍﺑﻂ ﺇﻟﻰ ﺍﻟﻤﻮﻗﻊ",
+   linkDISCShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﻣﻮﻗﻊ drocsiD",
+   linkDISCTitle = "ﺭﺍﺑﻂ ﺻﻔﺤﺔ ﺍﻟﺪﻳﺴﻜﻮﺭﺩ",
+   linkEMAILShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﻋﻨﻮﺍﻥ ﺍﻟﺒﺮﻳﺪ ﺍﻹﻟﻜﺘﺮﻭﻧﻲ ﻟﻠﻤﺸﺮﻭﻉ",
+   linkEMAILTitle = "ﻋﻨﻮﺍﻥ ﺍﻟﺒﺮﻳﺪ ﺍﻹﻟﻜﺘﺮﻭﻧﻲ ﻟﻠﻤﺸﺮﻭﻉ",
+   linkCURSEShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﻣﻮﻗﻊ egroFesruC",
+   linkCURSETitle = "ﺭﺍﺑﻂ ﺇﻟﻰ ﻣﻮﻗﻊ egroFesruC",
+   linkPPShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﻣﻮﻗﻊ laPyaP",
+   linkPPTitle = "ﺭﺍﺑﻂ ﺇﻟﻰ ﻣﻮﻗﻊ laPyaP",
+   linkBLIKShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺭﻗﻢ ﻫﺎﺗﻒ KILB",
+   linkTWITCHShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﺻﻔﺤﺔ hctiwT",
+   linkTWITCHTitle = "ﺭﺍﺑﻂ ﺻﻔﺤﺔ ﺗﻮﻳﺘﺶ",
+   linkFBShow = "ﺍﻧﻘﺮ ﻟﻌﺮﺽ ﺍﻟﺮﺍﺑﻂ ﺇﻟﻰ ﺻﻔﺤﺔ ﺍﻟﻤﻌﺠﺒﻴﻦ",
+   linkFBTitle = "ﺭﺍﺑﻂ ﺇﻟﻰ ﺻﻔﺤﺔ ﺍﻟﻤﻌﺠﺒﻴﻦ",
+   linkBLIKTitle = "ﺭﻗﻢ ﻫﺎﺗﻒ ﻛﻴﻠﺐ",
+   linkCloseFrame = "ﺃﻏﻠﻖ ﺍﻹﻃﺎﺭ",
+   linkCopy = "ﺍﺿﻐﻂ ﻋﻠﻰ C+lrtC ﻟﻨﺴﺦ ﺍﻟﻌﻨﻮﺍﻥ ﺇﻟﻰ ﺍﻟﺤﺎﻓﻈﺔ",
    betaTestersHeader = "",
    betaTestersHeaderDESC = "",
+   addressCOM = "https://discord.gg/pGDHFdezcC",
+   linkDISCShowCOM = "راﺑﻂ ﻣﺠﺘﻤﻊ واو اﻟﻌﺮﺑﻲ",
+   linkCOM = "راﺑﻂ ﻣﺠﺘﻤﻊ واو اﻟﻌﺮﺑﻲ",
 };
-   
----------------------------------------------------------------------------------------------------------
---translated names of the player's races and classes in various cases of the noun
---variant (M1,D1,C1,B1,N1,K1,W1;M2,D2,C2,B2,N2,K2,W2) and the player's gender (male:1, female:2)
----------------------------------------------------------------------------------------------------------
 
+---------------------------------------------------------------------------------------------------------
+--translated names of the player's races and classes in arabic; only male (M) and female (F)
+---------------------------------------------------------------------------------------------------------
 local p_race = {
-      ["Blood Elf"] = { M1="Blood Elf", D1="Blood Elf", C1="Blood Elf", B1="Blood Elf", N1="Blood Elf", K1="Blood Elf", W1="Blood Elf", M2="Blood Elf", D2="Blood Elf", C2="Blood Elf", B2="Blood Elf", N2="Blood Elf", K2="Blood Elf", W2="Blood Elf" }, 
-      ["Dark Iron Dwarf"] = { M1="Dark Iron Dwarf", D1="Dark Iron Dwarf", C1="Dark Iron Dwarf", B1="Dark Iron Dwarf", N1="Dark Iron Dwarf", K1="Dark Iron Dwarf", W1="Dark Iron Dwarf", M2="Dark Iron Dwarf", D2="Dark Iron Dwarf", C2="Dark Iron Dwarf", B2="Dark Iron Dwarf", N2="Dark Iron Dwarf", K2="Dark Iron Dwarf", W2="Dark Iron Dwarf" }, 
-      ["Dracthyr"] = { M1="Dracthyr", D1="Dracthyr", C1="Dracthyr", B1="Dracthyr", N1="Dracthyr", K1="Dracthyr", W1="Dracthyr", M2="Dracthyr", D2="Dracthyr", C2="Dracthyr", B2="Dracthyr", N2="Dracthyr", K2="Dracthyr", W2="Dracthyr" }, 
-      ["Draenei"] = { M1="Draenei", D1="Draenei", C1="Draenei", B1="Draenei", N1="Draenei", K1="Draenei", W1="Draenei", M2="Draenei", D2="Draenei", C2="Draenei", B2="Draenei", N2="Draenei", K2="Draenei", W2="Draenei" }, 
-      ["Dwarf"] = { M1="Dwarf", D1="Dwarf", C1="Dwarf", B1="Dwarf", N1="Dwarf", K1="Dwarf", W1="Dwarf", M2="Dwarf", D2="Dwarf", C2="Dwarf", B2="Dwarf", N2="Dwarf", K2="Dwarf", W2="Dwarf" }, 
-      ["Gnome"] = { M1="Gnome", D1="Gnome", C1="Gnome", B1="Gnome", N1="Gnome", K1="Gnome", W1="Gnome", M2="Gnome", D2="Gnome", C2="Gnome", B2="Gnome", N2="Gnome", K2="Gnome", W2="Gnome" }, 
-      ["Goblin"] = { M1="Goblin", D1="Goblin", C1="Goblin", B1="Goblin", N1="Goblin", K1="Goblin", W1="Goblin", M2="Goblin", D2="Goblin", C2="Goblin", B2="Goblin", N2="Goblin", K2="Goblin", W2="Goblin" }, 
-      ["Highmountain Tauren"] = { M1="Highmountain Tauren", D1="Highmountain Tauren", C1="Highmountain Tauren", B1="Highmountain Tauren", N1="Highmountain Tauren", K1="Highmountain Tauren", W1="Highmountain Tauren", M2="Highmountain Tauren", D2="Highmountain Tauren", C2="Highmountain Tauren", B2="Highmountain Tauren", N2="Highmountain Tauren", K2="Highmountain Tauren", W2="Highmountain Tauren" }, 
-      ["Human"] = { M1="Human", D1="Human", C1="Human", B1="Human", N1="Human", K1="Human", W1="Human", M2="Human", D2="Human", C2="Human", B2="Human", N2="Human", K2="Human", W2="Human" }, 
-      ["Kul Tiran"] = { M1="Kul Tiran", D1="Kul Tiran", C1="Kul Tiran", B1="Kul Tiran", N1="Kul Tiran", K1="Kul Tiran", W1="Kul Tiran", M2="Kul Tiran", D2="Kul Tiran", C2="Kul Tiran", B2="Kul Tiran", N2="Kul Tiran", K2="Kul Tiran", W2="Kul Tiran" }, 
-      ["Lightforged Draenei"] = { M1="Lightforged Draenei", D1="Lightforged Draenei", C1="Lightforged Draenei", B1="Lightforged Draenei", N1="Lightforged Draenei", K1="Lightforged Draenei", W1="Lightforged Draenei", M2="Lightforged Draenei", D2="Lightforged Draenei", C2="Lightforged Draenei", B2="Lightforged Draenei", N2="Lightforged Draenei", K2="Lightforged Draenei", W2="Lightforged Draenei" }, 
-      ["Mag'har Orc"] = { M1="Mag'har Orc", D1="Mag'har Orc", C1="Mag'har Orc", B1="Mag'har Orc", N1="Mag'har Orc", K1="Mag'har Orc", W1="Mag'har Orc", M2="Mag'har Orc", D2="Mag'har Orc", C2="Mag'har Orc", B2="Mag'har Orc", N2="Mag'har Orc", K2="Mag'har Orc", W2="Mag'har Orc" }, 
-      ["Mechagnome"] = { M1="Mechagnome", D1="Mechagnome", C1="Mechagnome", B1="Mechagnome", N1="Mechagnome", K1="Mechagnome", W1="Mechagnome", M2="Mechagnome", D2="Mechagnome", C2="Mechagnome", B2="Mechagnome", N2="Mechagnome", K2="Mechagnome", W2="Mechagnome" }, 
-      ["Nightborne"] = { M1="Nightborne", D1="Nightborne", C1="Nightborne", B1="Nightborne", N1="Nightborne", K1="Nightborne", W1="Nightborne", M2="Nightborne", D2="Nightborne", C2="Nightborne", B2="Nightborne", N2="Nightborne", K2="Nightborne", W2="Nightborne" }, 
-      ["Night Elf"] = { M1="Night Elf", D1="Night Elf", C1="Night Elf", B1="Night Elf", N1="Night Elf", K1="Night Elf", W1="Night Elf", M2="Night Elf", D2="Night Elf", C2="Night Elf", B2="Night Elf", N2="Night Elf", K2="Night Elf", W2="Night Elf" }, 
-      ["Orc"] = { M1="Orc", D1="Orc", C1="Orc", B1="Orc", N1="Orc", K1="Orc", W1="Orc", M2="Orc", D2="Orc", C2="Orc", B2="Orc", N2="Orc", K2="Orc", W2="Orc" }, 
-      ["Pandaren"] = { M1="Pandaren", D1="Pandaren", C1="Pandaren", B1="Pandaren", N1="Pandaren", K1="Pandaren", W1="Pandaren", M2="Pandaren", D2="Pandaren", C2="Pandaren", B2="Pandaren", N2="Pandaren", K2="Pandaren", W2="Pandaren" }, 
-      ["Tauren"] = { M1="Tauren", D1="Tauren", C1="Tauren", B1="Tauren", N1="Tauren", K1="Tauren", W1="Tauren", M2="Tauren", D2="Tauren", C2="Tauren", B2="Tauren", N2="Tauren", K2="Tauren", W2="Tauren" }, 
-      ["Troll"] = { M1="Troll", D1="Troll", C1="Troll", B1="Troll", N1="Troll", K1="Troll", W1="Troll", M2="Troll", D2="Troll", C2="Troll", B2="Troll", N2="Troll", K2="Troll", W2="Troll" }, 
-      ["Undead"] = { M1="Undead", D1="Undead", C1="Undead", B1="Undead", N1="Undead", K1="Undead", W1="Undead", M2="Undead", D2="Undead", C2="Undead", B2="Undead", N2="Undead", K2="Undead", W2="Undead" }, 
-      ["Void Elf"] = { M1="Void Elf", D1="Void Elf", C1="Void Elf", B1="Void Elf", N1="Void Elf", K1="Void Elf", W1="Void Elf", M2="Void Elf", D2="Void Elf", C2="Void Elf", B2="Void Elf", N2="Void Elf", K2="Void Elf", W2="Void Elf" }, 
-      ["Vulpera"] = { M1="Vulpera", D1="Vulpera", C1="Vulpera", B1="Vulpera", N1="Vulpera", K1="Vulpera", W1="Vulpera", M2="Vulpera", D2="Vulpera", C2="Vulpera", B2="Vulpera", N2="Vulpera", K2="Vulpera", W2="Vulpera" }, 
-      ["Worgen"] = { M1="Worgen", D1="Worgen", C1="Worgen", B1="Worgen", N1="Worgen", K1="Worgen", W1="Worgen", M2="Worgen", D2="Worgen", C2="Worgen", B2="Worgen", N2="Worgen", K2="Worgen", W2="Worgen" }, 
-      ["Zandalari Troll"] = { M1="Zandalari Troll", D1="Zandalari Troll", C1="Zandalari Troll", B1="Zandalari Troll", N1="Zandalari Troll", K1="Zandalari Troll", W1="Zandalari Troll", M2="Zandalari Troll", D2="Zandalari Troll", C2="Zandalari Troll", B2="Zandalari Troll", N2="Zandalari Troll", K2="Zandalari Troll", W2="Zandalari Troll" }, 
+   ["Blood Elf"] = { M = "ﺑﻠﻮد اﻟﻒ", F = "ﺑﻠﻮد اﻟﻔﺔ" },
+   ["Dark Iron Dwarf"] = { M = "دارك اﻳﺮون دوارف", F = "دارك اﻳﺮون دوارﻓﺔ" },
+   ["Dracthyr"] = { M = "دراﻛﺜﻴﺮ", F = "دراﻛﺜﻴﺮة" },
+   ["Draenei"] = { M = "دراﻳﻨﻲ", F = "دراﻳﻨﻴﺔ" },
+   ["Dwarf"] = { M = "دوارف", F = "دوارﻓﺔ" },
+   ["Gnome"] = { M = "ﺟﻨﻮم", F = "ﺟﻨﻮﻣﺔ" },
+   ["Earthen"] = { M = "ﺗﺮاﺑﻲ", F = "ﺗﺮاﺑﻲ" },
+   ["Goblin"] = { M = "ﺟﻮﺑﻠﻦ", F = "ﺟﻮﺑﻠﻨﺔ" },
+   ["Highmountain Tauren"] = { M = "ﻫﺎي ﻣﺎوﻧﺘﻦ ﺗﻮرﻳﻦ", F = "ﻫﺎي ﻣﺎوﻧﺘﻦ ﺗﻮرﻳﻨﺔ" },
+   ["Human"] = { M = "ﻫﻴﻮﻣﻦ", F = "ﻫﻴﻮﻣﻨﺔ" },
+   ["Kul Tiran"] = { M = "ﻛﻮل ﺗﻴﺮان", F = "ﻛﻮل ﺗﻴﺮاﻧﺔ" },
+   ["Lightforged Draenei"] = { M = "ﻻﻳﺖ ﻓﻮرﺟﺪ دراﻳﻨﻲ", F = "ﻻﻳﺖ ﻓﻮرﺟﺪ دراﻳﻨﻴﺔ" },
+   ["Mag'har Orc"] = { M = "ﻣﺎج ﻫﺎر اورك", F = "ﻣﺎج ﻫﺎر اورﻛﺔ" },
+   ["Mechagnome"] = { M = "ﻣﻴﻜﺎﺟﻨﻮم", F = "ﻣﻴﻜﺎﺟﻨﻮﻣﺔ" },
+   ["Nightborne"] = { M = "ﻧﺎﻳﺖ ﺑﻮرن", F = "ﻧﺎﻳﺖ ﺑﻮرﻧﺔ" },
+   ["Night Elf"] = { M = "ﻧﺎﻳﺖ اﻟﻒ", F = "ﻧﺎﻳﺖ اﻟﻔﺔ" },
+   ["Orc"] = { M = "اورك", F = "اورﻛﺔ" },
+   ["Pandaren"] = { M = "ﺑﺎﻧﺪاران", F = "ﺑﺎﻧﺪاراﻧﺔ" },
+   ["Tauren"] = { M = "ﺗﻮرﻳﻦ", F = "ﺗﻮرﻳﻨﺔ" },
+   ["Troll"] = { M = "ﺗﺮول", F = "ﺗﺮوﻟﺔ" },
+   ["Undead"] = { M = "اﻧﺪد", F = "اﻧﺪﻳﺔ" },
+   ["Void Elf"] = { M = "ﻓﻮﻳﺪ اﻟﻒ", F = "ﻓﻮﻳﺪ اﻟﻔﺔ" },
+   ["Vulpera"] = { M = "ﻓﻮﻟﺒﻴﺮا", F = "ﻓﻮﻟﺒﻴﺮا" },
+   ["Worgen"] = { M = "وارﺟﻴﻦ", F = "وارﺟﻴﻨﺔ" },
+   ["Zandalari Troll"] = { M = "زاﻧﺪاﻻري ﺗﺮول", F = "زاﻧﺪاﻻري ﺗﺮوﻟﺔ" },
 };
+
 local p_class = {
-      ["Death Knight"] = { M1="Death Knight", D1="Death Knight", C1="Death Knight", B1="Death Knight", N1="Death Knight", K1="Death Knight", W1="Death Knight", M2="Death Knight", D2="Death Knight", C2="Death Knight", B2="Death Knight", N2="Death Knight", K2="Death Knight", W2="Death Knight" }, 
-      ["Demon Hunter"] = { M1="Demon Hunter", D1="Demon Hunter", C1="Demon Hunter", B1="Demon Hunter", N1="Demon Hunter", K1="Demon Hunter", W1="Demon Hunter", M2="Demon Hunter", D2="Demon Hunter", C2="Demon Hunter", B2="Demon Hunter", N2="Demon Hunter", K2="Demon Hunter", W2="Demon Hunter" }, 
-      ["Druid"] = { M1="Druid", D1="Druid", C1="Druid", B1="Druid", N1="Druid", K1="Druid", W1="Druid", M2="Druid", D2="Druid", C2="Druid", B2="Druid", N2="Druid", K2="Druid", W2="Druid" }, 
-      ["Evoker"] = { M1="Evoker", D1="Evoker", C1="Evoker", B1="Evoker", N1="Evoker", K1="Evoker", W1="Evoker", M2="Evoker", D2="Evoker", C2="Evoker", B2="Evoker", N2="Evoker", K2="Evoker", W2="Evoker" }, 
-      ["Hunter"] = { M1="Hunter", D1="Hunter", C1="Hunter", B1="Hunter", N1="Hunter", K1="Hunter", W1="Hunter", M2="Hunter", D2="Hunter", C2="Hunter", B2="Hunter", N2="Hunter", K2="Hunter", W2="Hunter" }, 
-      ["Mage"] = { M1="Mage", D1="Mage", C1="Mage", B1="Mage", N1="Mage", K1="Mage", W1="Mage", M2="Mage", D2="Mage", C2="Mage", B2="Mage", N2="Mage", K2="Mage", W2="Mage" }, 
-      ["Monk"] = { M1="Monk", D1="Monk", C1="Monk", B1="Monk", N1="Monk", K1="Monk", W1="Monk", M2="Monk", D2="Monk", C2="Monk", B2="Monk", N2="Monk", K2="Monk", W2="Monk" }, 
-      ["Paladin"] = { M1="Paladin", D1="Paladin", C1="Paladin", B1="Paladin", N1="Paladin", K1="Paladin", W1="Paladin", M2="Paladin", D2="Paladin", C2="Paladin", B2="Paladin", N2="Paladin", K2="Paladin", W2="Paladin" }, 
-      ["Priest"] = { M1="Priest", D1="Priest", C1="Priest", B1="Priest", N1="Priest", K1="Priest", W1="Priest", M2="Priest", D2="Priest", C2="Priest", B2="Priest", N2="Priest", K2="Priest", W2="Priest" }, 
-      ["Rogue"] = { M1="Rogue", D1="Rogue", C1="Rogue", B1="Rogue", N1="Rogue", K1="Rogue", W1="Rogue", M2="Rogue", D2="Rogue", C2="Rogue", B2="Rogue", N2="Rogue", K2="Rogue", W2="Rogue" }, 
-      ["Shaman"] = { M1="Shaman", D1="Shaman", C1="Shaman", B1="Shaman", N1="Shaman", K1="Shaman", W1="Shaman", M2="Shaman", D2="Shaman", C2="Shaman", B2="Shaman", N2="Shaman", K2="Shaman", W2="Shaman" }, 
-      ["Warlock"] = { M1="Warlock", D1="Warlock", C1="Warlock", B1="Warlock", N1="Warlock", K1="Warlock", W1="Warlock", M2="Warlock", D2="Warlock", C2="Warlock", B2="Warlock", N2="Warlock", K2="Warlock", W2="Warlock" }, 
-      ["Warrior"] = { M1="Warrior", D1="Warrior", C1="Warrior", B1="Warrior", N1="Warrior", K1="Warrior", W1="Warrior", M2="Warrior", D2="Warrior", C2="Warrior", B2="Warrior", N2="Warrior", K2="Warrior", W2="Warrior" }, 
+   ["Death Knight"] = { M = "دﻳﺚ ﻧﺎﻳﺖ", F = "دﻳﺚ ﻧﺎﻳﺘﺔ" },
+   ["Demon Hunter"] = { M = "دﻳﻤﻮن ﻫﺎﻧﺘﺮ", F = "دﻳﻤﻮن ﻫﺎﻧﺘﺮة" },
+   ["Druid"] = { M = "دروﻳﺪ", F = "دروﻳﺪة" },
+   ["Evoker"] = { M = "اﻳﻔﻮﻛﺮ", F = "اﻳﻔﻮﻛﺮة" },
+   ["Hunter"] = { M = "ﻫﺎﻧﺘﺮ", F = "ﻫﺎﻧﺘﺮة" },
+   ["Mage"] = { M = "ﻣﻴﺞ", F = "ﻣﻴﺠﺔ" },
+   ["Monk"] = { M = "ﻣﻮﻧﻚ", F = "ﻣﻮﻧﻜﺔ" },
+   ["Paladin"] = { M = "ﺑﺎﻻدﻳﻦ", F = "ﺑﺎﻻدﻳﻨﺔ" },
+   ["Priest"] = { M = "ﺑﺮﻳﺴﺖ", F = "ﺑﺮﻳﺴﺘﺔ" },
+   ["Rogue"] = { M = "روق", F = "روﻗﺔ" },
+   ["Shaman"] = { M = "ﺷﺎﻣﺎن", F = "ﺷﺎﻣﺎﻧﺔ" },
+   ["Warlock"] = { M = "وارﻟﻮك", F = "وارﻟﻮﻛﺔ" },
+   ["Warrior"] = { M = "وارﻳﻮر", F = "وارﻳﻮرة" },
 };
 
 local QTR_race = UnitRace("player");
 local QTR_class = UnitClass("player");
 
-if (p_race[QTR_race]) then      
-   player_race_table = { M1=p_race[QTR_race].M1, D1=p_race[QTR_race].D1, C1=p_race[QTR_race].C1, B1=p_race[QTR_race].B1, N1=p_race[QTR_race].N1, K1=p_race[QTR_race].K1, W1=p_race[QTR_race].W1, M2=p_race[QTR_race].M2, D2=p_race[QTR_race].D2, C2=p_race[QTR_race].C2, B2=p_race[QTR_race].B2, N2=p_race[QTR_race].N2, K2=p_race[QTR_race].K2, W2=p_race[QTR_race].W2 };
-else   
-   player_race_table = { M1=QTR_race, D1=QTR_race, C1=QTR_race, B1=QTR_race, N1=QTR_race, K1=QTR_race, W1=QTR_race, M2=QTR_race, D2=QTR_race, C2=QTR_race, B2=QTR_race, N2=QTR_race, K2=QTR_race, W2=QTR_race };
-end
-if (p_class[QTR_class]) then
-   player_class_table = { M1=p_class[QTR_class].M1, D1=p_class[QTR_class].D1, C1=p_class[QTR_class].C1, B1=p_class[QTR_class].B1, N1=p_class[QTR_class].N1, K1=p_class[QTR_class].K1, W1=p_class[QTR_class].W1, M2=p_class[QTR_class].M2, D2=p_class[QTR_class].D2, C2=p_class[QTR_class].C2, B2=p_class[QTR_class].B2, N2=p_class[QTR_class].N2, K2=p_class[QTR_class].K2, W2=p_class[QTR_class].W2 };
+if (p_race[QTR_race]) then
+   _G.player_race_table = { M = p_race[QTR_race].M, F = p_race[QTR_race].F };
 else
-   player_class_table = { M1=QTR_class, D1=QTR_class, C1=QTR_class, B1=QTR_class, N1=QTR_class, K1=QTR_class, W1=QTR_class, M2=QTR_class, D2=QTR_class, C2=QTR_class, B2=QTR_class, N2=QTR_class, K2=QTR_class, W2=QTR_class };
+   _G.player_race_table = { M = QTR_race, F = QTR_race };
+end
+
+if (p_class[QTR_class]) then
+   _G.player_class_table = { M = p_class[QTR_class].M, F = p_class[QTR_class].F };
+else
+   _G.player_class_table = { M = QTR_class, F = QTR_class };
 end
 
 ---------------------------------------------------------------------------------------------------------
 --Fonts
 ---------------------------------------------------------------------------------------------------------
-WOWTR_Font1 = WoWTR_Localization.mainFolder.."\\Fonts\\font1.ttf";
-WOWTR_Font2 = WoWTR_Localization.mainFolder.."\\Fonts\\font2.ttf";
-WOWTR_Fonts = { };
-WOWTR_Fonts[1] = {name = "font2", file = WoWTR_Localization.mainFolder.."\\Fonts\\font2.ttf" };
-WOWTR_Fonts[2] = {name = "expressway", file = WoWTR_Localization.mainFolder.."\\Fonts\\Expressway.ttf" };
-WOWTR_Fonts[3] = {name = "naowh", file = WoWTR_Localization.mainFolder.."\\Fonts\\naowh.ttf" };
-WOWTR_version = GetAddOnMetadata(WoWTR_Localization.addonName, "Version");
+WOWTR_Font1 = WoWTR_Localization.mainFolder .. "\\Fonts\\font1.ttf";
+WOWTR_Font2 = WoWTR_Localization.mainFolder .. "\\Fonts\\font2.ttf";
+WOWTR_Fonts = { "font2.ttf" };
+WOWTR_version = C_AddOns.GetAddOnMetadata(WoWTR_Localization.addonFolder, "Version");
