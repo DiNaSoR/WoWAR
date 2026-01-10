@@ -1,5 +1,5 @@
 -- Debug UI Popup Frame
--- Accessible via /wdebug command
+-- Accessible via /wowardebug (opens Debug Tools UI; from there you can use tools without typing commands)
 
 WOWTR = WOWTR or {}
 WOWTR.DebugUI = WOWTR.DebugUI or {}

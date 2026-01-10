@@ -222,53 +222,15 @@ function Core.OnEvent(self, event, name, ...)
     SLASH_WOWTR_BUBBLES5 = "/btr"
     SLASH_WOWTR_BUBBLES6 = "/str"
 
-    -- Register /wdebug command for debug UI
-    SlashCmdList["WOWTR_DEBUG"] = function(msg)
-      if WOWTR and WOWTR.DebugUI and WOWTR.DebugUI.Toggle then
-        WOWTR.DebugUI.Toggle()
-      else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WOWTR Debug:|r Debug UI not available")
-      end
-    end
-    SLASH_WOWTR_DEBUG1 = "/wdebug"
-
-    -- Register /wtools command for Debug Tools UI (clickable dump/clear buttons)
-    SlashCmdList["WOWTR_TOOLS"] = function(msg)
+    -- Single entrypoint for debug tools UI (clickable dump/clear buttons)
+    SlashCmdList["WOWAR_DEBUG"] = function(msg)
       if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.Toggle then
         WOWTR.DebugToolsUI.Toggle()
       else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug Tools UI not available")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug UI not available")
       end
     end
-    SLASH_WOWTR_TOOLS1 = "/wtools"
-    SLASH_WOWTR_TOOLS2 = "/wowtrtools"
-
-    -- Smart UI string dumper (replaces /fstack hunting)
-    -- Usage: /wowtrdump <frame or shortcut> [all] [noise] [hidden]
-    -- Examples: /wowtrdump prof, /wowtrdump talents, /wowtrdump ProfessionsFrame all
-    SlashCmdList["WOWTR_DUMP"] = function(msg)
-      if WOWTR and WOWTR.Debug and WOWTR.Debug.HandleDumpCommand then
-        WOWTR.Debug.HandleDumpCommand(msg)
-      else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Dump system not available")
-      end
-    end
-    SLASH_WOWTR_DUMP1 = "/wowtrdump"
-    SLASH_WOWTR_DUMP2 = "/wdump"
-    SLASH_WOWTR_DUMP3 = "/dumpui"
-
-    -- Clear agent SavedVariables logs (agentDebugNDJSON / agentDumpNDJSON) from in-game.
-    -- Usage: /wowtrclearlogs [all|debug|dump|cache]
-    SlashCmdList["WOWTR_CLEARLOGS"] = function(msg)
-      if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
-        WOWTR.Debug.ClearAgentLogs(msg)
-      else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r ClearLogs not available")
-      end
-    end
-    SLASH_WOWTR_CLEARLOGS1 = "/wowtrclearlogs"
-    SLASH_WOWTR_CLEARLOGS2 = "/wclearlogs"
-    SLASH_WOWTR_CLEARLOGS3 = "/clearwowtrlogs"
+    SLASH_WOWAR_DEBUG1 = "/wowardebug"
 
     Core.CheckVars()
     if QTR_START then QTR_START() end
@@ -353,7 +315,7 @@ function Core.OnEvent(self, event, name, ...)
     local now = GetTime()
     
     -- Skip if we just processed this same quest (avoid double processing)
-    if currentQuestID > 0 and _lastProcessedQuestID == currentQuestID and (now - _lastProcessedQuestTime) < 0.5 then
+    if currentQuestID > 0 and _G._lastProcessedQuestID == currentQuestID and (now - _G._lastProcessedQuestTime) < 0.5 then
        if WOWTR and WOWTR.Debug then
          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Event handler: Already processed quest", currentQuestID, "recently, skipping to avoid double processing")
        end

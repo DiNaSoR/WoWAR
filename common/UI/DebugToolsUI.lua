@@ -1,5 +1,6 @@
 -- Debug Tools UI (floating helper panel)
 -- Provides clickable actions for dump/clear commands (no need to type slash commands)
+-- Open with /wowardebug
 
 WOWTR = WOWTR or {}
 WOWTR.DebugToolsUI = WOWTR.DebugToolsUI or {}
@@ -12,20 +13,11 @@ local function _msg(text)
   end
 end
 
-local function _getDumpCommand(frameOrShortcut, opts)
-  local parts = {}
-  parts[#parts + 1] = tostring(frameOrShortcut or "")
-  if opts and opts.includeAll then parts[#parts + 1] = "all" end
-  if opts and opts.includeNoise then parts[#parts + 1] = "noise" end
-  if opts and opts.includeHidden then parts[#parts + 1] = "hidden" end
-  return table.concat(parts, " ")
-end
-
 function UI.CreateFrame()
   if UI.frame then return UI.frame end
 
   local f = CreateFrame("Frame", "WOWTR_DebugToolsUIFrame", UIParent, "BackdropTemplate")
-  f:SetSize(420, 260)
+  f:SetSize(360, 220)
   f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   f:Hide()
   f:SetFrameStrata("DIALOG")
@@ -59,22 +51,9 @@ function UI.CreateFrame()
 
   local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
   hint:SetPoint("TOP", title, "BOTTOM", 0, -6)
-  hint:SetText("Click buttons instead of typing slash commands. (Export after /reload)")
+  hint:SetText("Dumps all visible UI strings. Export after /reload.")
 
-  -- Frame/shortcut input
-  local inputLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  inputLabel:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -60)
-  inputLabel:SetText("Target frame/shortcut:")
-
-  local edit = CreateFrame("EditBox", nil, f, "InputBoxTemplate")
-  edit:SetAutoFocus(false)
-  edit:SetSize(220, 20)
-  edit:SetPoint("LEFT", inputLabel, "RIGHT", 10, 0)
-  edit:SetText("prof")
-  edit:SetCursorPosition(0)
-  f.edit = edit
-
-  -- Options checkboxes
+  -- Options checkboxes (affect DumpVisibleUI)
   local opts = { includeAll = false, includeNoise = false, includeHidden = false }
   f.opts = opts
 
@@ -89,11 +68,11 @@ function UI.CreateFrame()
     return cb
   end
 
-  f.cbAll = mkCheck("Include translated (all)", 20, -90, "includeAll")
-  f.cbNoise = mkCheck("Include noise (numbers)", 20, -115, "includeNoise")
-  f.cbHidden = mkCheck("Include hidden", 20, -140, "includeHidden")
+  f.cbAll = mkCheck("Include translated (all)", 20, -60, "includeAll")
+  f.cbNoise = mkCheck("Include noise (numbers)", 20, -85, "includeNoise")
+  f.cbHidden = mkCheck("Include hidden", 20, -110, "includeHidden")
 
-  -- Buttons row
+  -- Button helper
   local function mkBtn(label, x, y, w, onClick)
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     b:SetSize(w or 120, 22)
@@ -103,27 +82,24 @@ function UI.CreateFrame()
     return b
   end
 
-  -- Dump action
-  mkBtn("Dump", 260, -90, 130, function()
-    if not (WOWTR and WOWTR.Debug and WOWTR.Debug.HandleDumpCommand) then
-      _msg("|cFFFF0000[WoWAR]|r Dump system not available")
+  -- Main action: Dump everything visible on screen (auto-detect open frames)
+  mkBtn("Dump Visible UI", 210, -70, 130, function()
+    if not (WOWTR and WOWTR.Debug and WOWTR.Debug.DumpVisibleUI) then
+      _msg("|cFFFF0000[WoWAR]|r DumpVisibleUI not available")
       return
     end
-    local target = (f.edit and f.edit.GetText and f.edit:GetText()) or ""
-    local cmd = _getDumpCommand(target, f.opts)
-    WOWTR.Debug.HandleDumpCommand(cmd)
+    WOWTR.Debug.DumpVisibleUI({
+      includeAll = f.opts.includeAll,
+      skipNoise = not f.opts.includeNoise,
+      includeHidden = f.opts.includeHidden,
+      dedupe = true,
+      maxRoots = 30,
+      maxNodes = 2000,
+      maxDepth = 12,
+    })
   end)
 
-  mkBtn("Dump Professions", 260, -115, 130, function()
-    if not (WOWTR and WOWTR.Debug and WOWTR.Debug.HandleDumpCommand) then
-      _msg("|cFFFF0000[WoWAR]|r Dump system not available")
-      return
-    end
-    local cmd = _getDumpCommand("prof", f.opts)
-    WOWTR.Debug.HandleDumpCommand(cmd)
-  end)
-
-  mkBtn("Reset dedupe", 260, -140, 130, function()
+  mkBtn("Reset dedupe", 210, -100, 130, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ResetDumpCache then
       WOWTR.Debug.ResetDumpCache()
     end
@@ -131,31 +107,31 @@ function UI.CreateFrame()
 
   -- Clear logs section
   local clearLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  clearLabel:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -175)
+  clearLabel:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -140)
   clearLabel:SetText("Clear agent logs:")
 
-  mkBtn("Clear ALL", 20, -200, 120, function()
+  mkBtn("Clear ALL", 20, -160, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("all")
     end
   end)
-  mkBtn("Clear dump", 150, -200, 120, function()
+  mkBtn("Clear dump", 130, -160, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("dump")
     end
   end)
-  mkBtn("Clear debug", 280, -200, 120, function()
+  mkBtn("Clear debug", 240, -160, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("debug")
     end
   end)
 
-  mkBtn("Clear cache", 20, -228, 120, function()
+  mkBtn("Clear cache", 20, -188, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("cache")
     end
   end)
-  mkBtn("/reload", 150, -228, 120, function()
+  mkBtn("/reload", 130, -188, 100, function()
     if ReloadUI then ReloadUI() end
   end)
 
@@ -179,4 +155,3 @@ function UI.Toggle()
     UI.Show()
   end
 end
-

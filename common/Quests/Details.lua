@@ -1190,7 +1190,7 @@ function Quests.Details.QuestPrepare(event)
   -- But allow reprocessing if the text isn't actually translated (Blizzard might have overwritten it)
   if q_ID > 0 then
     local now = GetTime()
-    if _lastProcessedQuestID == q_ID and (now - _lastProcessedQuestTime) < 0.5 then
+    if _G._lastProcessedQuestID == q_ID and (now - _G._lastProcessedQuestTime) < 0.5 then
       -- Check if text is actually translated - if not, allow reprocessing
       -- But only allow ONE reprocessing attempt to avoid infinite loops
       local isActuallyTranslated = false
@@ -1227,7 +1227,7 @@ function Quests.Details.QuestPrepare(event)
       
       if isActuallyTranslated then
         if WOWTR and WOWTR.Debug then
-          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed | Text is translated | Time since last:", string.format("%.2f", now - _lastProcessedQuestTime), "s")
+          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed | Text is translated | Time since last:", string.format("%.2f", now - _G._lastProcessedQuestTime), "s")
         end
         return
       elseif shouldReprocess then
@@ -1235,17 +1235,17 @@ function Quests.Details.QuestPrepare(event)
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REPROCESS | Quest", q_ID, "was processed but text appears untranslated | Allowing ONE reprocessing attempt")
         end
         -- Reset the timestamp so we can process it again, but mark that we've tried reprocessing
-        _G["_lastProcessedQuestTime"] = 0
+        _G._lastProcessedQuestTime = 0
       else
         if WOWTR and WOWTR.Debug then
-          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed recently | Time since last:", string.format("%.2f", now - _lastProcessedQuestTime), "s")
+          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed recently | Time since last:", string.format("%.2f", now - _G._lastProcessedQuestTime), "s")
         end
         return
       end
     end
     -- Mark that we're processing this quest now
-    _G["_lastProcessedQuestID"] = q_ID
-    _G["_lastProcessedQuestTime"] = now
+    _G._lastProcessedQuestID = q_ID
+    _G._lastProcessedQuestTime = now
     -- Clear reprocess flag when starting fresh processing
     local reprocessKey = "_reprocess_" .. q_ID
     _G[reprocessKey] = nil

@@ -133,48 +133,9 @@ function Debug.AgentDumpLog(hypothesisId, location, message, data)
 end
 
 -------------------------------------------------------------------------------
--- Smart UI String Dumper (replaces manual /fstack hunting)
+-- Smart UI String Dumper (auto-dumps all visible frames)
+-- Use /wowardebug and click "Dump Visible UI" to capture everything on screen
 -------------------------------------------------------------------------------
-
--- Known frame shortcuts (use /wowtrdump <shortcut>)
-Debug.FrameShortcuts = {
-  prof = "ProfessionsFrame",
-  professions = "ProfessionsFrame",
-  profbook = "ProfessionsBookFrame",
-  talents = "PlayerTalentFrame",
-  talent = "PlayerTalentFrame",
-  spellbook = "SpellBookFrame",
-  char = "CharacterFrame",
-  character = "CharacterFrame",
-  quest = "QuestFrame",
-  questmap = "QuestMapFrame",
-  gossip = "GossipFrame",
-  merchant = "MerchantFrame",
-  friends = "FriendsFrame",
-  guild = "GuildFrame",
-  collections = "CollectionsJournal",
-  mounts = "MountJournal",
-  pets = "PetJournalParent",
-  achievements = "AchievementFrame",
-  map = "WorldMapFrame",
-  encounter = "EncounterJournal",
-  pvp = "PVPUIFrame",
-  lfg = "LFGListFrame",
-  pve = "PVEFrame",
-  wardrobe = "WardrobeCollectionFrame",
-  transmog = "WardrobeFrame",
-  mail = "MailFrame",
-  auction = "AuctionHouseFrame",
-  bank = "BankFrame",
-  void = "VoidStorageFrame",
-  settings = "SettingsPanel",
-  options = "GameMenuFrame",
-  help = "HelpFrame",
-  tutorial = "TutorialFrame",
-  weekly = "WeeklyRewardsFrame",
-  delves = "DelvesDifficultyPickerFrame",
-  itemupgrade = "ItemUpgradeFrame",
-}
 
 -- Noise patterns to skip (pure numbers, money, dynamic counts, etc.)
 local function _isNoiseText(text)
@@ -183,17 +144,149 @@ local function _isNoiseText(text)
   if text:match("^%s*$") then return true end
   -- Pure number (with optional comma/decimal)
   if text:match("^%-?[%d,%.]+$") then return true end
+  -- Parenthesized count like "(33)"
+  if text:match("^%(%d+%)$") then return true end
   -- Very short (1-2 chars) unless special
-  if string.len(text) <= 2 and not text:match("[%a]") then return true end
+  if string.len(text) <= 2 then
+    -- Single-letter hotkeys (E, Q, Z, etc.) and short tokens are not translation targets.
+    if text:match("^[%a]$") then return true end
+    if not text:match("[%a]") then return true end
+  end
   -- Money strings (Gold/Silver/Copper icons)
   if text:match("UI%-GoldIcon") or text:match("UI%-SilverIcon") or text:match("UI%-CopperIcon") then return true end
   -- Pure color codes with no text
   if text:match("^|c[%x]+|r$") then return true end
   -- Reagent counts like "85/1" or "7/5"
   if text:match("^%d+/%d+$") then return true end
+  -- Reagent/progress counts with spaces like "0 / 1000"
+  if text:match("^%s*%d+%s*/%s*%d+%s*$") then return true end
   -- Level/skill numbers like "100/100" or "1000/1000"
   if text:match("^%d+/%d+%s*$") then return true end
+  -- Common keybind/hotkey patterns (Shift/Ctrl shown as s-/c- in some UIs)
+  if text:match("^[sc]%-[%w%+]+$") then return true end
+  -- Function keys
+  if text:match("^F%d+$") then return true end
+  -- Mouse button labels / numpad labels
+  if text:match("^Mouse Button") or text:match("^Middle Mouse$") or text:match("^Num Pad") then return true end
   return false
+end
+
+-- Dump everything currently visible on screen (auto-detect visible root frames).
+-- Intended to replace manual /fstack and manual frame targeting during UI exploration.
+function Debug.DumpVisibleUI(opts)
+  opts = opts or {}
+  local includeHidden = opts.includeHidden and true or false
+  local includeAll = opts.includeAll and true or false
+  local skipNoise = (opts.skipNoise == nil) and true or opts.skipNoise
+  local dedupe = (opts.dedupe == nil) and true or opts.dedupe
+  local maxRoots = (type(opts.maxRoots) == "number" and opts.maxRoots) or 30
+  local maxNodesPerRoot = (type(opts.maxNodes) == "number" and opts.maxNodes) or 2000
+  local maxDepth = (type(opts.maxDepth) == "number" and opts.maxDepth) or 12
+
+  if type(_G.EnumerateFrames) ~= "function" then
+    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR Dump]|r EnumerateFrames() not available in this client.")
+    return 0
+  end
+
+  local strataRank = {
+    BACKGROUND = 1,
+    LOW = 2,
+    MEDIUM = 3,
+    HIGH = 4,
+    DIALOG = 5,
+    FULLSCREEN = 6,
+    FULLSCREEN_DIALOG = 7,
+    TOOLTIP = 8,
+  }
+
+  local function safeVisible(obj)
+    if includeHidden then return true end
+    if obj and obj.IsVisible then
+      local ok, v = pcall(obj.IsVisible, obj)
+      if ok then return v and true or false end
+    end
+    return true
+  end
+
+  local function safeName(obj)
+    if obj and obj.GetName then
+      local ok, n = pcall(obj.GetName, obj)
+      if ok and n and n ~= "" then return n end
+    end
+    return nil
+  end
+
+  local roots = {}
+  local rootSet = {}
+  local rootNameSet = {}
+
+  local f = _G.EnumerateFrames()
+  while f do
+    if f ~= UIParent and safeVisible(f) then
+      local name = safeName(f)
+      if name then
+        local top = f
+        local guard = 0
+        while top and top.GetParent and top:GetParent() and top:GetParent() ~= UIParent and guard < 25 do
+          top = top:GetParent()
+          guard = guard + 1
+        end
+        if top and top ~= UIParent and safeVisible(top) and not rootSet[top] then
+          local topName = safeName(top)
+          if topName then
+            -- Don't include our own debug tools frame in dumps (it will always be visible during dumping).
+            if topName == "WOWTR_DebugToolsUIFrame" then
+              rootSet[top] = true
+            elseif rootNameSet[topName] then
+              rootSet[top] = true
+            else
+            local okS, s = pcall(top.GetFrameStrata, top)
+            local okL, lvl = pcall(top.GetFrameLevel, top)
+            local sr = (okS and strataRank[s]) or 0
+            local lv = (okL and tonumber(lvl)) or 0
+            roots[#roots + 1] = { frame = top, name = topName, score = (sr * 10000) + lv }
+            rootSet[top] = true
+            rootNameSet[topName] = true
+            end
+          end
+        end
+      end
+    end
+    f = _G.EnumerateFrames(f)
+  end
+
+  table.sort(roots, function(a, b) return a.score > b.score end)
+  if #roots > maxRoots then
+    for i = maxRoots + 1, #roots do roots[i] = nil end
+  end
+
+  Debug.AgentDumpLog("DUMP", "Debug.DumpVisibleUI", "start_visible", {
+    roots = #roots,
+    includeAll = includeAll,
+    skipNoise = skipNoise,
+    dedupe = dedupe,
+    includeHidden = includeHidden,
+    maxNodesPerRoot = maxNodesPerRoot,
+    maxDepth = maxDepth,
+  })
+
+  local totalStrings = 0
+  for i = 1, #roots do
+    local r = roots[i]
+    totalStrings = totalStrings + Debug.DumpFrameStrings(r.frame, {
+      includeHidden = includeHidden,
+      includeAll = includeAll,
+      skipNoise = skipNoise,
+      dedupe = dedupe,
+      maxNodes = maxNodesPerRoot,
+      maxDepth = maxDepth,
+      silent = true,
+    })
+  end
+
+  Debug.AgentDumpLog("DUMP", "Debug.DumpVisibleUI", "end_visible", { roots = #roots, strings = totalStrings })
+  DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Visible UI dump: roots=" .. tostring(#roots) .. ", strings=" .. tostring(totalStrings) .. " (export after /reload)")
+  return totalStrings
 end
 
 -- Categorize text by its likely UI role
@@ -261,6 +354,7 @@ end
 -- Smart dump: filters noise, dedupes, only logs missing translations by default
 function Debug.DumpFrameStrings(rootFrame, opts)
   opts = opts or {}
+  local silent = opts.silent and true or false
   local includeHidden = opts.includeHidden and true or false
   local includeAll = opts.includeAll and true or false -- false = missing only
   local skipNoise = (opts.skipNoise == nil) and true or opts.skipNoise
@@ -329,13 +423,50 @@ function Debug.DumpFrameStrings(rootFrame, opts)
 
   local rootName = safeName(rootFrame) or "root"
 
+  local function containsArabic(text)
+    if type(text) ~= "string" or text == "" then return false end
+    if type(_G.AS_ContainsArabic) == "function" then
+      local ok, v = pcall(_G.AS_ContainsArabic, text)
+      if ok then return v == true end
+    end
+    return false
+  end
+
+  local function isArabicMode()
+    local loc = rawget(_G, "WOWTR_Localization")
+    return (type(loc) == "table" and loc.lang == "AR") or false
+  end
+
   local function logString(obj, path, text, kind)
     local t = normalizeText(text)
     if not t then return end
+
+    -- Skip common non-translation UI regions by name (hotkeys, counts)
+    local objName = safeName(obj)
+    if objName and (objName:find("HotKey") or objName:find("ButtonCount") or objName:find("BackpackButtonCount") or objName:find("Count$")) then
+      if skipNoise then
+        skippedNoise = skippedNoise + 1
+        return
+      end
+    end
     
     -- Smart filter: skip noise
     if skipNoise and _isNoiseText(t) then
       skippedNoise = skippedNoise + 1
+      return
+    end
+
+    -- If this text already looks translated by WoWAR (NONBREAKINGSPACE marker), treat as translated.
+    local nbsp = rawget(_G, "NONBREAKINGSPACE")
+    if (not includeAll) and type(nbsp) == "string" and nbsp ~= "" and t:find(nbsp, 1, true) then
+      skippedHasTranslation = skippedHasTranslation + 1
+      return
+    end
+
+    -- If the string already contains Arabic characters, treat as already-localized (not "missing").
+    -- This avoids polluting missing lists with already-translated / Blizzard-localized Arabic UI text.
+    if (not includeAll) and containsArabic(t) then
+      skippedHasTranslation = skippedHasTranslation + 1
       return
     end
     
@@ -450,12 +581,14 @@ function Debug.DumpFrameStrings(rootFrame, opts)
   })
   
   -- User feedback
-  local msg = string.format(
-    "|cFF00FF00[WoWAR Dump]|r %s: |cFFFFD700%d|r strings found (|cFF808080%d noise, %d dupes, %d translated skipped|r)",
-    rootName, count, skippedNoise, skippedDupe, skippedHasTranslation
-  )
-  DEFAULT_CHAT_FRAME:AddMessage(msg)
-  DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Type |cFFFFD700/reload|r then run |cFFFFD700ExportAgentDebugLog.ps1|r to export.")
+  if not silent then
+    local msg = string.format(
+      "|cFF00FF00[WoWAR Dump]|r %s: |cFFFFD700%d|r strings found (|cFF808080%d noise, %d dupes, %d translated skipped|r)",
+      rootName, count, skippedNoise, skippedDupe, skippedHasTranslation
+    )
+    DEFAULT_CHAT_FRAME:AddMessage(msg)
+    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Type |cFFFFD700/reload|r then run |cFFFFD700Tools/ExportAgentDebugLog.ps1|r to export.")
+  end
   
   return count
 end
@@ -543,96 +676,6 @@ function Debug.ClearAgentLogs(msg)
 
   DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Logs]|r Cleared: " .. table.concat(parts, ", ") .. " (note: 1 post-clear marker log is written).")
   DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Logs]|r Run |cFFFFD700/reload|r to flush SavedVariables, then export via |cFFFFD700Tools/ExportAgentDebugLog.ps1|r.")
-end
-
--- List available frame shortcuts
-function Debug.ListDumpShortcuts()
-  DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Available shortcuts:")
-  local sorted = {}
-  for k, v in pairs(Debug.FrameShortcuts) do
-    sorted[#sorted + 1] = k
-  end
-  table.sort(sorted)
-  for _, k in ipairs(sorted) do
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700" .. k .. "|r -> " .. Debug.FrameShortcuts[k])
-  end
-  DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Or use any global frame name directly: /wowtrdump MyAddonFrame")
-end
-
--- Main slash command handler
-function Debug.HandleDumpCommand(msg)
-  msg = msg or ""
-  local args = {}
-  for word in msg:gmatch("%S+") do
-    args[#args + 1] = word:lower()
-  end
-  
-  local target = args[1]
-  local flags = {}
-  for i = 2, #args do
-    flags[args[i]] = true
-  end
-  
-  -- Special commands
-  if target == "help" or target == "?" then
-    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r Usage:")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump <frame>|r - Dump UI strings (missing translations only)")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump <frame> all|r - Include already-translated strings")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump <frame> noise|r - Include noise (numbers, counts)")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump <frame> hidden|r - Include hidden elements")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump list|r - Show available frame shortcuts")
-    DEFAULT_CHAT_FRAME:AddMessage("  |cFFFFD700/wowtrdump reset|r - Clear deduplication cache")
-    return
-  end
-  
-  if target == "list" or target == "shortcuts" then
-    Debug.ListDumpShortcuts()
-    return
-  end
-  
-  if target == "reset" or target == "clear" then
-    Debug.ResetDumpCache()
-    return
-  end
-  
-  if not target or target == "" then
-    DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR Dump]|r No frame specified. Try: /wowtrdump prof")
-    DEFAULT_CHAT_FRAME:AddMessage("  Type |cFFFFD700/wowtrdump list|r for shortcuts, or |cFFFFD700/wowtrdump help|r for options.")
-    return
-  end
-  
-  -- Resolve frame
-  local frameName = Debug.FrameShortcuts[target] or target
-  -- Try to find the frame (case-insensitive fallback)
-  local frame = _G[frameName]
-  if not frame then
-    -- Try original case from args
-    frame = _G[args[1]]
-    frameName = args[1] or frameName
-  end
-  if not frame then
-    -- Try PascalCase conversion
-    local pascal = target:gsub("^%l", string.upper):gsub("_%l", function(s) return s:sub(2):upper() end)
-    frame = _G[pascal]
-    if frame then frameName = pascal end
-  end
-  
-  if not frame then
-    DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR Dump]|r Frame not found: " .. frameName)
-    DEFAULT_CHAT_FRAME:AddMessage("  Make sure the frame is loaded (open the UI first).")
-    DEFAULT_CHAT_FRAME:AddMessage("  Type |cFFFFD700/wowtrdump list|r for available shortcuts.")
-    return
-  end
-  
-  -- Build options from flags
-  local opts = {
-    includeAll = flags["all"] or false,
-    skipNoise = not flags["noise"],
-    includeHidden = flags["hidden"] or false,
-    dedupe = not flags["nodupe"],
-  }
-  
-  Debug.DumpFrameStrings(frame, opts)
 end
 
 -- Clear prior agent logs at addon load; they are already flushed to disk on /reload before this runs.

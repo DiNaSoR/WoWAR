@@ -8,8 +8,8 @@ local Quests = ns.Quests
 local S = ns.Quests.State or {}
 
 -- Track last processed quest to avoid double processing
-_lastProcessedQuestID = _lastProcessedQuestID or 0
-_lastProcessedQuestTime = _lastProcessedQuestTime or 0
+_G._lastProcessedQuestID = _G._lastProcessedQuestID or 0
+_G._lastProcessedQuestTime = _G._lastProcessedQuestTime or 0
 
 -- Toggle quest translation on/off (keeps globals in sync)
 function Quests.ToggleTranslation()
@@ -276,7 +276,7 @@ function Quests.Start()
         local now = GetTime()
         
         -- Skip if we just processed this same quest (avoid double processing)
-        if currentQuestID > 0 and _lastProcessedQuestID == currentQuestID and (now - _lastProcessedQuestTime) < 0.5 then
+        if currentQuestID > 0 and _G._lastProcessedQuestID == currentQuestID and (now - _G._lastProcessedQuestTime) < 0.5 then
            if WOWTR and WOWTR.Debug then
              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestInfo_Display: Already processed quest", currentQuestID, "recently, skipping to avoid double processing")
            end
