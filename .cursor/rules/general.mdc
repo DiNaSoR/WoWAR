@@ -1,0 +1,158 @@
+# General Modular Architecture Guidelines (WoW AddOns, Lua 11.x)
+
+This document captures project-agnostic, reusable patterns we applied while refactoring. Use it as a living guide for future work across features and locales.
+
+## Core Principles
+
+1) Single responsibility: Each module owns one area (e.g., Gossip, Tracker, UI, Details, Utils, RTL).
+2) Clear boundaries: Keep logic isolated; expose a minimal API per module via a common namespace.
+3) Namespacing, not globals: Use the WoW namespacing pattern and avoid leaking globals.
+4) Backward compatibility: Provide thin global wrappers that delegate to the new module APIs.
+5) Explicit dependencies: Load modules in deterministic order via `.toc` and keep runtime checks defensive.
+6) Idempotent hooks: Hook once; ensure repeated calls are safe and side‑effect free.
+7) Null‑safety everywhere: Frames may be nil or not yet visible; guard all UI access.
+8) Performance: Localize hot global lookups, avoid heavy work in tight loops, and throttle updates.
+9) Configurable, not hardcoded: Abstract special cases (e.g., RTL) behind helpers; no scattered `lang == 'AR'` checks.
+
+## Recommended Structure
+
+Top‑level example (adapt paths per addon):
+
+```
+common/
+  RTL.lua                # RTL / directionality helpers
+  Quests/
+    Utils.lua            # Pure helpers (fonts, layout, formatting)
+    Gossip.lua           # Gossip toggle logic (GossipFrame / QuestFrame greeting)
+    Main.lua             # Init, buttons/hooks, save, get quest id, toggle entrypoint
+    Tracker.lua          # Objective tracker category titles + list updates
+    UI.lua               # Quest UI helpers (map details, click handlers, next objective)
+    Details.lua          # TranslateOn/Off, QuestPrepare, display constants
+Plugins/                 # Optional integration shims (Immersion, Storyline, DUI, etc.)
+Libs/                    # Third‑party libs (LibStub, Ace*, LDB, etc.)
+Locales/                 # Localized data, quest/gossip payloads per language
+```
+
+Loading order (via `.toc`), after core and libs:
+
+1) `RTL.lua`
+2) `Quests/Utils.lua`
+3) `Quests/Gossip.lua`
+4) `Quests/Main.lua`
+5) `Quests/Tracker.lua`
+6) `Quests/UI.lua`
+7) `Quests/Details.lua`
+
+Rationale: Utils first (pure helpers), then feature modules; Details last since it can depend on Utils and other data.
+
+## Namespacing Pattern
+
+Use the standard WoW pattern to prevent global collisions and share a single namespace across files:
+
+```lua
+local addonName, ns = ...
+ns = ns or {}
+ns.Quests = ns.Quests or {}
+-- Define submodules under ns.Quests.*
+```
+
+Expose functions as module methods (e.g., `ns.Quests.Details.TranslateOn`) and keep global wrappers only for back‑compat.
+
+## Wrapper vs. Implementation
+
+- Implementation lives inside `ns.*` modules.
+- Thin wrappers keep legacy global function names and immediately delegate, e.g.:
+
+```lua
+function QTR_Translate_On(typ, event)
+  if ns and ns.Quests and ns.Quests.Details and ns.Quests.Details.TranslateOn then
+    return ns.Quests.Details.TranslateOn(typ, event)
+  end
+end
+```
+
+Guideline: wrappers do not duplicate logic. They only route calls to the new module API.
+
+## RTL / Directionality
+
+Isolate all directionality logic in `RTL.lua` so UI code stays clean and language‑agnostic.
+
+- `RTL.IsRTL()`: single truth for directionality.
+- `RTL.JustifyFontString(fontString, defaultJustify)`: use for alignment.
+- `RTL.ApplyOptionButtonLayout(button)`: positions icon/text for RTL vs LTR.
+
+Never scatter `lang == 'AR'` across feature modules — call the RTL helpers instead.
+
+## UI + ScrollBox Patterns
+
+- Use ScrollBox pools’ `ProcessActiveObjects` or enumerators; avoid stale references.
+- After `SetText/SetFont`, re‑measure and optionally `Resize()`.
+- For buttons with icons, compute text padding from icon width; don’t hardcode offsets.
+- Do not assume regions exist — detect first FontString via a helper and guard nils.
+
+## Hooks & Events
+
+- Hook once per frame/function; idempotent lambdas preferred.
+- Prefer WoW API hooks like `hooksecurefunc` over overwriting.
+- Delay dependent work until frames are visible (e.g., via `C_Timer.After` or a safe wait helper).
+
+## Performance & Safety
+
+- Localize hot globals: `local strsub, gsub = string.sub, string.gsub`, etc.
+- Avoid string concatenation in tight loops; precompute where possible.
+- Batch updates when possible (e.g., compute, then apply once to the frame).
+- Guard every UI access: the frame or region may be nil or not yet created.
+
+## Data & SavedVariables
+
+- Initialize saved variables once with defaults.
+- Treat saved data as untrusted (nil‑check, type‑check) before use.
+
+## Compatibility & API Stability
+
+- Keep global function names via thin wrappers for third‑party compatibility.
+- Additive changes: prefer adding new module APIs over breaking old ones.
+- Version detection: use `GetBuildInfo()` or feature detection before using new APIs.
+
+## Code Style & Conventions
+
+- Module files define public functions on `ns.<Feature>.*`.
+- Use descriptive names: `TranslateOn`, `QuestPrepare`, `ObjectiveTrackerFrame_Titles`.
+- Keep function bodies focused; large chunks split across files (`UI`, `Tracker`, `Details`).
+- Use consistent justification behavior via RTL helpers.
+
+## Migration Strategy (Refactors)
+
+1) Create new module and implement the logic there.
+2) Add wrapper(s) that immediately delegate to the module.
+3) Update `.toc` ordering to load the module before wrappers are called.
+4) Keep wrappers for back‑compat; remove legacy bodies when safe.
+5) Extract special‑case logic (e.g., RTL, Utils) into dedicated helpers.
+
+## Example: Gossip Toggle (Pattern)
+
+```lua
+-- Quests/Gossip.lua
+function ns.Quests.Gossip.ToggleNPCGossip()
+  local isRTL = ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL() or false
+  -- 1) Apply greeting text based on isRTL
+  -- 2) Set option buttons via Utils.ApplyOptionButtonLayout(button, isRTL)
+end
+
+-- Legacy wrapper (compat)
+function GS_ON_OFF()
+  return ns.Quests.Gossip.ToggleNPCGossip()
+end
+```
+
+## Checklist Before Shipping
+
+- [ ] Wrappers delegate to modules; no duplicate logic
+- [ ] `.toc` load order valid for all locales/addons
+- [ ] All directionality via `ns.RTL.*` helpers
+- [ ] Defensive nil‑checks on frames and regions
+- [ ] Hooks idempotent; no double work
+- [ ] Saved variables initialized with defaults
+- [ ] No new global leaks
+- [ ] Verified on newest build (11.x) with feature detection where needed
+

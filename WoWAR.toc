@@ -1,22 +1,26 @@
-﻿## Interface: 100207, 110000
-## Version: v10.03
-## Title: WoWAR |cff8080ff10.02|r
+﻿## Interface: 110205, 110207, 120000
+## Title: WoWAR |cff8080ffv12.00|r
+## Version: 12.00
 ## Notes: World of Warcraft in Arabic.
-## Author: Platine & Dragonarab
+## Authors: Platine, Dragonarab[DiNaSoR]
 ## E-mail: Dragonarab@gmail.com
 ## WWW: https://www.wowar.co
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## IconTexture: Interface\AddOns\WoWAR\Fonts\images\wia.blp
-## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, CH_PM, WoWTR_minimapDB
+## IconTexture: Interface\AddOns\WoWAR\Images\wia.blp
+## SavedVariables: QTR_PS, QTR_SAVED, QTR_MISSING, QTR_GOSSIP, BB_PM, BB_PS, BB_TR, MF_PM, MF_PS, TT_PS, TT_TUTORIALS, BT_PM, BT_SAVED, ST_PM, ST_PS, ST_PH, CH_PM, WoWTR_minimapDB, WOWTR_DB
 
-Libs\LibStub\LibStub.lua
-Libs\AceAddon-3.0\AceAddon-3.0.lua
-Libs\AceConsole-3.0\AceConsole-3.0.lua
-Libs\AceDB-3.0\AceDB-3.0.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+common\Libs\LibStub\LibStub.lua
+common\Libs\AceAddon-3.0\AceAddon-3.0.lua
+common\Libs\AceConsole-3.0\AceConsole-3.0.lua
+common\Libs\AceDB-3.0\AceDB-3.0.lua
+common\Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+common\Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+common\Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+common\Libs\LibSharedMedia-3.0\lib.xml
+common\Libs\AceGUI-3.0\AceGUI-3.0.xml
+common\Libs\AceConfig-3.0\AceConfig-3.0.xml
+common\Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 
 Translations\QuestData_AR.lua
 Translations\Gossip_AR.lua
@@ -27,15 +31,65 @@ Translations\TutorialsData7_AR.lua
 Translations\Books_AR.lua
 Translations\Tooltips_AR.lua
 
-WoW_Arabic_Reshaper.lua
 WoW_Localization_AR.lua
-WoW_Quests.lua
-WoW_Bubbles.lua
-WoW_MovieSubtitles.lua
-WoW_Tutorials.lua
-WoW_Books.lua
-WoW_Tooltips.lua
+Changelog_AR.lua
+common/Core/State.lua
+common/Core/Debug.lua
+common/Core/LegacyBridge.lua
+common/Core/Main.lua
+common/Core/Compat.lua
+common/Core/HookUtils.lua
+common/UI/Fonts.lua
+common/Config/Helpers.lua
+common/Config/Core.lua
+common/Config/ControlCenter/Templates.xml
+common/Config/ControlCenter/Util.lua
+common/Config/ControlCenter/ScrollView.lua
+common/Config/ControlCenter/ScrollBar.lua
+common/Config/ControlCenter/Registry.lua
+common/Config/ControlCenter/Apply.lua
+common/Config/ControlCenter/SettingsPanel.lua
+common/Config/ControlCenter/SettingsPanelRegistry.lua
+common/Tooltips/State.lua
+common/Tooltips/Utils.lua
+common/Tooltips/Main.lua
+common/Tooltips/Hooks.lua
+common/Tooltips/GameTooltip.lua
+common/UI/Translate.lua
+common/UI/AdventureGuide.lua
+common/UI/GroupFinder.lua
+common/UI/Frames.lua
+common/Config/Main.lua
+common/Config/Minimap.lua
+
+WoW_Arabic_Reshaper.lua
+common/RTL.lua
+common/Quests/State.lua
+common/Quests/Utils.lua
+common/Quests/Gossip.lua
+common/Quests/Main.lua
+common/Quests/Tracker.lua
+common/Quests/UI.lua
+common/Quests/Details.lua
+common/Quests/Integrations.lua
+common/Text.lua
+common/Bubbles/State.lua
+common/Bubbles/Utils.lua
+common/Bubbles/Main.lua
+common/Movies/State.lua
+common/Movies/Utils.lua
+common/Movies/Main.lua
+common/Tutorials/State.lua
+common/Tutorials/Utils.lua
+common/Tutorials/Main.lua
+common/Books/Main.lua
+common/UI/Changelog.lua
+common/UI/DebugUI.lua
 WoW_Chat.lua
 
-WoWAR.lua
-WoW_Config.lua
+common/Plugins/ClassicQuestLogPlugin.lua
+common/Plugins/ImmersionPlugin.lua
+common/Plugins/StorylinePlugin.lua
+common/Plugins/DUIPlugin.lua
+common/UI/Professions.lua
+common/UI/Talents.lua
