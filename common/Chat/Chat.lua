@@ -22,7 +22,11 @@ local CH_ActiveEditBox = nil;    -- tracks the editbox currently receiving input
 local CH_BSize = 14;            -- default size of chat bubbles
 
 -- fonty z arabskimi znakami
-CH_Font = WOWTR_Font2;
+-- SavedVariables (declared in `WoWAR.toc`). Ensure the table exists before any callbacks run.
+---@type table<string, any>
+CH_PM = CH_PM or {}
+
+local CH_Font = WOWTR_Font2;
 -------------------------------------------------------------------------------------------------------
 
 local function CH_bubblizeText()
@@ -38,8 +42,9 @@ local function CH_bubblizeText()
             -- This is hopefully the frame with the content
                for i = 1, child:GetNumRegions() do
                   local region = select(i, child:GetRegions());
+                  local act_font
                   if (CH_PM["setsize"]=="1") then
-                     act_font = tonumber(CH_PM["fontsize"]);
+                     act_font = tonumber(CH_PM["fontsize"]) or CH_BSize;
                   else
                      act_font = CH_BSize;
                   end
@@ -135,7 +140,7 @@ end
 
 -------------------------------------------------------------------------------------------------------
 
-local function CH_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
+local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, lineID, ...)
    if (CH_PM["active"]=="0") then
       return false;     -- wyświetlaj tekst oryginalny w oknie czatu
    end
@@ -201,7 +206,9 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
       if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Processing player:", playerFullName, "| Name for UnitClass:", playerNameOnly) end
 
       -- Try to get the class name and color using pcall for safety
-      local success, className = pcall(UnitClass, playerNameOnly);
+      local success, classNameOrErr = pcall(UnitClass, playerNameOnly);
+      ---@type string?
+      local className = success and classNameOrErr or nil
       local classNameUpper = nil -- Variable to hold the uppercase version
 
       -- Debugging Output 2: Show result of UnitClass
@@ -209,8 +216,7 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
            if success then
                print("|cFF00FF00WoWAR Debug:|r UnitClass result for", playerNameOnly, "is:", className or "nil")
            else
-               print("|cFFFF0000WoWAR Debug:|r UnitClass call failed for", playerNameOnly, ":", className) -- className holds error msg here
-               className = nil
+               print("|cFFFF0000WoWAR Debug:|r UnitClass call failed for", playerNameOnly, ":", tostring(classNameOrErr))
            end
        end
 
@@ -240,7 +246,7 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
 
       -- Construct the player link using the correct names and determined color
       -- Note: We still display the original Capitalized playerNameOnly, just use classNameUpper for color lookup
-      local playerLink = GetPlayerLink(playerFullName, ("[|c"..playerColorStr.."%s|r]"):format(playerNameOnly), arg11);
+      local playerLink = GetPlayerLink(playerFullName, ("[|c"..playerColorStr.."%s|r]"):format(playerNameOnly), lineID);
 
       -- Debugging Output 5: Show the final link generated
       if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Generated playerLink:", playerLink or "nil") end
@@ -1075,11 +1081,12 @@ function CHAT_START()
    CH_InsertButton = CreateFrame("Button", nil, DEFAULT_CHAT_FRAME.editBox, "UIPanelButtonTemplate");
    CH_InsertButton:SetWidth(28);
    CH_InsertButton:SetHeight(20);
-   CH_InsertButton.Text:SetFont(CH_Font, 14, _C);
+   local _, _, insertFlags = DEFAULT_CHAT_FRAME:GetFont()
+   CH_InsertButton.Text:SetFont(CH_Font, 14, insertFlags or "");
    CH_InsertButton:SetText("←");
    CH_InsertButton:Hide();
    CH_InsertButton:ClearAllPoints();
-   if (Prat) then       -- jest aktywny dodatek Prat
+   if (C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Prat-3.0")) then       -- jest aktywny dodatek Prat
       CH_InsertButton:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME.editBox, "TOPRIGHT", -2, -1);
    else
       CH_InsertButton:SetPoint("TOPLEFT", DEFAULT_CHAT_FRAME.editBox, "TOPRIGHT", -9, -6);
@@ -1310,10 +1317,10 @@ function CH_CreateTestLine()
    CH_TestLine.ScrollFrame.ScrollBar:ClearAllPoints();
    CH_TestLine.ScrollFrame.ScrollBar:SetPoint("TOPLEFT", CH_TestLine.ScrollFrame, "TOPRIGHT", -12, -18);
    CH_TestLine.ScrollFrame.ScrollBar:SetPoint("BOTTOMRIGHT", CH_TestLine.ScrollFrame, "BOTTOMRIGHT", -7, 15);
-   CHchild = CreateFrame("Frame", nil, CH_TestLine.ScrollFrame);
+   local CHchild = CreateFrame("Frame", nil, CH_TestLine.ScrollFrame);
    CHchild:SetSize(552,100);
    CHchild.bg = CHchild:CreateTexture(nil, "BACKGROUND");
-   CHchild.bg:SetAllPoints(true);
+   CHchild.bg:SetAllPoints();
    CHchild.bg:SetColorTexture(0, 0.05, 0.1, 0.8);
    CH_TestLine.ScrollFrame:SetScrollChild(CHchild);
    CH_TestLine.text = CHchild:CreateFontString(nil, "OVERLAY", "GameFontHighlight");
@@ -1348,7 +1355,7 @@ function CH_LineChat(txt, font_size)
       local char2 = "";
       local last_space = 0;
       while (pos > 0) do       -- UWAGA: tekst arabski jest podany wprost, od prawej: sprawdzaj długość od prawej
-         c = strbyte(txt, pos);
+         local c = strbyte(txt, pos);
          while (c >= 128) and (c <= 191) do
             pos = pos - 1;
             c = strbyte(txt, pos);
@@ -1373,7 +1380,7 @@ function CH_LineChat(txt, font_size)
             last_space = last_space + 1;
          end
          if (link_start_stop == false) then           -- nie jesteśmy wewnątrz linku - można sprawdzać
-            if (Prat) then       -- jest aktywny dodatek Prat
+            if (C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Prat-3.0")) then       -- jest aktywny dodatek Prat
                CH_TestLine.text:SetWidth(DEFAULT_CHAT_FRAME:GetWidth()-(0.35*font_size+0.8)*10);     -- czas w dodatku Prat zabiera nam miejsce
             else
                CH_TestLine.text:SetWidth(DEFAULT_CHAT_FRAME:GetWidth());
@@ -1410,7 +1417,7 @@ function CH_AddSpaces(txt, snd)                                 -- snd = second 
    if (CH_TestLine == nil) then     -- a own frame for displaying the translation of texts and determining the length
       CH_CreateTestLine();
    end   
-   if ((Prat) and (snd==0)) then       -- jest aktywny dodatek Prat
+   if ((C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Prat-3.0")) and (snd==0)) then       -- jest aktywny dodatek Prat
       CH_TestLine.text:SetWidth(DEFAULT_CHAT_FRAME:GetWidth()-(0.35*_sizeC+0.8)*10);     -- czas w dodatku Prat zabiera nam miejsce
    else
       CH_TestLine.text:SetWidth(DEFAULT_CHAT_FRAME:GetWidth());
@@ -1475,16 +1482,20 @@ function CH_SpecifyBubbleWidth(str_txt, reg)
    local vlines = CH_mysplit(str_txt,"\n");
    local _fontR, _sizeR, _R = reg:GetFont();   -- odczytaj aktualną czcionkę i rozmiar
    local max_width = 20;
+   local bubbleFontSize = CH_BSize
+   if (CH_PM and CH_PM["setsize"]=="1") then
+      bubbleFontSize = tonumber(CH_PM["fontsize"]) or CH_BSize
+   end
    for _, v in ipairs(vlines) do 
       if (CH_TestLine == nil) then     -- a own frame for displaying the translation of texts and determining the length
          CH_CreateTestLine();
       end   
       CH_TestLine:Hide();     -- the frame is invisible in the game
       CH_TestLine.text:SetFont(_fontR, _sizeR, _R);
-      local newTextWidth = (0.35*act_font+0.8)*AS_UTF8len(v)*1.5;  -- maksymalna szerokość okna dymku
+      local newTextWidth = (0.35*bubbleFontSize+0.8)*AS_UTF8len(v)*1.5;  -- maksymalna szerokość okna dymku
       CH_TestLine.text:SetWidth(newTextWidth);
       CH_TestLine.text:SetText(v);
-      local minTextWidth = (0.35*act_font+0.8)*AS_UTF8len(v)*0.8;  -- minimalna szerokość ograniczająca pętlę
+      local minTextWidth = (0.35*bubbleFontSize+0.8)*AS_UTF8len(v)*0.8;  -- minimalna szerokość ograniczająca pętlę
       
       while ((CH_TestLine.text:GetHeight() < _sizeR*1.5) and (minTextWidth < newTextWidth)) do
          newTextWidth = newTextWidth - 5;
@@ -1512,7 +1523,7 @@ function CH_LineReverse(s, limit)
       local counter = 0;
       local char1;
       while (pos > 0) do
-         c = strbyte(s, pos);                      -- read the character (odczytaj znak)
+         local c = strbyte(s, pos);                      -- read the character (odczytaj znak)
          while c >= 128 and c <= 191 do
             pos = pos - 1;                         -- cofnij się na początek litery UTF-8
             c = strbyte(s, pos);

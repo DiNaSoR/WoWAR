@@ -78,6 +78,8 @@ function Quests.Details.TranslateOn(typ,event)
    -- which can overwrite our translated Arabic text. The post-layout ticker exists to
    -- re-apply the translation after those late UI updates.
    
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
+   
    if WOWTR and WOWTR.Debug then
      WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn called with typ:", typ, "event:", event or "nil")
      WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QTR_quest_ID:", QTR_quest_ID)
@@ -127,7 +129,7 @@ function Quests.Details.TranslateOn(typ,event)
 
    if (typ==1) then
       local numer_ID = QTR_quest_ID
-      str_ID = tostring(numer_ID)
+      local str_ID = tostring(numer_ID)
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Checking quest data for ID:", str_ID)
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QTR_QuestData[str_ID] exists:", QTR_QuestData and QTR_QuestData[str_ID] ~= nil)
@@ -819,6 +821,7 @@ end
 
 -- Display original English text
 function Quests.Details.TranslateOff(typ,event)
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
    Quests.Details.CancelPostLayoutRefresh()
    QTR_display_constants(0)
    -- When used as a "fallback to English" (no translation available / feature disabled),
@@ -856,7 +859,7 @@ function Quests.Details.TranslateOff(typ,event)
    local function restoreMapRewards()
      if not (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) then return end
      local df = (QuestMapFrame.QuestsFrame and QuestMapFrame.QuestsFrame.DetailsFrame) or QuestMapFrame.DetailsFrame
-     local mapRewards = (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame) or _G.MapQuestInfoRewardsFrame
+     local mapRewards = (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame) or rawget(_G, "MapQuestInfoRewardsFrame")
      if not mapRewards then return end
 
      local inv = {}
@@ -991,7 +994,7 @@ function Quests.Details.TranslateOff(typ,event)
    end
    if (typ==1) then
       local numer_ID = QTR_quest_ID
-      str_ID = tostring(numer_ID)
+      local str_ID = tostring(numer_ID)
 
       -- Always restore LTR layout + original header labels, even if the quest has no translation data.
       -- This prevents mixed UI states like Arabic "الوصف" and RTL alignment on English-only quests.
@@ -1149,7 +1152,8 @@ function Quests.Details.TranslateOff(typ,event)
       end
    else
       if (QTR_curr_trans == "0") then
-         if ((ImmersionFrame ~= nil ) and (ImmersionFrame.TalkBox:IsVisible() )) then
+         local immersionFrame = GetImmersionFrame()
+         if (immersionFrame and immersionFrame.TalkBox and immersionFrame.TalkBox:IsVisible()) then
             if (not WOWTR_wait(0.2,QTR_Immersion_OFF_Static)) then end
          end
       end
@@ -1166,6 +1170,7 @@ function QTR_PrepareReload() return Quests.Details.QuestPrepare() end
 -- Prepare quest data and switch translated view on
 function Quests.Details.QuestPrepare(event)
   local startTime = GetTime()
+  local QTR_QuestData = rawget(_G, "QTR_QuestData")
   if WOWTR and WOWTR.Debug then
     WOWTR.Debug.Enter("QuestPrepare", WOWTR.Debug.Categories.QUESTS, "Event:", event or "nil", "| Time:", startTime)
   end
@@ -1230,7 +1235,7 @@ function Quests.Details.QuestPrepare(event)
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REPROCESS | Quest", q_ID, "was processed but text appears untranslated | Allowing ONE reprocessing attempt")
         end
         -- Reset the timestamp so we can process it again, but mark that we've tried reprocessing
-        _lastProcessedQuestTime = 0
+        _G["_lastProcessedQuestTime"] = 0
       else
         if WOWTR and WOWTR.Debug then
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed recently | Time since last:", string.format("%.2f", now - _lastProcessedQuestTime), "s")
@@ -1239,8 +1244,8 @@ function Quests.Details.QuestPrepare(event)
       end
     end
     -- Mark that we're processing this quest now
-    _lastProcessedQuestID = q_ID
-    _lastProcessedQuestTime = now
+    _G["_lastProcessedQuestID"] = q_ID
+    _G["_lastProcessedQuestTime"] = now
     -- Clear reprocess flag when starting fresh processing
     local reprocessKey = "_reprocess_" .. q_ID
     _G[reprocessKey] = nil
@@ -1704,6 +1709,7 @@ end
 -- Remove delegator stubs that would override real implementations
 
 function Quests.Details.DisplayConstants(lg)
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
    local str_ID = QTR_quest_ID and tostring(QTR_quest_ID) or nil
    local questDataExists = str_ID and QTR_QuestData and QTR_QuestData[str_ID]
    local questLGData = questDataExists and QTR_quest_LG and QTR_quest_LG[QTR_quest_ID]
@@ -1969,7 +1975,7 @@ function Quests.Details.DisplayConstants(lg)
                 or (QuestMapFrame and QuestMapFrame.DetailsFrame)
               local mapRewards =
                 (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame)
-                or _G.MapQuestInfoRewardsFrame
+                or rawget(_G, "MapQuestInfoRewardsFrame")
               if mapRewards and mapRewards.GetRegions then
                 local function norm(s)
                   if not s then return "" end

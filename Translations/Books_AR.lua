@@ -1,5 +1,6 @@
-﻿-- Arabic database of translated books
+-- Arabic database of translated books
 -- for the addon WoWinArabic-Books
+---@diagnostic disable: duplicate-index
 
 BT_lang = "AR";         -- translation language
 BT_type = "Reshaped";   -- type of saving text

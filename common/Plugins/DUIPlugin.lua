@@ -47,6 +47,7 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Handle gossip DUI on/off toggling
 function DUIPlugin.GossipDUI_ON_OFF()
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    if (QTR_curr_goss == "1") then      -- Turn off translation - show original text
       QTR_curr_goss = "0"
       QTR_ToggleButton6:SetText("GH="..tostring(QTR_curr_hash).." (EN)")
@@ -72,6 +73,8 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Handle DUI Gossip Frame
 function DUIPlugin.QTR_DUIGossipFrame()
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
+   local GS_Gossip = rawget(_G, "GS_Gossip")
    QTR_ToggleButton6:Show()
    QTR_ToggleButton7:Hide()
    
@@ -105,7 +108,7 @@ function DUIPlugin.QTR_DUIGossipFrame()
          local _font1, _size1, _1 = fontString:GetFont()     -- odczytaj aktualną czcionkę i rozmiar
          fontString:SetFont(WOWTR_Font2,_size1)
          local firstHeight = fontString:GetHeight()
-         gossipX = gossip[countFontString] or ''
+         local gossipX = gossip[countFontString] or ''
          if (WOWTR_Localization.lang == 'AR') then
             fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2))
          else
@@ -163,6 +166,7 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Check if the current frame is a DUI quest frame
 function DUIPlugin.IsDUIQuestFrame()
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    if (DUIQuestFrame ~= nil) then        -- jest uruchomiony dodatek DialogueUI
       if (QTR_ToggleButton6 == nil) then    -- przycisk w oknie tekstu gossip
          -- przycisk z Hash gossip
@@ -214,6 +218,7 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Handle DUI buttons translation
 function DUIPlugin.QTR_DUIbuttons()
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    local DUI_AcceptButton = DUIQuestFrame.AcceptButton.Content.Name
    ST_CheckAndReplaceTranslationText(DUI_AcceptButton, true, "ui", false, true)
 
@@ -224,6 +229,7 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Handle DUI quest frame dialog on/off toggling
 function DUIPlugin.DUI_ON_OFF()
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    if (QTR_curr_dialog == "1") then      -- Turn off translation - show original text
       QTR_curr_dialog = "0"
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." (EN)")
@@ -239,7 +245,7 @@ function DUIPlugin.DUI_ON_OFF()
       end
    else                                  -- Show translation
       QTR_curr_dialog = "1"
-      QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")")
+      QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..WOWTR_Localization.lang..")")
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1, 18)
          if (WOWTR_Localization.lang == 'AR') then
@@ -273,6 +279,7 @@ end
 -------------------------------------------------------------------------------------------------------------------
 -- Handle DUI quest frame
 function DUIPlugin.QTR_DUIQuestFrame(event)
+   local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    print("DUIPlugin.QTR_DUIQuestFrame called with event: " .. (event or "nil"))
    QTR_ToggleButton7:Show()
    QTR_ToggleButton6:Hide()

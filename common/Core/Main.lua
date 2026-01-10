@@ -354,7 +354,7 @@ function Core.OnEvent(self, event, name, ...)
         end
       if QTR_Storyline_Quest then Core.Wait(1, QTR_Storyline_Quest) end
     end
-    if QTR_ObjectiveTracker_Check then Core.Wait(1, QTR_ObjectiveTracker_Check) end
+    -- (cleanup) removed orphaned QTR_ObjectiveTracker_Check hook
   elseif (event == "GOSSIP_SHOW") then
     if (QTR_PS and QTR_PS["active"] == "1" and QTR_PS["gossip"] == "1") then
       if DUIPlugin and IsDUIQuestFrame and IsDUIQuestFrame() then
