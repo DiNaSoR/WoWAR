@@ -9,7 +9,7 @@ DUIPlugin = {}
 -- Process font strings for gossip dialog UI
 function DUIPlugin.ProcessGossipFontStrings(fontString, countFontString)
    if (QTR_curr_goss == "1") then   -- Show translations
-      if (WoWTR_Localization.lang == 'AR') then
+      if (WOWTR_Localization.lang == 'AR') then
          fontString:SetText(GossipDUI_LN[countFontString])
          fontString:SetJustifyH("RIGHT")
       else
@@ -29,7 +29,7 @@ end
 function DUIPlugin.ProcessGossipButtonStrings(buttonString, count2FontString)
    local fontString = buttonString.Content.Name
    if (QTR_curr_goss == "1") then   -- Show translations
-      if (WoWTR_Localization.lang == 'AR') then
+      if (WOWTR_Localization.lang == 'AR') then
          fontString:SetText(Gossip2DUI_LN[count2FontString])
          fontString:SetJustifyH("LEFT")
       else
@@ -52,7 +52,7 @@ function DUIPlugin.GossipDUI_ON_OFF()
       QTR_ToggleButton6:SetText("GH="..tostring(QTR_curr_hash).." (EN)")
    else                                -- Show translation
       QTR_curr_goss = "1"
-      QTR_ToggleButton6:SetText("GH="..tostring(QTR_curr_hash).." ("..WoWTR_Localization.lang..")")
+      QTR_ToggleButton6:SetText("GH="..tostring(QTR_curr_hash).." ("..WOWTR_Localization.lang..")")
    end
    
    local countFontString = 0
@@ -106,7 +106,7 @@ function DUIPlugin.QTR_DUIGossipFrame()
          fontString:SetFont(WOWTR_Font2,_size1)
          local firstHeight = fontString:GetHeight()
          gossipX = gossip[countFontString] or ''
-         if (WoWTR_Localization.lang == 'AR') then
+         if (WOWTR_Localization.lang == 'AR') then
             fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2))
          else
             fontString:SetText(QTR_ExpandUnitInfo(gossipX.." ",false,fontString,WOWTR_Font2))
@@ -229,7 +229,7 @@ function DUIPlugin.DUI_ON_OFF()
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." (EN)")
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(Original_Font1, 18)
-         if (WoWTR_Localization.lang == 'AR') then
+         if (WOWTR_Localization.lang == 'AR') then
             DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_quest_EN[QTR_quest_ID].title)
             DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("LEFT")
          else
@@ -242,7 +242,7 @@ function DUIPlugin.DUI_ON_OFF()
       QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..QTR_lang..")")
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1, 18)
-         if (WoWTR_Localization.lang == 'AR') then
+         if (WOWTR_Localization.lang == 'AR') then
             DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestProgressTitleText, WOWTR_Font1))
             DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT")
          else
@@ -257,7 +257,7 @@ function DUIPlugin.DUI_ON_OFF()
       countFontString = countFontString + 1
       if (QTR_curr_dialog == "1") then   -- Show translations
          fontString:SetText(DialogueUI_LN[countFontString])
-         if (WoWTR_Localization.lang == 'AR') then
+         if (WOWTR_Localization.lang == 'AR') then
             fontString:SetJustifyH("RIGHT")
          else
             fontString:SetJustifyH("LEFT")
@@ -282,7 +282,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
    if (QTR_PS["transtitle"] == "1") then
       print("Setting title font and text")
       DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1, 18)
-      if (WoWTR_Localization.lang == 'AR') then
+      if (WOWTR_Localization.lang == 'AR') then
          DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestProgressTitleText, WOWTR_Font1))
          DUIQuestFrame.FrontFrame.Header.Title:SetJustifyH("RIGHT")
       else
@@ -370,7 +370,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
          
          if (event == "QUEST_DETAIL" and DetailsX) then
             print("Processing QUEST_DETAIL text")
-            if (WoWTR_Localization.lang == 'AR') then
+            if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(DetailsX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
             else
@@ -379,7 +379,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
             end
          elseif (event == "QUEST_PROGRESS" and ProgressX) then
             print("Processing QUEST_PROGRESS text")
-            if (WoWTR_Localization.lang == 'AR') then
+            if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(ProgressX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
             else
@@ -388,7 +388,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
             end
          elseif (event == "QUEST_COMPLETE" and CompletionX) then
             print("Processing QUEST_COMPLETE text")
-            if (WoWTR_Localization.lang == 'AR') then
+            if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(CompletionX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
             else
@@ -397,7 +397,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
             end
          elseif (objectivesNow) then
             print("Processing Objectives text")
-            if (WoWTR_Localization.lang == 'AR') then
+            if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
                objectivesNow = false        -- Objectives is in one long row?
@@ -408,7 +408,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
             end
          elseif (rewardsNow) then
             print("Processing Rewards text")
-            if (WoWTR_Localization.lang == 'AR') then
+            if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemreceive, false, fontString, WOWTR_Font2))
                fontString:SetJustifyH("RIGHT")
                rewardsNow = false        -- Rewards is in one long row?

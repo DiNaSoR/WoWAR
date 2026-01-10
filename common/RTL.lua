@@ -8,7 +8,7 @@ local RTL = ns.RTL
 
 -- Return true if current language should use RTL layout
 function RTL.IsRTL()
-   return (type(WoWTR_Localization) == "table" and WoWTR_Localization.lang == 'AR') or false
+   return (type(WOWTR_Localization) == "table" and WOWTR_Localization.lang == 'AR') or false
 end
 
 -- Safely justify a FontString: RIGHT for RTL, otherwise defaultJustify (LEFT if omitted)

@@ -288,8 +288,8 @@ function M.MountJournalButton()
       MountJournal,
       TT_PS,
       "ui4",
-      WoWTR_Localization.WoWTR_enDESC,
-      WoWTR_Localization.WoWTR_trDESC,
+      WOWTR_Localization.WoWTR_enDESC,
+      WOWTR_Localization.WoWTR_trDESC,
       { "TOPLEFT", MountJournal, "TOPRIGHT", -170, 0 },
       function()
         M.MountJournal()
@@ -486,7 +486,7 @@ end
 
 -- ItemRef Tooltip
 local ignoreList = {}
-if WoWTR_Localization.lang == 'TR' then
+if WOWTR_Localization.lang == 'TR' then
   ignoreList = {
     "Head", "Neck", "Shoulder", "Back", "Chest", "Tabard", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger", "Trinket"
   }

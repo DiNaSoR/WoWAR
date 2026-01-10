@@ -9,7 +9,7 @@ function WOWTR.Config.Groups.ChatAR()
   return WOWTR.Config.MakeTab("chatAR", {
     order = 6,
     name = function() return WOWTR.Config.Label("chatService", "Arabic Chat") end,
-    hidden = function() return not (WoWTR_Localization and WoWTR_Localization.lang == 'AR') end,
+    hidden = function() return not (WOWTR_Localization and WOWTR_Localization.lang == 'AR') end,
     args = {
       basics = {
         type = "group", inline = true, order = 1,

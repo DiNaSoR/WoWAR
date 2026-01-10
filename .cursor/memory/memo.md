@@ -1,6 +1,6 @@
 # WoWLang / WoWAR – Project Memo
 
-Last updated: 2026-01-03
+Last updated: 2026-01-10
 
 ## High signal (current state)
 
@@ -13,6 +13,7 @@ Last updated: 2026-01-03
 - Arabic font application is centralized in `common/UI/Fonts.lua`.
 - UI translation is data-driven via `common/UI/Translate.lua`; ad-hoc per-frame logic is discouraged.
 - RTL detection is centralized via `ns.RTL.IsRTL()`; raw locale checks are deprecated.
+- Primary localization globals are `WOWTR_Localization` and `WOWTR_Config_Interface` (legacy `WoWTR_*` names are aliases only).
 - All legacy `ST_*` globals are registered only in `common/Core/Compat.lua`.
 - Hook/ticker wiring uses shared helpers from `common/Core/HookUtils.lua`.
 - Primary settings UI is the Plumber-style **ControlCenter panel** in `common/Config/ControlCenter/*` (AceConfig UI is disabled).

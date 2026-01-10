@@ -190,7 +190,7 @@ function GT.OnShow()
     if (shownMoneyFrames) then
       for i = 1, shownMoneyFrames, 1 do
         local moneyFrameName = GameTooltip:GetName() .. "MoneyFrame" .. i
-        _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WoWTR_Localization.sellPrice))
+        _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WOWTR_Localization.sellPrice))
         _font1, _size1, _1 = _G[moneyFrameName .. "PrefixText"]:GetFont()
         _G[moneyFrameName .. "PrefixText"]:SetFont(WOWTR_Font2, _size1)
         if (ST_PM["sellprice"] == "1") then
@@ -275,7 +275,7 @@ function GT.OnShow()
             if (ST_pomoc5 and (ST_pomoc5 > 22)) then
               ST_miasto = string.sub(ST_leftText, 21, ST_pomoc5 - 1)
             else
-              ST_miasto = WoWTR_Localization.your_home
+              ST_miasto = WOWTR_Localization.your_home
             end
             ST_pomoc6, _ = string.find(ST_leftText, ' Min Cooldown)')
             if (ST_pomoc6) then
@@ -298,7 +298,7 @@ function GT.OnShow()
               local endBy = string.find(ST_leftText, ">")
               local nameBy = string.sub(ST_leftText, ST_pomoc7 + 9, endBy - 1)
               ST_tlumaczenie = ST_TooltipsHS[ST_hash]
-              if (WoWTR_Localization.lang == 'AR') then
+              if (WOWTR_Localization.lang == 'AR') then
                 ST_tlumaczenie = string.gsub(ST_tlumaczenie, "NAMEBY", string.reverse(nameBy))
                 ST_tlumaczenie = string.gsub(ST_tlumaczenie, "{$M}", string.reverse(nameBy))
               else
@@ -544,7 +544,7 @@ function GT.OnShow()
     
     -- Apply or reset RTL justification for tooltips (must happen AFTER all text is set)
     -- Set RIGHT if Arabic text is found, otherwise reset to LEFT (justification persists between shows)
-    if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+    if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
       local numLinesToJustify = GameTooltip:NumLines()
       local hasArabic = false
       -- Check if any line contains Arabic text
@@ -679,7 +679,7 @@ function GT.ElvSpellBookTooltipOnShow()
   end
 
   -- Apply or reset RTL justification for ElvUI SpellBook tooltip
-  if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+  if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
     local numLinesToJustify = ST_MyGameTooltip:NumLines()
     local hasArabic = false
     for i = 1, numLinesToJustify do
@@ -727,7 +727,7 @@ function GT.BuffOrDebuff()
       ST_MyGameTooltip:ClearAllPoints()
       ST_MyGameTooltip:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", 0, 0)
       ST_MyGameTooltip:ClearLines()
-      if (WoWTR_Localization.lang == 'AR') then
+      if (WOWTR_Localization.lang == 'AR') then
         ST_MyGameTooltip:AddLine(QTR_ExpandUnitInfo(ST_tlumaczenie, false, ST_MyGameTooltip, WOWTR_Font2), leftColR, leftColG, leftColB, true)
       else
         ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true)
@@ -739,7 +739,7 @@ function GT.BuffOrDebuff()
         _G["ST_MyGameTooltipTextLeft3"]:SetFont(WOWTR_Font2, 12)
       end
       -- Apply or reset RTL justification for buff/debuff tooltip
-      if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+      if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
         local numLinesToJustify = ST_MyGameTooltip:NumLines()
         local hasArabic = false
         for i = 1, numLinesToJustify do
@@ -792,7 +792,7 @@ function GT.CurrentEquipped(obj)
       if (objShown) then
         for i = 1, objShown, 1 do
           local moneyFrameName = obj:GetName() .. "MoneyFrame" .. i
-          _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WoWTR_Localization.sellPrice))
+          _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WOWTR_Localization.sellPrice))
           _font1, _size1, _1 = _G[moneyFrameName .. "PrefixText"]:GetFont()
           _G[moneyFrameName .. "PrefixText"]:SetFont(WOWTR_Font2, _size1)
           if (ST_PM["sellprice"] == "1") then
@@ -807,9 +807,9 @@ function GT.CurrentEquipped(obj)
       if (ST_leftText) then
         if (string.find(ST_leftText, NONBREAKINGSPACE) == nil) then
           if (ST_leftText == "Currently Equipped") then
-            ST_info = WoWTR_Localization.currentlyEquipped
+            ST_info = WOWTR_Localization.currentlyEquipped
           elseif (ST_leftText == "Equipped With") then
-            ST_info = WoWTR_Localization.additionalEquipped
+            ST_info = WOWTR_Localization.additionalEquipped
           else
             ST_info = ST_leftText
           end
@@ -929,7 +929,7 @@ function GT.CurrentEquipped(obj)
       end
 
       -- Apply or reset RTL justification for compare tooltips
-      if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+      if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
         local objName = obj:GetName()
         local numLinesToJustify = obj:NumLines()
         local hasArabic = false

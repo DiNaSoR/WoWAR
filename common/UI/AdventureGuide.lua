@@ -293,8 +293,8 @@ function M.AdventureGuideButton()
       EncounterJournal,
       TT_PS,
       "ui5",
-      WoWTR_Localization.WoWTR_enDESC,
-      WoWTR_Localization.WoWTR_trDESC,
+      WOWTR_Localization.WoWTR_enDESC,
+      WOWTR_Localization.WoWTR_trDESC,
       { "TOPLEFT", EncounterJournal, "TOPRIGHT", -170, 0 },
       function()
         M.ClickBosses()

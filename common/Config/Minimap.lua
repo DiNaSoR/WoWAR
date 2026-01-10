@@ -36,7 +36,7 @@ if LDB and LDBIcon then
 
   local function OpenMinimapMenu(ownerButton)
     local menu = {
-      { text = QTR_ReverseIfAR((WoWTR_Localization and WoWTR_Localization.optionTitle) or "WoWLang"), isTitle = true, notCheckable = true },
+      { text = QTR_ReverseIfAR((WOWTR_Localization and WOWTR_Localization.optionTitle) or "WoWLang"), isTitle = true, notCheckable = true },
       { text = QTR_ReverseIfAR("Open"), notCheckable = true, func = OpenConfig },
       {
         text = WOWTR.Config and WOWTR.Config.Label and WOWTR.Config.Label("showMinimapIcon", "Show minimap icon") or QTR_ReverseIfAR("Show minimap icon"),
@@ -69,7 +69,7 @@ if LDB and LDBIcon then
   WOWTR_minimapButton = LDB:NewDataObject("WOWTR_LDB", {
     type = "data source",
     text = "WOWTR_LDB",
-    icon = WoWTR_Localization.mainFolder .. "\\Images\\icon.png",
+    icon = WOWTR_Localization.mainFolder .. "\\Images\\icon.png",
     OnClick = function(btn, mouseButton)
       if mouseButton == "RightButton" then
         OpenMinimapMenu(btn)
@@ -78,12 +78,12 @@ if LDB and LDBIcon then
       end
     end,
     OnTooltipShow = function(tooltip)
-      if (WoWTR_Localization.lang == 'AR') then
-        tooltip:SetText("|cff8080ff" .. WOWTR_version .. "|r " .. QTR_ReverseIfAR(WoWTR_Localization.optionTitle));
+      if (WOWTR_Localization.lang == 'AR') then
+        tooltip:SetText("|cff8080ff" .. WOWTR_version .. "|r " .. QTR_ReverseIfAR(WOWTR_Localization.optionTitle));
       else
-        tooltip:SetText(QTR_ReverseIfAR(WoWTR_Localization.optionTitle) .. " |cff8080ff" .. WOWTR_version .. "|r");
+        tooltip:SetText(QTR_ReverseIfAR(WOWTR_Localization.optionTitle) .. " |cff8080ff" .. WOWTR_version .. "|r");
       end
-      tooltip:AddLine("|cffffffff" .. QTR_ReverseIfAR(WoWTR_Localization.addonIconDesc) .. "|r");
+      tooltip:AddLine("|cffffffff" .. QTR_ReverseIfAR(WOWTR_Localization.addonIconDesc) .. "|r");
       if WOWTR and WOWTR.Fonts and WOWTR.Fonts.Apply then
         WOWTR.Fonts.Apply(tooltip)
       end

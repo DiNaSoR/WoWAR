@@ -87,7 +87,7 @@ function C.SyncGlobalsFromDB()
       WOWTR_Font2 = fontPath
     end
   elseif p.quests.FontFile and WOWTR_Fonts and #WOWTR_Fonts > 1 then
-    WOWTR_Font2 = WoWTR_Localization.mainFolder .. "\\Fonts\\" .. p.quests.FontFile
+    WOWTR_Font2 = WOWTR_Localization.mainFolder .. "\\Fonts\\" .. p.quests.FontFile
   end
 end
 
@@ -104,13 +104,13 @@ end
 
 local function RegisterLSMFonts()
   if not LSM then return end
-  if not WoWTR_Localization then return end
+  if not WOWTR_Localization then return end
   if WOWTR_Font1 then LSM:Register("font", "WoWLang Font1", WOWTR_Font1) end
   if WOWTR_Font2 then LSM:Register("font", "WoWLang Font2", WOWTR_Font2) end
   if WOWTR_Fonts and type(WOWTR_Fonts) == "table" then
     for _, filename in ipairs(WOWTR_Fonts) do
       local name = tostring(filename):gsub("%.ttf$", "")
-      local path = WoWTR_Localization.mainFolder .. "\\Fonts\\" .. filename
+      local path = WOWTR_Localization.mainFolder .. "\\Fonts\\" .. filename
       LSM:Register("font", "WoWLang " .. name, path)
     end
   end
@@ -242,8 +242,8 @@ local function HookAceConfigDialogChrome()
       tex:SetHeight(80)
     end
     local path
-    if WoWTR_Localization and WoWTR_Localization.mainFolder then
-      path = WoWTR_Localization.mainFolder .. "\\Images\\bannar.png"
+    if WOWTR_Localization and WOWTR_Localization.mainFolder then
+      path = WOWTR_Localization.mainFolder .. "\\Images\\bannar.png"
     end
     if path then container.WOWTR_Banner:SetTexture(path) end
     container.WOWTR_Banner:Show()
@@ -317,7 +317,7 @@ end
 -- Tooltip hooking/font templating is owned by the Tooltips module (see `common/Tooltips/Hooks.lua`).
 
 local function GetOptionTitle()
-  return QTR_ReverseIfAR(WoWTR_Localization and WoWTR_Localization.optionTitle or "WoWLang")
+  return QTR_ReverseIfAR(WOWTR_Localization and WOWTR_Localization.optionTitle or "WoWLang")
 end
 
 local function BuildOptions()

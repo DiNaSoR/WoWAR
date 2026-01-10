@@ -7,7 +7,7 @@ function CreateToggleButton(parentFrame, settingsTable, settingKey, onText, offT
 
    local function SetupButton(button, text)
       button:SetSize(120, 22)
-      if (WoWTR_Localization and WoWTR_Localization.lang == 'AR' and text == (WoWTR_Localization.WoWTR_trDESC or text)) then
+      if (WOWTR_Localization and WOWTR_Localization.lang == 'AR' and text == (WOWTR_Localization.WoWTR_trDESC or text)) then
          button:SetText(QTR_ReverseIfAR(text))
          button:GetFontString():SetFont(WOWTR_Font2, 13)
       else
@@ -50,12 +50,12 @@ end
 
 
 -- Lightweight label helper for Ace3 options
--- Uses WoWTR_Config_Interface key when present (and reverses only then),
+-- Uses WOWTR_Config_Interface key when present (and reverses only then),
 -- otherwise returns the provided English fallback without reversal.
 WOWTR = WOWTR or {}
 WOWTR.Config = WOWTR.Config or {}
 function WOWTR.Config.Label(key, fallback)
-  local v = (WoWTR_Config_Interface and WoWTR_Config_Interface[key]) or nil
+  local v = (WOWTR_Config_Interface and WOWTR_Config_Interface[key]) or nil
   if v and v ~= "" then
     local rev = _G.QTR_ReverseIfAR
     if type(rev) == "function" then
@@ -70,7 +70,7 @@ end
 
 -- Return localized text without RTL reversal (used when the caller handles reversing).
 function WOWTR.Config.LabelRaw(key, fallback)
-  local v = (WoWTR_Config_Interface and WoWTR_Config_Interface[key]) or nil
+  local v = (WOWTR_Config_Interface and WOWTR_Config_Interface[key]) or nil
   if v and v ~= "" then
     return v
   end

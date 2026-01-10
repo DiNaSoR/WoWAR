@@ -13,7 +13,7 @@ function Core.DebugPrint(...)
     WOWTR.Debug.Normal(WOWTR.Debug.Categories.GENERAL, ...)
   elseif WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debug then
     -- Fallback to simple debug print
-    local prefix = "|cFF00FF00WoWTR Debug:|r"
+    local prefix = "|cFF00FF00WOWTR Debug:|r"
     print(prefix, ...)
   end
 end
@@ -113,7 +113,7 @@ function Core.CheckVars()
 
   -- Font selection for legacy quest/gossip rendering (depends on QTR_PS["FontFile"]).
   if (WOWTR_Fonts and #WOWTR_Fonts > 1) then
-    WOWTR_Font2 = WoWTR_Localization.mainFolder .. "\\Fonts\\" .. (QTR_PS["FontFile"] or WOWTR_Fonts[1])
+    WOWTR_Font2 = WOWTR_Localization.mainFolder .. "\\Fonts\\" .. (QTR_PS["FontFile"] or WOWTR_Fonts[1])
   end
 
   if (not QTR_PS.firstTimeLoaded) then
@@ -174,12 +174,12 @@ function Core.OnChatMsgAddon(who, msg)
   if (tonumber(msg) > tonumber(WOWTR_version)) then
     local currentTime = GetTime()
     if (currentTime - WOWTR_lastNotificationTime) > WOWTR_notificationCooldown then
-      print("|cffffff00" .. WoWTR_Localization.addonName .. "|r - " .. WoWTR_Localization.newVersionAvailable .. " |cffffff00" .. msg .. "|r")
+      print("|cffffff00" .. WOWTR_Localization.addonName .. "|r - " .. WOWTR_Localization.newVersionAvailable .. " |cffffff00" .. msg .. "|r")
       UIErrorsFrame:SetTimeVisible(10)
-      if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
-        UIErrorsFrame:AddMessage(QTR_ReverseIfAR(WoWTR_Localization.addonName .. " - " .. WoWTR_Localization.newVersionAvailable .. WOWTR_AnsiReverse(msg)), 1, 0.5, 1)
+      if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
+        UIErrorsFrame:AddMessage(QTR_ReverseIfAR(WOWTR_Localization.addonName .. " - " .. WOWTR_Localization.newVersionAvailable .. WOWTR_AnsiReverse(msg)), 1, 0.5, 1)
       else
-        UIErrorsFrame:AddMessage(WoWTR_Localization.addonName .. " - " .. WoWTR_Localization.newVersionAvailable .. msg, 1, 0.5, 1)
+        UIErrorsFrame:AddMessage(WOWTR_Localization.addonName .. " - " .. WOWTR_Localization.newVersionAvailable .. msg, 1, 0.5, 1)
       end
       WOWTR_lastNotificationTime = currentTime
     end
@@ -188,7 +188,7 @@ end
 
 -- Event dispatcher
 function Core.OnEvent(self, event, name, ...)
-  if (event == "ADDON_LOADED" and WoWTR_Localization and name == WoWTR_Localization.addonFolder) then
+  if (event == "ADDON_LOADED" and WOWTR_Localization and name == WOWTR_Localization.addonFolder) then
     self:UnregisterEvent("ADDON_LOADED")
     self:RegisterEvent("QUEST_ACCEPTED")
     self:RegisterEvent("QUEST_DETAIL")
@@ -222,7 +222,7 @@ function Core.OnEvent(self, event, name, ...)
       if WOWTR and WOWTR.DebugUI and WOWTR.DebugUI.Toggle then
         WOWTR.DebugUI.Toggle()
       else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WoWTR Debug:|r Debug UI not available")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WOWTR Debug:|r Debug UI not available")
       end
     end
     SLASH_WOWTR_DEBUG1 = "/wdebug"
@@ -230,7 +230,7 @@ function Core.OnEvent(self, event, name, ...)
     Core.CheckVars()
     if QTR_START then QTR_START() end
     if Config_OnEnable then Config_OnEnable() end
-    if (WoWTR_Localization and WoWTR_Localization.lang == 'AR' and CHAT_START) then CHAT_START() end
+    if (WOWTR_Localization and WOWTR_Localization.lang == 'AR' and CHAT_START) then CHAT_START() end
 
     if TutorialFrame and TT_onTutorialShow then TutorialFrame:HookScript("OnShow", TT_onTutorialShow) end
     if (not PlayerChoiceFrame) then PlayerChoice_LoadUI() end
@@ -280,7 +280,7 @@ function Core.OnEvent(self, event, name, ...)
 
     if BB_OknoTRonline then BB_OknoTRonline() end
 
-    WOWTR_ADDON_PREFIX = WoWTR_Localization.addonName .. "_ver"
+    WOWTR_ADDON_PREFIX = WOWTR_Localization.addonName .. "_ver"
     if WOWTR_EventFrame and WOWTR_EventFrame.RegisterEvent then
       WOWTR_EventFrame:RegisterEvent("CHAT_MSG_ADDON")
     else
@@ -289,8 +289,8 @@ function Core.OnEvent(self, event, name, ...)
     end
     C_ChatInfo.RegisterAddonMessagePrefix(WOWTR_ADDON_PREFIX)
 
-    DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. WoWTR_Localization.addonName .. "  ver. " .. WOWTR_version .. " - " .. WoWTR_Localization.started)
-    if ((not QTR_PS["welcome"]) and WoWTR_Config_Interface and (string.len(WoWTR_Config_Interface.welcomeText or "") > 1)) then
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. WOWTR_Localization.addonName .. "  ver. " .. WOWTR_version .. " - " .. WOWTR_Localization.started)
+    if ((not QTR_PS["welcome"]) and WOWTR_Config_Interface and (string.len(WOWTR_Config_Interface.welcomeText or "") > 1)) then
       if WOWTR_WelcomePanel then WOWTR_WelcomePanel() end
     end
   elseif (event == "PLAYER_ENTERING_WORLD") then
@@ -418,7 +418,7 @@ if ((GetLocale() == "enUS") or (GetLocale() == "enGB")) then
   WOWTR_EventFrame:SetScript("OnEvent", WOWTR_onEvent)
   WOWTR_EventFrame:RegisterEvent("ADDON_LOADED")
 else
-  DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. (WoWTR_Localization and WoWTR_Localization.addonName or addonName) .. "|r  ver. " .. (WOWTR_version or "") .. " - add-on is not active because it was run in Locale |cffffff00" .. GetLocale())
+  DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. (WOWTR_Localization and WOWTR_Localization.addonName or addonName) .. "|r  ver. " .. (WOWTR_version or "") .. " - add-on is not active because it was run in Locale |cffffff00" .. GetLocale())
 end
 
 

@@ -9,7 +9,7 @@ local function IsArabicUI()
    if WOWTR and WOWTR.Fonts and type(WOWTR.Fonts.IsArabic) == "function" then
       return WOWTR.Fonts.IsArabic()
    end
-   return (WoWTR_Localization and WoWTR_Localization.lang == "AR") and true or false
+   return (WOWTR_Localization and WOWTR_Localization.lang == "AR") and true or false
 end
 
 local function ApplyArabicStorylineFixes()
@@ -68,7 +68,7 @@ function StorylinePlugin.isStoryline()
          QTR_ToggleButton5 = CreateFrame("Button",nil, Storyline_NPCFrameChat, "UIPanelButtonTemplate")
          QTR_ToggleButton5:SetWidth(150)
          QTR_ToggleButton5:SetHeight(20)
-         QTR_ToggleButton5:SetText(QTR_ReverseIfAR(WoWTR_Localization.choiceQuestFirst))
+         QTR_ToggleButton5:SetText(QTR_ReverseIfAR(WOWTR_Localization.choiceQuestFirst))
          QTR_ToggleButton5:ClearAllPoints()
          QTR_ToggleButton5:SetPoint("BOTTOMLEFT", Storyline_NPCFrameChat, "BOTTOMLEFT", 244, -16)
          QTR_ToggleButton5:SetScript("OnClick", QTR_ON_OFF)
@@ -116,7 +116,7 @@ end
 function StorylinePlugin.QTR_Storyline_Objectives()
    if (QTR_PS["active"]=="1" and QTR_PS["storyline"]=="1" and QTR_quest_ID>0) then
       local string_ID= tostring(QTR_quest_ID)
-      Storyline_NPCFrameObjectivesContent.Title:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives))
+      Storyline_NPCFrameObjectivesContent.Title:SetText(QTR_ReverseIfAR(WOWTR_Localization.objectives))
       Storyline_NPCFrameObjectivesContent.Title:SetFont(WOWTR_Font1, 13)
       if (QTR_QuestData[string_ID] ) then
          Storyline_NPCFrameObjectivesContent.Objectives:SetText(QTR_ExpandUnitInfo(QTR_QuestData[string_ID]["Objectives"],true,Storyline_NPCFrameObjectivesContent.Objectives,WOWTR_Font2,-40))
@@ -161,7 +161,7 @@ end
 
 function StorylinePlugin.QTR_Storyline_Rewards()
    if (QTR_PS["active"]=="1" and QTR_PS["storyline"]=="1") then
-      Storyline_NPCFrameRewards.Content.Title:SetText(QTR_ReverseIfAR(WoWTR_Localization.rewards))
+      Storyline_NPCFrameRewards.Content.Title:SetText(QTR_ReverseIfAR(WOWTR_Localization.rewards))
    end
 end
 

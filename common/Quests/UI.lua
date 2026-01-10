@@ -12,8 +12,8 @@ function Quests.UI.QuestScrollFrame_OnShow()
    if (QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1") then
       if (QuestScrollFrame.Contents.StoryHeader.Progress and QuestScrollFrame.Contents.StoryHeader.Progress:GetText()) then
          local txt = QuestScrollFrame.Contents.StoryHeader.Progress:GetText()
-         txt = string.gsub(txt, "Story Progress", QTR_ReverseIfAR(WoWTR_Localization.storyLineProgress))
-         txt = string.gsub(txt, "Chapters", QTR_ReverseIfAR(WoWTR_Localization.storyLineChapters))
+         txt = string.gsub(txt, "Story Progress", QTR_ReverseIfAR(WOWTR_Localization.storyLineProgress))
+         txt = string.gsub(txt, "Chapters", QTR_ReverseIfAR(WOWTR_Localization.storyLineChapters))
          local _font1, _size1 = QuestScrollFrame.Contents.StoryHeader.Progress:GetFont()
          QuestScrollFrame.Contents.StoryHeader.Progress:SetText(txt)
          QuestScrollFrame.Contents.StoryHeader.Progress:SetFont(WOWTR_Font2, _size1)

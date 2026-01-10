@@ -54,7 +54,7 @@ function Movies.ShowCinematicSubtitles()
       local gl_MF_Hash = _G["MF_Hash"]
       local gl_BB_Bubbles = _G["BB_Bubbles"]
       if (gl_BB_Bubbles and gl_BB_Bubbles[hash2]) or (gl_MF_Hash and gl_MF_Hash[hash2]) then
-        if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
           local output = "r|" .. WOWTR_AnsiReverse(string.sub(replaced, 1, p1 - 1)) .. " :0099FFFFc| " .. WOW_ZmienKody((gl_BB_Bubbles and gl_BB_Bubbles[hash2]) or (gl_MF_Hash and gl_MF_Hash[hash2]))
           fs:SetText(QTR_ExpandUnitInfo(output, false, fs, WOWTR_Font1) .. NONBREAKINGSPACE)
           shouldSaveEN = false
@@ -132,10 +132,10 @@ function Movies.PlayMovie(movieID)
     S.confirmQuestionMovie:ClearAllPoints()
     S.confirmQuestionMovie:SetPoint("CENTER", MovieFrame.CloseDialog, "CENTER", 0, 6)
     S.confirmQuestionMovie:SetFont(WOWTR_Font2, 13)
-    S.confirmQuestionMovie:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovie))
+    S.confirmQuestionMovie:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovie))
   end
-  MovieFrame.CloseDialog.ConfirmButton:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovieYes))
-  MovieFrame.CloseDialog.ResumeButton:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovieNo))
+  MovieFrame.CloseDialog.ConfirmButton:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovieYes))
+  MovieFrame.CloseDialog.ResumeButton:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovieNo))
   U.applyFontToButtonFontStrings(MovieFrame.CloseDialog.ConfirmButton, WOWTR_Font2, 15)
   U.applyFontToButtonFontStrings(MovieFrame.CloseDialog.ResumeButton, WOWTR_Font2, 15)
 
@@ -158,10 +158,10 @@ function Movies.CinematicStart()
     S.confirmQuestionCinematic:ClearAllPoints()
     S.confirmQuestionCinematic:SetPoint("CENTER", CinematicFrameCloseDialog, "CENTER", 0, 6)
     S.confirmQuestionCinematic:SetFont(WOWTR_Font2, 13)
-    S.confirmQuestionCinematic:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovie))
+    S.confirmQuestionCinematic:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovie))
   end
-  CinematicFrameCloseDialogConfirmButton:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovieYes))
-  CinematicFrameCloseDialogResumeButton:SetText(QTR_ReverseIfAR(WoWTR_Localization.stopTheMovieNo))
+  CinematicFrameCloseDialogConfirmButton:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovieYes))
+  CinematicFrameCloseDialogResumeButton:SetText(QTR_ReverseIfAR(WOWTR_Localization.stopTheMovieNo))
   U.applyFontToButtonFontStrings(CinematicFrameCloseDialogConfirmButton, WOWTR_Font2, 15)
   U.applyFontToButtonFontStrings(CinematicFrameCloseDialogResumeButton, WOWTR_Font2, 15)
 

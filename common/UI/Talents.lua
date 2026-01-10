@@ -4,14 +4,14 @@
 -- Depends on global functions/variables:
 --   ST_CheckAndReplaceTranslationTextUI, ST_CheckAndReplaceTranslationText, ST_RenkKoduSil,
 --   ST_OriginalTextCache, ST_OriginalFontCache, ST_OriginalJustifyCache, StartTicker,
---   WoWTR_Localization, QTR_ReverseIfAR, NONBREAKINGSPACE, TT_PS, ST_UsunZbedneZnaki, StringHash,
+--   WOWTR_Localization, QTR_ReverseIfAR, NONBREAKINGSPACE, TT_PS, ST_UsunZbedneZnaki, StringHash,
 --   ST_TooltipsHS, WOWTR_Font2, QTR_ExpandUnitInfo, ST_TranslatePrepare, ST_SetText, ST_PM, ST_PH,
 --   WOWTR_player_class, ST_PrzedZapisem
 -------------------------------------------------------------------------------------------------------
 
 -- ADDED: Check if the dependency function exists early on
 if not _G.CreateToggleButton then
-    -- print("WoWTR Talents: CRITICAL ERROR - CreateToggleButton function not found in global scope!")
+    -- print("WOWTR Talents: CRITICAL ERROR - CreateToggleButton function not found in global scope!")
 end
 
 local addonName, ns = ...
@@ -20,7 +20,7 @@ local UI = ns.UI and ns.UI.Translate
 local RTL = ns.RTL
 
 local function isRTL()
-    return (RTL and RTL.IsRTL and RTL.IsRTL()) or (type(WoWTR_Localization) == "table" and WoWTR_Localization.lang == "AR") or false
+    return (RTL and RTL.IsRTL and RTL.IsRTL()) or (type(WOWTR_Localization) == "table" and WOWTR_Localization.lang == "AR") or false
 end
 
 local function uiFont()
@@ -100,7 +100,7 @@ local function RevertElementState(element)
         if originalFontInfo then
             local success, err = pcall(element.SetFont, element, unpack(originalFontInfo))
             --[[if not success then
-                print("WoWTR Revert: Error reverting font for " .. elementName .. " - " .. tostring(err))
+                print("WOWTR Revert: Error reverting font for " .. elementName .. " - " .. tostring(err))
             end]]
             ST_OriginalFontCache[element] = nil -- Clear cache after reverting
         end
@@ -112,7 +112,7 @@ local function RevertElementState(element)
         if originalJustifyH then
             local success, err = pcall(element.SetJustifyH, element, originalJustifyH)
             --[[if not success then
-                print("WoWTR Revert: Error reverting justifyH for " .. elementName .. " - " .. tostring(err))
+                print("WOWTR Revert: Error reverting justifyH for " .. elementName .. " - " .. tostring(err))
             end]]
             ST_OriginalJustifyCache[element] = nil -- Clear cache after reverting
         end
@@ -472,7 +472,7 @@ local TalentUpdateVisibility -- Function to update button visibility
 function UpdateTalentToggleButtonState(parentFrame)
     if not parentFrame then return end
     if not _G.CreateToggleButton then
-        -- print("WoWTR Talents: ERROR - CreateToggleButton function is nil!")
+        -- print("WOWTR Talents: ERROR - CreateToggleButton function is nil!")
         return
     end
 
@@ -482,8 +482,8 @@ function UpdateTalentToggleButtonState(parentFrame)
             parentFrame,
             TT_PS,
             "ui_talents",
-            WoWTR_Localization.WoWTR_enDESC,
-            WoWTR_Localization.WoWTR_trDESC,
+            WOWTR_Localization.WoWTR_enDESC,
+            WOWTR_Localization.WoWTR_trDESC,
             { "TOPRIGHT", parentFrame, "TOPRIGHT", -65, 0 }, -- Position args
             function()                                       -- OnClick handler
                 -- When toggled, update all relevant parts of the UI based on current state
@@ -512,7 +512,7 @@ function UpdateTalentToggleButtonState(parentFrame)
             TalentUpdateVisibility = result -- Store the visibility update function returned by CreateToggleButton
             isTalentButtonCreated = true
         else
-            -- print("WoWTR Talents: CreateToggleButton failed:", success and "nil returned" or tostring(result))
+            -- print("WOWTR Talents: CreateToggleButton failed:", success and "nil returned" or tostring(result))
             return -- Don't proceed if button creation failed
         end
     end
@@ -520,7 +520,7 @@ function UpdateTalentToggleButtonState(parentFrame)
     -- Update button visibility if the function exists
     if TalentUpdateVisibility then
         local visSuccess, visError = pcall(TalentUpdateVisibility)
-        -- if not visSuccess then print("WoWTR Talents: Error calling TalentUpdateVisibility:", tostring(visError)) end
+        -- if not visSuccess then print("WOWTR Talents: Error calling TalentUpdateVisibility:", tostring(visError)) end
     end
 
     -- Hook TalentsTab OnShow if needed (only needs to happen once per session)
@@ -568,9 +568,11 @@ local function HookPlayerSpellsFrameForButton()
         -- Clean up if necessary
         -- end)
 
+        -- Mark as hooked (use WOWTR prefix; keep legacy field in sync to avoid double-hooking).
+        PlayerSpellsFrame.WOWTRSpellsHooked = true
         PlayerSpellsFrame.WoWTRSpellsHooked = true
         playerSpellsFrameHooked = true
-        -- print("WoWTR Talents: PlayerSpellsFrame hooked successfully.")
+        -- print("WOWTR Talents: PlayerSpellsFrame hooked successfully.")
 
         -- Stop the timer check once hooked
         if playerSpellsFrameCheckTimer then
@@ -581,7 +583,7 @@ local function HookPlayerSpellsFrameForButton()
     end
 
     -- Already hooked scenario
-    if PlayerSpellsFrame and PlayerSpellsFrame.WoWTRSpellsHooked then
+    if PlayerSpellsFrame and (PlayerSpellsFrame.WOWTRSpellsHooked or PlayerSpellsFrame.WoWTRSpellsHooked) then
         playerSpellsFrameHooked = true
         if playerSpellsFrameCheckTimer then
             playerSpellsFrameCheckTimer:Cancel()
@@ -609,7 +611,7 @@ function StartPlayerSpellsFrameCheck()
                 -- Inside the timer, attempt to hook again
                 if HookPlayerSpellsFrameForButton() then
                     -- Timer's job is done once hooked (Hook function cancels timer)
-                    -- print("WoWTR Talents: Timer found and hooked PlayerSpellsFrame.")
+                    -- print("WOWTR Talents: Timer found and hooked PlayerSpellsFrame.")
                 end
             end)
         end
@@ -625,7 +627,8 @@ local initFrame = CreateFrame("Frame")
 initFrame:RegisterEvent("ADDON_LOADED")
 initFrame:SetScript("OnEvent", function(self, event, addonName)
     -- Check if this addon is loaded or potentially trigger on a core Blizzard addon load
-    if addonName == "WoWTR" or addonName == "Blizzard_PlayerSpells" then -- Check against your addon name
+    local myAddon = (WOWTR_Localization and WOWTR_Localization.addonFolder) or "WoWAR"
+    if addonName == myAddon or addonName == "Blizzard_PlayerSpells" then
         StartPlayerSpellsFrameCheck()
 
         -- Hook the SpecFrame content update (adjust hook point if needed)

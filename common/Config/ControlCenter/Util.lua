@@ -19,7 +19,7 @@ local LandingPageUtil = CC.LandingPageUtil
 -- -----------------------------------------------------------------------------
 
 local function GetBaseFolder()
-  return (WoWTR_Localization and WoWTR_Localization.mainFolder) or "Interface\\AddOns\\WoWAR"
+  return (WOWTR_Localization and WOWTR_Localization.mainFolder) or "Interface\\AddOns\\WoWAR"
 end
 
 local function PathJoin(base, rel)

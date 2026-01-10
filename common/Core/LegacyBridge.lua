@@ -37,7 +37,7 @@ local function setAt(root, path, value)
 end
 
 local function isArabic()
-  return (WoWTR_Localization and WoWTR_Localization.lang == "AR") and true or false
+  return (WOWTR_Localization and WOWTR_Localization.lang == "AR") and true or false
 end
 
 local function asValue(v)

@@ -109,7 +109,7 @@ local function IsArabicUI()
     if WOWTR and WOWTR.Fonts and type(WOWTR.Fonts.IsArabic) == "function" then
         return WOWTR.Fonts.IsArabic()
     end
-    return (WoWTR_Localization and WoWTR_Localization.lang == "AR") and true or false
+    return (WOWTR_Localization and WOWTR_Localization.lang == "AR") and true or false
 end
 
 local function ShapeTextIfArabic(text)

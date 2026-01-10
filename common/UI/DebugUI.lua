@@ -124,9 +124,9 @@ function DebugUI.CreateFrame()
       end
       -- Show feedback message
       if checked then
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WoWTR Debug:|r [" .. cat.label .. "] Enabled")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WOWTR Debug:|r [" .. cat.label .. "] Enabled")
       else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WoWTR Debug:|r [" .. cat.label .. "] Disabled")
+        DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00WOWTR Debug:|r [" .. cat.label .. "] Disabled")
       end
     end)
 

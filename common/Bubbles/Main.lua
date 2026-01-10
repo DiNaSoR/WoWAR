@@ -422,7 +422,7 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
 
       if (BB_PM["chat-tr"] == "1") then
         local _fontC, _sizeC, _C = DEFAULT_CHAT_FRAME:GetFont()
-        if (WoWTR_Localization and WoWTR_Localization.lang ~= 'TR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang ~= 'TR') then
           DEFAULT_CHAT_FRAME:SetFont(WOWTR_Font2, _sizeC, _C)
         end
         if (nr_poz > 0) then

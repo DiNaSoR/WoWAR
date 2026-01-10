@@ -68,7 +68,7 @@ end
 
 -- Color codes for different message types
 local Colors = {
-  PREFIX = "|cFF00FF00",      -- Green for "WoWTR Debug:"
+  PREFIX = "|cFF00FF00",      -- Green for "WOWTR Debug:"
   SUCCESS = "|cFF00FF00",     -- Green for success messages
   ERROR = "|cFFFF0000",       -- Red for errors
   WARNING = "|cFFFFFF00",     -- Yellow for warnings
@@ -153,7 +153,7 @@ end
 function Debug.Print(category, verbosity, ...)
   if not Debug.ShouldPrint(category, verbosity) then return end
   
-  local prefix = Colors.PREFIX .. "WoWTR Debug:" .. Colors.RESET
+  local prefix = Colors.PREFIX .. "WOWTR Debug:" .. Colors.RESET
   local categoryName = category or "general"
   local categoryColor = CategoryColors[categoryName] or Colors.INFO
   

@@ -244,7 +244,7 @@ function ST_TranslatePrepare(origin, tlumacz)
   local isRTL = false
   if ns and ns.RTL and ns.RTL.IsRTL then
     isRTL = ns.RTL.IsRTL()
-  elseif _G.WoWTR_Localization and _G.WoWTR_Localization.lang == 'AR' then
+  elseif _G.WOWTR_Localization and _G.WOWTR_Localization.lang == 'AR' then
     isRTL = true
   end
   

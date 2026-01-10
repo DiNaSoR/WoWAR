@@ -155,7 +155,7 @@ function Text.WOW_ZmienKody(message, target)
       effectivePlayerSex = override
     end
   end
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     msg = string.gsub(msg, "{N}", "YOUR_NAME")
     msg = string.gsub(msg, "{B}", "NEW_LINE")
     msg = string.gsub(msg, "{R}", "YOUR_RACE")
@@ -186,7 +186,7 @@ function Text.WOW_ZmienKody(message, target)
 
   msg = string.gsub(msg, "NEW_LINE", "\n")
 
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     if (effectivePlayerSex == 3) then
       msg = string.gsub(msg, "YOUR_CLASS", player_class_table.F)
     else
@@ -213,7 +213,7 @@ function Text.WOW_ZmienKody(message, target)
   -- Substitute player/target names.
   -- In AR locale, many strings will be reversed later for RTL display. To keep LTR names readable,
   -- we pre-reverse them ONLY when the surrounding string contains Arabic (and therefore will be RTL-processed).
-  local shouldAnsiReverse = (WoWTR_Localization and WoWTR_Localization.lang == 'AR') and Text.ContainsArabic(msg)
+  local shouldAnsiReverse = (WOWTR_Localization and WOWTR_Localization.lang == 'AR') and Text.ContainsArabic(msg)
   local function maybeAnsiReverse(s)
     if not s then return "" end
     if shouldAnsiReverse then
@@ -232,7 +232,7 @@ function Text.WOW_ZmienKody(message, target)
   end
 
   if (string.find(msg, "NPC_GENDER")) then
-    if (WoWTR_Localization.lang == 'AR') then
+    if (WOWTR_Localization.lang == 'AR') then
       if (QTR_NPC_GENDER == 'F') then
         msg = string.gsub(msg, "NPC_GENDER", "F")
       else
@@ -244,7 +244,7 @@ function Text.WOW_ZmienKody(message, target)
   end
 
   if (string.find(msg, "YOUR_GENDER")) then
-    if (WoWTR_Localization.lang == 'AR') then
+    if (WOWTR_Localization.lang == 'AR') then
       if (effectivePlayerSex == 3) then
         msg = string.gsub(msg, "YOUR_GENDER", "F")
       else
@@ -300,7 +300,7 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
   if (msg == nil) then msg = "" end
   msg = Text.WOW_ZmienKody(msg)
 
-  if ((WoWTR_Localization and WoWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
+  if ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
     local _font = WOWTR_Font2
     local AR_size = 13
     if AR_obj.GetFont then
@@ -366,7 +366,7 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
 end
 
 function Text.ReverseIfAR(txt)
-  if (txt and WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (txt and WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     local msg = Text.WOW_ZmienKody(txt)
     if not Text.ContainsArabic(msg) then
       return msg
@@ -415,7 +415,7 @@ end
 function Text.AnsiReverse(txt)
   if not txt then return "" end
   local text = txt
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     text = string.reverse(text)
   end
   return text

@@ -2,7 +2,7 @@
 -- Authors: Platine, Dragonarab[DiNaSoR]
 -------------------------------------------------------------------------------------------------------
 
-WoWTR_Localization = {
+WOWTR_Localization = {
    lang = "AR",
    started = "|cFF87CEEBﻲﻔﻜﺗ ﻢﻜﺗﺍﻮﻋﺩ ..ﻢﻜﻴﻓ ﷲ ﻙﺭﺎﺑ|r |T524354:16:16:0:0|t", -- addon was started
    mainFolder = "Interface\\AddOns\\WoWAR", -- main folder for addon files
@@ -64,6 +64,11 @@ WoWTR_Localization = {
    newVersionAvailable = "إﺻﺪار ﺟﺪﻳﺪ ﻣﻦ اﻟﻮﻇﻴﻔﺔ اﻹﺿﺎﻓﻴﺔ ﻣﺘﺎح:", -- new version of addon is available
 };
 
+-- Primary namespace wiring (WOWTR) + legacy aliases (older builds used WoWTR_* globals).
+WOWTR = WOWTR or {}
+WOWTR.Localization = WOWTR_Localization
+_G.WoWTR_Localization = WOWTR_Localization
+
 ---------------------------------------------------------------------------------------------------------
 
 QTR_Messages = {
@@ -107,7 +112,7 @@ QTR_Messages = {
 
 ---------------------------------------------------------------------------------------------------------
 
-WoWTR_Config_Interface = {
+WOWTR_Config_Interface = {
    showMinimapIcon = "ﻋﺮﺽ ﺭﻣﺰ ﺇﻋﺪﺍﺩﺍﺕ ﺍﻹﺿﺎﻓﺔ ﺑﺠﺎﻧﺐ ﺍﻟﺨﺮﻳﻄﺔ ﺍﻟﻤﺼﻐﺮﺓ",
    showMinimapIconDESC = "ﻣﻠﺨﺺ: ﻳﻈﻬﺮ أﻳﻘﻮﻧﺔ اﻹﺿﺎﻓﺔ ﺑﺠﺎﻧﺐ اﻟﺨﺮﻳﻄﺔ اﻟﻤﺼﻐﺮة.\nﻧﺼﻴﺤﺔ: اﺿﻐﻂ ﻋﻠﻰ اﻷﻳﻘﻮﻧﺔ ﻟﻔﺘﺢ اﻹﻋﺪادات ﺑﺴﺮﻋﺔ.",
    minimap = "اﻟﺨﺮﻳﻄﺔ ﺍﻟﻤﺼﻐﺮﺓ",
@@ -342,6 +347,11 @@ WoWTR_Config_Interface = {
    linkCOM = "راﺑﻂ ﻣﺠﺘﻤﻊ واو اﻟﻌﺮﺑﻲ",
 };
 
+-- Expose config localization through WOWTR and keep a legacy alias.
+WOWTR.Config = WOWTR.Config or {}
+WOWTR.Config.Interface = WOWTR_Config_Interface
+_G.WoWTR_Config_Interface = WOWTR_Config_Interface
+
 ---------------------------------------------------------------------------------------------------------
 --translated names of the player's races and classes in arabic; only male (M) and female (F)
 ---------------------------------------------------------------------------------------------------------
@@ -407,7 +417,7 @@ end
 ---------------------------------------------------------------------------------------------------------
 --Fonts
 ---------------------------------------------------------------------------------------------------------
-WOWTR_Font1 = WoWTR_Localization.mainFolder .. "\\Fonts\\font1.ttf";
-WOWTR_Font2 = WoWTR_Localization.mainFolder .. "\\Fonts\\font2.ttf";
+WOWTR_Font1 = WOWTR_Localization.mainFolder .. "\\Fonts\\font1.ttf";
+WOWTR_Font2 = WOWTR_Localization.mainFolder .. "\\Fonts\\font2.ttf";
 WOWTR_Fonts = { "font2.ttf" };
-WOWTR_version = C_AddOns.GetAddOnMetadata(WoWTR_Localization.addonFolder, "Version");
+WOWTR_version = C_AddOns.GetAddOnMetadata(WOWTR_Localization.addonFolder, "Version");

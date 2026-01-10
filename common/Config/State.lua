@@ -14,7 +14,7 @@ function WOWTR_ResetVariables(nr)
     ST_PS = nil;
     ST_PH = nil;
     if (WOWTR_ResetButton1) then
-      WOWTR_ResetButton1:SetText(WoWTR_Localization.resultButton1);
+      WOWTR_ResetButton1:SetText(WOWTR_Localization.resultButton1);
       if (WOWTR_Confirmation1) then WOWTR_Confirmation1:Hide(); end
     end
   else

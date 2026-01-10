@@ -11,7 +11,7 @@ local function isRTL()
   if RTL and RTL.IsRTL then
     return RTL.IsRTL()
   end
-  return (type(WoWTR_Localization) == "table" and WoWTR_Localization.lang == "AR") or false
+  return (type(WOWTR_Localization) == "table" and WOWTR_Localization.lang == "AR") or false
 end
 
 -- Return true if a given TT_PS UI toggle key is enabled (e.g. "ui3").

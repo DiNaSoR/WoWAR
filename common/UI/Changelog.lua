@@ -84,7 +84,7 @@ local function SetTextFS(fs, text, size)
   if not fs then return end
   local ok, font, currentSize, flags = pcall(fs.GetFont, fs)
   local useSize = size or currentSize or 13
-  if WOWTR_Font2 and WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+  if WOWTR_Font2 and WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
     pcall(fs.SetFont, fs, WOWTR_Font2, useSize, flags)
   end
   fs:SetText(text)
@@ -132,7 +132,7 @@ local function CreateEntry(parent, data, prev)
     title:SetPoint("TOPLEFT", versionFS, "BOTTOMLEFT", 0, -4)
   end
   local titleText = tostring(data.title or "")
-  if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+  if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
     titleText = QTR_ReverseIfAR(titleText)
   end
   SetTextFS(title, titleText, 16)
@@ -185,7 +185,7 @@ local function CreateEntry(parent, data, prev)
   if ns and ns.RTL and ns.RTL.JustifyFontString then ns.RTL.JustifyFontString(body, "LEFT") end
   body:SetWordWrap(true)
   local desc = tostring(data.description or "")
-  if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+  if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
     if ns and ns.Quests and ns.Quests.Utils and ns.Quests.Utils.ApplyRTLText then
       local shaped = ns.Quests.Utils.ApplyRTLText(desc)
       if shaped and shaped ~= "" then

@@ -11,19 +11,19 @@ Quests.Tracker = Quests.Tracker or {}
 -- Translation of Objective Tracker category titles
 function Quests.Tracker.ObjectiveTrackerFrame_Titles()
    if (QTR_PS["active"]=="1" and QTR_PS["tracker"]=="1") then
-      ObjectiveTrackerFrame.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.objectives))
+      ObjectiveTrackerFrame.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.objectives))
       ObjectiveTrackerFrame.Header.Text:SetFont(WOWTR_Font2, 14)
-      QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.quests))
+      QuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.quests))
       QuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
-      WorldQuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.worldquests))
+      WorldQuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.worldquests))
       WorldQuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
-      CampaignQuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.campaignquests))
+      CampaignQuestObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.campaignquests))
       CampaignQuestObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
-      BonusObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.bonusobjective))
+      BonusObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.bonusobjective))
       BonusObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
-      MonthlyActivitiesObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.travelerlog))
+      MonthlyActivitiesObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.travelerlog))
       MonthlyActivitiesObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
-      ScenarioObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WoWTR_Localization.scenariodung))
+      ScenarioObjectiveTracker.Header.Text:SetText(QTR_ReverseIfAR(WOWTR_Localization.scenariodung))
       ScenarioObjectiveTracker.Header.Text:SetFont(WOWTR_Font2, 14)
 
       if Quests.Utils and Quests.Utils.IsRTL and Quests.Utils.IsRTL() then
@@ -138,7 +138,7 @@ function Quests.Tracker.QuestLogQuests_Update()
                applyTranslationFormatting = true
            end
        elseif ((originalText == QUEST_WATCH_QUEST_READY) or (originalText == "Ready for turn-in")) then
-           textToSet = QTR_ExpandUnitInfo(WoWTR_Localization.readyForTurnIn, false, textElement, WOWTR_Font2, -5)
+           textToSet = QTR_ExpandUnitInfo(WOWTR_Localization.readyForTurnIn, false, textElement, WOWTR_Font2, -5)
            applyTranslationFormatting = true
        else
            if QTR_QuestData and QTR_QuestData[str_ID] and QTR_QuestData[str_ID]["Objectives"] then

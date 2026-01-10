@@ -16,7 +16,7 @@ local TooltipsHooked = false
 local processedFrames = {}
 local function ApplyTooltipFonts(tt)
   if not tt or not tt.GetRegions then return end
-  if not (WoWTR_Localization and WoWTR_Localization.lang == 'AR' and WOWTR_Font2) then return end
+  if not (WOWTR_Localization and WOWTR_Localization.lang == 'AR' and WOWTR_Font2) then return end
 
   -- For Arabic tooltips, enforce RTL-feeling layout via justification (no anchor mirroring).
   -- This ensures shaped Arabic lines render aligned to the RIGHT edge of the tooltip.
@@ -325,7 +325,7 @@ local function HookTooltipFonts()
   -- NOTE: These FontObjects are templates - new tooltip lines inherit from them
   -- They are ALWAYS set to WOWTR_Font2 (not conditional on translations)
   -- Individual FontStrings are then checked and restored if no translation exists
-  if WoWTR_Localization and WoWTR_Localization.lang == 'AR' and WOWTR_Font2 then
+  if WOWTR_Localization and WOWTR_Localization.lang == 'AR' and WOWTR_Font2 then
     local function SetFO(obj, objName)
       if not obj then return end
       local ok, currentFont, size, flags = pcall(obj.GetFont, obj)
@@ -373,7 +373,7 @@ local function HookTooltipFonts()
             end
             -- Reset justification to LEFT on hide so next tooltip starts fresh
             -- This fixes the "sticky RIGHT" issue when switching from Arabic to English tooltips
-            if WoWTR_Localization and WoWTR_Localization.lang == 'AR' then
+            if WOWTR_Localization and WOWTR_Localization.lang == 'AR' then
               for i = 1, 40 do
                 local left = _G[ttName .. "TextLeft" .. i]
                 if left and left.SetJustifyH then
