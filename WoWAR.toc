@@ -84,6 +84,7 @@ common/Tutorials/Main.lua
 common/Books/Main.lua
 common/UI/Changelog.lua
 common/UI/DebugUI.lua
+common/UI/DebugToolsUI.lua
 common/Chat/Chat.lua
 
 common/Plugins/ClassicQuestLogPlugin.lua

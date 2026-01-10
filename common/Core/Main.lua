@@ -72,6 +72,11 @@ end
 local tickers = {}
 function Core.StartTicker(frame, func, interval)
   if not frame or not func or not interval then return end
+  -- Clamp invalid/zero intervals. Some call sites pass 0 to mean "as fast as possible",
+  -- which can translate into per-frame execution and cause heavy UI stutter.
+  if type(interval) ~= "number" or interval <= 0 then
+    interval = 0.1
+  end
   if not tickers[frame] then
     func()
     tickers[frame] = C_Timer.NewTicker(interval, function()
@@ -226,6 +231,44 @@ function Core.OnEvent(self, event, name, ...)
       end
     end
     SLASH_WOWTR_DEBUG1 = "/wdebug"
+
+    -- Register /wtools command for Debug Tools UI (clickable dump/clear buttons)
+    SlashCmdList["WOWTR_TOOLS"] = function(msg)
+      if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.Toggle then
+        WOWTR.DebugToolsUI.Toggle()
+      else
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug Tools UI not available")
+      end
+    end
+    SLASH_WOWTR_TOOLS1 = "/wtools"
+    SLASH_WOWTR_TOOLS2 = "/wowtrtools"
+
+    -- Smart UI string dumper (replaces /fstack hunting)
+    -- Usage: /wowtrdump <frame or shortcut> [all] [noise] [hidden]
+    -- Examples: /wowtrdump prof, /wowtrdump talents, /wowtrdump ProfessionsFrame all
+    SlashCmdList["WOWTR_DUMP"] = function(msg)
+      if WOWTR and WOWTR.Debug and WOWTR.Debug.HandleDumpCommand then
+        WOWTR.Debug.HandleDumpCommand(msg)
+      else
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Dump system not available")
+      end
+    end
+    SLASH_WOWTR_DUMP1 = "/wowtrdump"
+    SLASH_WOWTR_DUMP2 = "/wdump"
+    SLASH_WOWTR_DUMP3 = "/dumpui"
+
+    -- Clear agent SavedVariables logs (agentDebugNDJSON / agentDumpNDJSON) from in-game.
+    -- Usage: /wowtrclearlogs [all|debug|dump|cache]
+    SlashCmdList["WOWTR_CLEARLOGS"] = function(msg)
+      if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
+        WOWTR.Debug.ClearAgentLogs(msg)
+      else
+        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r ClearLogs not available")
+      end
+    end
+    SLASH_WOWTR_CLEARLOGS1 = "/wowtrclearlogs"
+    SLASH_WOWTR_CLEARLOGS2 = "/wclearlogs"
+    SLASH_WOWTR_CLEARLOGS3 = "/clearwowtrlogs"
 
     Core.CheckVars()
     if QTR_START then QTR_START() end
