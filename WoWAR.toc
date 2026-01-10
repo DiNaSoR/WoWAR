@@ -24,7 +24,6 @@ common\Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 
 Translations\QuestData_AR.lua
 Translations\Gossip_AR.lua
-Translations\TlumaczOnline_AR.lua
 Translations\Bubbles_AR.lua
 Translations\Subtitles_AR.lua
 Translations\TutorialsData7_AR.lua

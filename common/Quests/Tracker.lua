@@ -128,16 +128,7 @@ function Quests.Tracker.QuestLogQuests_Update()
        local translationSourceIsQuestData = false
        local applyTranslationFormatting = false
 
-       if (string.find(originalText, "/")) then
-           local tempText = originalText
-           for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online or {}) do
-               tempText = string.gsub(tempText, qtr_en, qtr_pl)
-           end
-           if tempText ~= originalText then
-               textToSet = tempText
-               applyTranslationFormatting = true
-           end
-       elseif ((originalText == QUEST_WATCH_QUEST_READY) or (originalText == "Ready for turn-in")) then
+       if ((originalText == QUEST_WATCH_QUEST_READY) or (originalText == "Ready for turn-in")) then
            textToSet = QTR_ExpandUnitInfo(WOWTR_Localization.readyForTurnIn, false, textElement, WOWTR_Font2, -5)
            applyTranslationFormatting = true
        else
@@ -145,15 +136,6 @@ function Quests.Tracker.QuestLogQuests_Update()
                textToSet = QTR_QuestData[str_ID]["Objectives"]
                translationSourceIsQuestData = true
                applyTranslationFormatting = true
-           else
-               local tempText = originalText
-               for qtr_en, qtr_pl in pairsByKeys(QTR_Tlumacz_Online or {}) do
-                   tempText = string.gsub(tempText, qtr_en, qtr_pl)
-               end
-               if tempText ~= originalText then
-                   textToSet = tempText
-                   applyTranslationFormatting = true
-               end
            end
        end
 
