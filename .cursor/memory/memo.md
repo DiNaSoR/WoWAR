@@ -14,6 +14,11 @@ Last updated: 2026-01-10
 - UI translation is data-driven via `common/UI/Translate.lua`; ad-hoc per-frame logic is discouraged.
 - RTL detection is centralized via `ns.RTL.IsRTL()`; raw locale checks are deprecated.
 - Primary localization globals are `WOWTR_Localization` and `WOWTR_Config_Interface` (legacy `WoWTR_*` names are aliases only).
+- File locations (current):
+  - Localization: `common/Locale/AR.lua`
+  - Locale changelog entries: `common/Locale/changelog.lua`
+  - Arabic reshaper: `common/Text/Reshaper.lua`
+  - Arabic chat: `common/Chat/Chat.lua`
 - All legacy `ST_*` globals are registered only in `common/Core/Compat.lua`.
 - Hook/ticker wiring uses shared helpers from `common/Core/HookUtils.lua`.
 - Primary settings UI is the Plumber-style **ControlCenter panel** in `common/Config/ControlCenter/*` (AceConfig UI is disabled).

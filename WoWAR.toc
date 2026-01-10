@@ -31,8 +31,8 @@ Translations\TutorialsData7_AR.lua
 Translations\Books_AR.lua
 Translations\Tooltips_AR.lua
 
-WoW_Localization_AR.lua
-Changelog_AR.lua
+common/Locale/AR.lua
+common/Locale/changelog.lua
 common/Core/State.lua
 common/Core/Debug.lua
 common/Core/LegacyBridge.lua
@@ -62,7 +62,7 @@ common/UI/Frames.lua
 common/Config/Main.lua
 common/Config/Minimap.lua
 
-WoW_Arabic_Reshaper.lua
+common/Text/Reshaper.lua
 common/RTL.lua
 common/Quests/State.lua
 common/Quests/Utils.lua
@@ -85,7 +85,7 @@ common/Tutorials/Main.lua
 common/Books/Main.lua
 common/UI/Changelog.lua
 common/UI/DebugUI.lua
-WoW_Chat.lua
+common/Chat/Chat.lua
 
 common/Plugins/ClassicQuestLogPlugin.lua
 common/Plugins/ImmersionPlugin.lua

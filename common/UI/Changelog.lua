@@ -5,7 +5,7 @@ WOWTR.Changelog = WOWTR.Changelog or {}
 
 local Changelog = WOWTR.Changelog
 
--- Entries should be provided by locale packs (e.g., WoWAR/Changelog_AR.lua)
+-- Entries should be provided by locale packs (e.g., common/Locale/changelog.lua)
 Changelog.entries = Changelog.entries or {}
 
 local function colorRGBA(name)
