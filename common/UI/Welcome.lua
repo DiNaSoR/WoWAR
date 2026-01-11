@@ -16,6 +16,13 @@ local function Label(key, fallback)
   return fallback
 end
 
+local function LabelRaw(key, fallback)
+  if WOWTR and WOWTR.Config and WOWTR.Config.LabelRaw then
+    return WOWTR.Config.LabelRaw(key, fallback)
+  end
+  return fallback
+end
+
 local function IsRTL()
   return (ns and ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL()) and true or false
 end
@@ -37,8 +44,8 @@ local function EnsureFrame()
   if Welcome.frame then return Welcome.frame end
 
   local f = CreateFrame("Frame", "WOWTR_WelcomeFrame", UIParent, "BackdropTemplate")
-  f:SetSize(780, 520)
-  f:SetPoint("CENTER")
+  f:SetSize(720, 480)
+  f:SetPoint("CENTER", UIParent, "CENTER", 0, 40)
   f:Hide()
   f:SetFrameStrata("DIALOG")
   f:SetMovable(true)
@@ -47,29 +54,51 @@ local function EnsureFrame()
   f:SetScript("OnDragStart", function(self) self:StartMoving() end)
   f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 
-  -- Base background (ControlCenter uses a themed image; fall back to solid)
-  local bg = f:CreateTexture(nil, "BACKGROUND")
-  bg:SetAllPoints()
-  bg:SetColorTexture(0.118, 0.114, 0.169, 1.0)
-
+  ---------------------------------------------------------------------------
+  -- Background: Use ControlCenter art if available, else a nice gradient
+  ---------------------------------------------------------------------------
   local CC = WOWTR and WOWTR.Config and WOWTR.Config.ControlCenter
   local backgroundFile = CC and CC.Assets and CC.Assets.ControlCenterBackground
+
+  -- Base solid color (dark blue-purple tone matching ControlCenter)
+  local baseBg = f:CreateTexture(nil, "BACKGROUND", nil, -8)
+  baseBg:SetAllPoints()
+  baseBg:SetColorTexture(0.08, 0.075, 0.12, 1.0)
+
+  -- Main art background (ControlCenter style)
   if type(backgroundFile) == "string" and backgroundFile ~= "" then
-    local art = f:CreateTexture(nil, "BACKGROUND", nil, 1)
+    local art = f:CreateTexture(nil, "BACKGROUND", nil, -7)
     art:SetAllPoints()
     art:SetTexture(backgroundFile)
-    art:SetAlpha(0.85)
+    art:SetAlpha(0.92)
     f.BackgroundArt = art
   end
 
-  -- Use the same ControlCenter border (ExpansionLandingPage theme) for consistency.
+  -- Top gradient overlay (subtle darkening at top for title contrast)
+  local topGrad = f:CreateTexture(nil, "BACKGROUND", nil, -6)
+  topGrad:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+  topGrad:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
+  topGrad:SetHeight(100)
+  topGrad:SetColorTexture(0, 0, 0, 1)
+  topGrad:SetGradient("VERTICAL", CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 0.7))
+
+  -- Bottom gradient overlay (for button area contrast)
+  local botGrad = f:CreateTexture(nil, "BACKGROUND", nil, -6)
+  botGrad:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 0, 0)
+  botGrad:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", 0, 0)
+  botGrad:SetHeight(80)
+  botGrad:SetColorTexture(0, 0, 0, 1)
+  botGrad:SetGradient("VERTICAL", CreateColor(0, 0, 0, 0.8), CreateColor(0, 0, 0, 0))
+
+  ---------------------------------------------------------------------------
+  -- Border: Use the same ControlCenter NineSlice border
+  ---------------------------------------------------------------------------
   do
     local LandingPageUtil = CC and CC.LandingPageUtil
     if LandingPageUtil and type(LandingPageUtil.CreateExpansionThemeFrame) == "function" then
       local nine = LandingPageUtil.CreateExpansionThemeFrame(f, 10)
       nine:CoverParent(0)
       if nine.Background then
-        -- We provide our own background art + base color.
         nine.Background:Hide()
       end
       nine:SetUsingParentLevel(false)
@@ -77,121 +106,308 @@ local function EnsureFrame()
       nine:ShowCloseButton(true)
       nine:SetCloseButtonOwner(f)
       f.NineSlice = nine
+    else
+      -- Fallback: simple dark border
+      f:SetBackdrop({
+        bgFile = nil,
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true, tileSize = 32, edgeSize = 32,
+        insets = { left = 11, right = 12, top = 12, bottom = 11 },
+      })
     end
   end
 
-  -- Title
+  ---------------------------------------------------------------------------
+  -- Title area
+  ---------------------------------------------------------------------------
   local title = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-  title:SetPoint("TOP", f, "TOP", 0, -16)
+  title:SetPoint("TOP", f, "TOP", 0, -24)
   title:SetJustifyH("CENTER")
-  title:SetText("Welcome to WoWAR")
+  title:SetText("Welcome to WoWAR") -- overwritten in Welcome.Show() for Arabic
   ApplyFonts(title)
-  if IsRTL() and WOWTR_Font2 then
-    pcall(title.SetFont, title, WOWTR_Font2, 22, "")
+  if WOWTR_Font2 then
+    pcall(title.SetFont, title, WOWTR_Font2, 26, "")
+  end
+  if title.SetTextColor then
+    pcall(title.SetTextColor, title, 1, 0.82, 0, 1) -- Gold
   end
 
-  local sub = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  sub:SetPoint("TOP", title, "BOTTOM", 0, -4)
+  local sub = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  sub:SetPoint("TOP", title, "BOTTOM", 0, -6)
   sub:SetJustifyH("CENTER")
-  sub:SetText("Quick start + settings")
+  sub:SetText("Quick start + settings") -- overwritten in Welcome.Show() for Arabic
   ApplyFonts(sub)
+  if sub.SetTextColor then
+    pcall(sub.SetTextColor, sub, 0.7, 0.7, 0.7, 1)
+  end
 
+  -- Decorative line under title
   local line = f:CreateTexture(nil, "ARTWORK")
-  line:SetColorTexture(0.216, 0.208, 0.31, 1)
+  line:SetColorTexture(0.9, 0.75, 0.2, 0.6)
   line:SetHeight(2)
-  line:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -56)
-  line:SetPoint("TOPRIGHT", f, "TOPRIGHT", -20, -56)
+  line:SetPoint("LEFT", f, "LEFT", 60, 0)
+  line:SetPoint("RIGHT", f, "RIGHT", -60, 0)
+  line:SetPoint("TOP", sub, "BOTTOM", 0, -10)
 
+  ---------------------------------------------------------------------------
   -- Scrollable welcome text
-  local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
-  scroll:SetPoint("TOPLEFT", f, "TOPLEFT", 24, -70)
-  scroll:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -34, 86)
+  ---------------------------------------------------------------------------
+  local scrollArea = CreateFrame("Frame", nil, f)
+  scrollArea:SetPoint("TOPLEFT", f, "TOPLEFT", 40, -100)
+  scrollArea:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -40, 90)
 
-  local content = CreateFrame("Frame", nil, scroll)
-  content:SetSize(1, 1)
-  scroll:SetScrollChild(content)
+  -- We'll store raw (already expanded) texts here; Reflow() builds the scroll content.
+  f._welcomeBodyText = ""
+  f._welcomeTipsText = ""
 
-  local body = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-  body:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
-  body:SetPoint("TOPRIGHT", content, "TOPRIGHT", 0, 0)
-  body:SetJustifyV("TOP")
-  body:SetSpacing(4)
+  local body, tips
 
-  if ns and ns.RTL and ns.RTL.JustifyFontString then
-    ns.RTL.JustifyFontString(body, "LEFT")
-  end
-  ApplyFonts(body)
-
-  -- Creative polish: a small “tips” block at the bottom of the text
-  local tips = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  tips:SetPoint("TOPLEFT", body, "BOTTOMLEFT", 0, -14)
-  tips:SetPoint("TOPRIGHT", body, "BOTTOMRIGHT", 0, -14)
-  tips:SetJustifyV("TOP")
-  if ns and ns.RTL and ns.RTL.JustifyFontString then
-    ns.RTL.JustifyFontString(tips, "LEFT")
-  end
-  ApplyFonts(tips)
-
-  local function Reflow()
-    -- Keep content width in sync with scroll width
-    local w = scroll:GetWidth()
-    if w and w > 0 then
-      content:SetWidth(w)
+  -- Prefer ControlCenter's ScrollView + ScrollBar so scrolling looks/feels identical.
+  local function TryCreateControlCenterScroll()
+    local CC2 = WOWTR and WOWTR.Config and WOWTR.Config.ControlCenter
+    local API = CC2 and CC2.API
+    if not (CC2 and API and CC2.CreateScrollBarWithDynamicSize and API.CreateScrollView) then
+      return false
     end
 
-    body:SetWidth(content:GetWidth())
-    tips:SetWidth(content:GetWidth())
+    local ScrollBar = CC2.CreateScrollBarWithDynamicSize(f)
+    ScrollBar:SetPoint("TOPRIGHT", scrollArea, "TOPRIGHT", 10, 0)
+    ScrollBar:SetPoint("BOTTOMRIGHT", scrollArea, "BOTTOMRIGHT", 10, 0)
+    ScrollBar:SetFrameLevel((f.GetFrameLevel and f:GetFrameLevel() or 0) + 30)
+    ScrollBar:UpdateThumbRange()
 
-    local bodyH = (body.GetStringHeight and body:GetStringHeight()) or 0
-    local tipsH = (tips.GetStringHeight and tips:GetStringHeight()) or 0
-    content:SetHeight(math.max(1, bodyH + tipsH + 40))
+    local ScrollView = API.CreateScrollView(f, ScrollBar)
+    ScrollBar.ScrollView = ScrollView
+    ScrollView:SetPoint("TOPLEFT", scrollArea, "TOPLEFT", 0, 0)
+    -- Leave room for the scrollbar.
+    ScrollView:SetPoint("BOTTOMRIGHT", scrollArea, "BOTTOMRIGHT", -24, 0)
+    ScrollView:SetStepSize(64)
+    ScrollView:OnSizeChanged()
+    if ScrollView.EnableMouseBlocker then
+      ScrollView:EnableMouseBlocker(true)
+    end
+    if ScrollView.SetAlwaysShowScrollBar then
+      ScrollView:SetAlwaysShowScrollBar(false)
+    end
+    ScrollView.renderAllObjects = true
+
+    local function CreateFontString()
+      local obj = ScrollView:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+      obj:SetJustifyV("TOP")
+      obj:SetSpacing(5)
+      if ns and ns.RTL and ns.RTL.JustifyFontString then
+        ns.RTL.JustifyFontString(obj, IsRTL() and "RIGHT" or "LEFT")
+      end
+      ApplyFonts(obj)
+      return obj
+    end
+
+    local function RemoveFontString(obj)
+      obj:SetText(nil)
+      obj:Hide()
+      obj:ClearAllPoints()
+    end
+
+    ScrollView:AddTemplate("FontString", CreateFontString, RemoveFontString, function(obj)
+      obj:SetSpacing(5)
+    end)
+
+    -- Measurement FontStrings (not in the ScrollView pool) to compute heights for content layout.
+    local measureBody = f:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    measureBody:Hide()
+    measureBody:SetJustifyV("TOP")
+    measureBody:SetSpacing(5)
+    if ns and ns.RTL and ns.RTL.JustifyFontString then
+      ns.RTL.JustifyFontString(measureBody, IsRTL() and "RIGHT" or "LEFT")
+    end
+    ApplyFonts(measureBody)
+
+    local measureTips = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    measureTips:Hide()
+    measureTips:SetJustifyV("TOP")
+    measureTips:SetSpacing(5)
+    if ns and ns.RTL and ns.RTL.JustifyFontString then
+      ns.RTL.JustifyFontString(measureTips, IsRTL() and "RIGHT" or "LEFT")
+    end
+    ApplyFonts(measureTips)
+
+    body = measureBody
+    tips = measureTips
+
+    local function Reflow()
+      if not ScrollView then return end
+
+      local isRTL = IsRTL()
+      local edgePoint = isRTL and "TOPRIGHT" or "TOPLEFT"
+      local padX = 4
+      local width = (ScrollView.GetWidth and ScrollView:GetWidth()) or 0
+      local textWidth = math.max(1, width - 2 * padX)
+
+      -- Measure heights using the same wrapping width.
+      measureBody:SetWidth(textWidth)
+      measureTips:SetWidth(textWidth)
+      measureBody:SetText(f._welcomeBodyText or "")
+      measureTips:SetText(f._welcomeTipsText or "")
+
+      local bodyH = (measureBody.GetStringHeight and measureBody:GetStringHeight()) or 0
+      local tipsH = (measureTips.GetStringHeight and measureTips:GetStringHeight()) or 0
+      local gap = 18
+
+      local content = {}
+      local top = 0
+      local bottom = top + bodyH
+      content[1] = {
+        dataIndex = 1,
+        templateKey = "FontString",
+        top = top,
+        bottom = bottom,
+        point = edgePoint,
+        relativePoint = edgePoint,
+        offsetX = isRTL and -padX or padX,
+        setupFunc = function(obj)
+          obj:SetWidth(textWidth)
+          obj:SetFontObject("GameFontHighlight")
+          obj:SetText(f._welcomeBodyText or "")
+          obj:SetJustifyH(isRTL and "RIGHT" or "LEFT")
+          ApplyFonts(obj)
+          obj:Show()
+        end,
+      }
+
+      top = bottom + gap
+      bottom = top + tipsH + 6
+      content[2] = {
+        dataIndex = 2,
+        templateKey = "FontString",
+        top = top,
+        bottom = bottom,
+        point = edgePoint,
+        relativePoint = edgePoint,
+        offsetX = isRTL and -padX or padX,
+        setupFunc = function(obj)
+          obj:SetWidth(textWidth)
+          obj:SetFontObject("GameFontNormal")
+          obj:SetText(f._welcomeTipsText or "")
+          obj:SetJustifyH(isRTL and "RIGHT" or "LEFT")
+          ApplyFonts(obj)
+          obj:Show()
+        end,
+      }
+
+      ScrollView:SetContent(content)
+      ScrollBar:UpdateThumbRange()
+    end
+
+    ScrollView:SetScript("OnSizeChanged", function()
+      ScrollView:OnSizeChanged(true)
+      ScrollBar:OnSizeChanged()
+      Reflow()
+    end)
+
+    f.ScrollView = ScrollView
+    f.ScrollBar = ScrollBar
+    f.Reflow = Reflow
+    return true
   end
 
-  scroll:SetScript("OnSizeChanged", function() Reflow() end)
+  local function CreateFallbackScroll()
+    -- Fallback to the default scroll frame if ControlCenter is not available.
+    local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
+    scroll:SetPoint("TOPLEFT", scrollArea, "TOPLEFT", 0, 0)
+    scroll:SetPoint("BOTTOMRIGHT", scrollArea, "BOTTOMRIGHT", 0, 0)
 
-  -- Bottom buttons (match “settings/config” vibe)
-  local function mkBtn(label, anchor, x, y, w, onClick)
+    local content = CreateFrame("Frame", nil, scroll)
+    content:SetSize(1, 1)
+    scroll:SetScrollChild(content)
+
+    local b = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    b:SetPoint("TOPLEFT", content, "TOPLEFT", 0, 0)
+    b:SetPoint("TOPRIGHT", content, "TOPRIGHT", 0, 0)
+    b:SetJustifyV("TOP")
+    b:SetSpacing(5)
+    if ns and ns.RTL and ns.RTL.JustifyFontString then
+      ns.RTL.JustifyFontString(b, IsRTL() and "RIGHT" or "LEFT")
+    end
+    ApplyFonts(b)
+
+    local t = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    t:SetPoint("TOPLEFT", b, "BOTTOMLEFT", 0, -18)
+    t:SetPoint("TOPRIGHT", b, "BOTTOMRIGHT", 0, -18)
+    t:SetJustifyV("TOP")
+    if ns and ns.RTL and ns.RTL.JustifyFontString then
+      ns.RTL.JustifyFontString(t, IsRTL() and "RIGHT" or "LEFT")
+    end
+    ApplyFonts(t)
+
+    body = b
+    tips = t
+
+    local function Reflow()
+      local w = scroll:GetWidth()
+      if w and w > 0 then
+        content:SetWidth(w)
+      end
+      b:SetWidth(content:GetWidth())
+      t:SetWidth(content:GetWidth())
+
+      local bodyH = (b.GetStringHeight and b:GetStringHeight()) or 0
+      local tipsH = (t.GetStringHeight and t:GetStringHeight()) or 0
+      content:SetHeight(math.max(1, bodyH + tipsH + 50))
+    end
+
+    scroll:SetScript("OnSizeChanged", function() Reflow() end)
+    f.Reflow = Reflow
+    f.ScrollFrame = scroll
+  end
+
+  if not TryCreateControlCenterScroll() then
+    CreateFallbackScroll()
+  end
+
+  ---------------------------------------------------------------------------
+  -- Bottom buttons
+  ---------------------------------------------------------------------------
+  local function mkBtn(label, anchor, relTo, relAnchor, x, y, w, onClick)
     local b = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
-    b:SetSize(w or 160, 24)
-    b:SetPoint(anchor, f, anchor, x, y)
+    b:SetSize(w or 160, 26)
+    b:SetPoint(anchor, relTo, relAnchor, x, y)
     b:SetText(label)
     b:SetScript("OnClick", onClick)
     ApplyFonts(b)
     return b
   end
 
-  local btnOpen = mkBtn("Open Settings", "BOTTOMLEFT", 24, 24, 160, function()
+  local btnOpen = mkBtn("Open Settings", "BOTTOMLEFT", f, "BOTTOMLEFT", 40, 30, 160, function()
     if WOWTR and WOWTR.Config and WOWTR.Config.Open then
       WOWTR.Config.Open()
     end
   end)
 
-  local btnOk = mkBtn(Label("welcomeButton", "OK - I read"), "BOTTOMRIGHT", -24, 24, 190, function()
+  local btnOk = mkBtn("OK - I read", "BOTTOMRIGHT", f, "BOTTOMRIGHT", -40, 30, 180, function()
     QTR_PS = QTR_PS or {}
     QTR_PS["welcome"] = "1"
     f:Hide()
   end)
 
   local showAgain = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
-  showAgain:SetPoint("BOTTOM", f, "BOTTOM", 0, 28)
+  showAgain:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
   showAgain.text:SetText("Show again next login")
   showAgain:SetChecked(false)
   showAgain:SetScript("OnClick", function(self)
     QTR_PS = QTR_PS or {}
     if self:GetChecked() then
       QTR_PS["welcome"] = nil
-    else
-      -- Keep current value unchanged when unchecked (user controls it via OK button)
     end
   end)
   ApplyFonts(showAgain)
 
+  ---------------------------------------------------------------------------
   -- Store refs
+  ---------------------------------------------------------------------------
   f.Title = title
   f.Subtitle = sub
   f.Body = body
   f.Tips = tips
-  f.Reflow = Reflow
   f.BtnOpenSettings = btnOpen
   f.BtnOk = btnOk
   f.CBShowAgain = showAgain
@@ -203,19 +419,55 @@ end
 function Welcome.Show()
   local f = EnsureFrame()
 
-  local text = (WOWTR_Config_Interface and WOWTR_Config_Interface.welcomeText) or "Welcome!"
-  local tipsText =
+  local isRTL = IsRTL()
+
+  local titleText = LabelRaw("welcomeTitle", "Welcome to WoWAR")
+  local subText = LabelRaw("welcomeSubtitle", "Quick start + settings")
+  local openText = LabelRaw("welcomeOpenSettings", "Open Settings")
+  local okText = LabelRaw("welcomeButton", "OK - I read")
+  local showAgainText = LabelRaw("welcomeShowAgain", "Show again next login")
+
+  local text = LabelRaw("welcomeText", "Welcome!")
+  local tipsText = LabelRaw("welcomeTipsText",
     "|cffffd200Tips:|r\n" ..
     "- Use the minimap icon to open settings anytime.\n" ..
     "- /wowardebug can dump visible UI strings for missing translations.\n" ..
-    "- If something is untranslated, save/export and send it on Discord."
+    "- If something is untranslated, save/export and send it on Discord.")
+
+  -- Title/subtitle/buttons: Arabic uses QTR_ExpandUnitInfo (keeps embedded English LTR).
+  if f.Title then
+    f.Title:SetText(ExpandIfArabic(titleText, f.Title, _G.WOWTR_Font2, -5, true))
+  end
+  if f.Subtitle then
+    f.Subtitle:SetText(ExpandIfArabic(subText, f.Subtitle, _G.WOWTR_Font2, -5, true))
+  end
+  if f.BtnOpenSettings and f.BtnOpenSettings.SetText then
+    -- Do NOT run QTR_ExpandUnitInfo on buttons (can cause odd wrapping/width issues).
+    f.BtnOpenSettings:SetText(isRTL and Label("welcomeOpenSettings", openText) or openText)
+  end
+  if f.BtnOk and f.BtnOk.SetText then
+    -- Do NOT run QTR_ExpandUnitInfo on buttons.
+    f.BtnOk:SetText(isRTL and Label("welcomeButton", okText) or okText)
+  end
+  if f.CBShowAgain and f.CBShowAgain.text and f.CBShowAgain.text.SetText then
+    -- Do NOT run QTR_ExpandUnitInfo on checkbox labels.
+    f.CBShowAgain.text:SetText(isRTL and Label("welcomeShowAgain", showAgainText) or showAgainText)
+  end
 
   -- Arabic: use QTR_ExpandUnitInfo so embedded English stays LTR and bidi is stable.
-  -- English/other: keep raw text LTR.
-  f.Body:SetText(ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -5))
-  f.Tips:SetText(tipsText)
+  local bodyText = ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -5)
+  local tipsOut = ExpandIfArabic(tipsText, f.Tips, _G.WOWTR_Font2, -5)
 
-  -- Default: if already welcomed, don’t show; caller can override
+  -- Store for ControlCenter-style scroll content builder, and update fallback text if used.
+  f._welcomeBodyText = bodyText
+  f._welcomeTipsText = tipsOut
+  if f.Body and f.Body.SetText then
+    f.Body:SetText(bodyText)
+  end
+  if f.Tips and f.Tips.SetText then
+    f.Tips:SetText(tipsOut)
+  end
+
   QTR_PS = QTR_PS or {}
   f.CBShowAgain:SetChecked(false)
 
@@ -231,4 +483,3 @@ function Welcome.Toggle()
     Welcome.Show()
   end
 end
-

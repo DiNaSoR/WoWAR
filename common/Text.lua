@@ -6,6 +6,21 @@ ns = ns or {}
 ns.Text = ns.Text or {}
 local Text = ns.Text
 
+-- In Arabic RTL mode we reverse the full string (AS_UTF8reverse / AS_ReverseAndPrepareLineText*).
+-- Because of that, intuitive authoring like `{cFFFFD200}TEXT{r}` will often color the wrong
+-- visual segment after reversal. The correct RTL-safe authoring is `{r}TEXT{cFFFFD200}`.
+--
+-- To keep locale strings readable, we automatically rewrite only the LTR-style spans:
+--   `{cAARRGGBB}...{r}` -> `{r}...{cAARRGGBB}`
+-- and we DO NOT touch spans already written in RTL-safe form.
+local function FixCurlyColorSpansForRTL(msg)
+  if type(msg) ~= "string" or msg == "" then return msg end
+  -- Only rewrite the LTR-style pattern {cHEX}...{r}. Non-greedy match to stop at nearest {r}.
+  return (msg:gsub("(%{c%x%x%x%x%x%x%x%x%})(.-)(%{r%})", function(cTag, inner)
+    return "{r}" .. inner .. cTag
+  end))
+end
+
 -- Handle special WoW codes by replacing them with placeholders, so the text can be reversed/shaped safely.
 function Text.HandleWoWSpecialCodes(msg)
   local specialCodes = {}
@@ -301,6 +316,7 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
   msg = Text.WOW_ZmienKody(msg)
 
   if ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
+    msg = FixCurlyColorSpansForRTL(msg)
     local _font = WOWTR_Font2
     local AR_size = 13
     if AR_obj.GetFont then
@@ -371,6 +387,7 @@ function Text.ReverseIfAR(txt)
     if not Text.ContainsArabic(msg) then
       return msg
     end
+    msg = FixCurlyColorSpansForRTL(msg)
     local specialCodes, prefix
     msg, specialCodes, prefix = Text.HandleWoWSpecialCodes(msg)
 

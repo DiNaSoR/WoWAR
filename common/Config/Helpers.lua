@@ -54,6 +54,7 @@ end
 -- otherwise returns the provided English fallback without reversal.
 WOWTR = WOWTR or {}
 WOWTR.Config = WOWTR.Config or {}
+
 function WOWTR.Config.Label(key, fallback)
   local v = (WOWTR_Config_Interface and WOWTR_Config_Interface[key]) or nil
   if v and v ~= "" then
