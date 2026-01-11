@@ -300,11 +300,6 @@ function Core.OnEvent(self, event, name, ...)
     end
   elseif (event == "PLAYER_ENTERING_WORLD") then
     if TT_onTutorialShow then TT_onTutorialShow() end
-    -- Auto-open changelog once per version if needed
-    if WOWTR and WOWTR.Changelog and WOWTR.Changelog.ShouldShow and WOWTR.Changelog.ShouldShow() then
-      if WOWTR_ShowChangelog then WOWTR_ShowChangelog() end
-      if WOWTR.Changelog.MarkShown then WOWTR.Changelog.MarkShown() end
-    end
   elseif (event == "QUEST_DETAIL" or event == "QUEST_PROGRESS" or event == "QUEST_COMPLETE") then
     if WOWTR and WOWTR.Debug then
       WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Event received:", event)

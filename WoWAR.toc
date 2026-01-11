@@ -58,6 +58,7 @@ common/UI/Translate.lua
 common/UI/AdventureGuide.lua
 common/UI/GroupFinder.lua
 common/UI/Frames.lua
+common/UI/Welcome.lua
 common/Config/Main.lua
 common/Config/Minimap.lua
 
@@ -82,7 +83,6 @@ common/Tutorials/State.lua
 common/Tutorials/Utils.lua
 common/Tutorials/Main.lua
 common/Books/Main.lua
-common/UI/Changelog.lua
 common/UI/DebugUI.lua
 common/UI/DebugToolsUI.lua
 common/Chat/Chat.lua

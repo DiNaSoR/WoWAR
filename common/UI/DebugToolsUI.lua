@@ -17,7 +17,7 @@ function UI.CreateFrame()
   if UI.frame then return UI.frame end
 
   local f = CreateFrame("Frame", "WOWTR_DebugToolsUIFrame", UIParent, "BackdropTemplate")
-  f:SetSize(360, 220)
+  f:SetSize(380, 260)
   f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   f:Hide()
   f:SetFrameStrata("DIALOG")
@@ -51,10 +51,10 @@ function UI.CreateFrame()
 
   local hint = f:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
   hint:SetPoint("TOP", title, "BOTTOM", 0, -6)
-  hint:SetText("Dumps all visible UI strings. Export after /reload.")
+  hint:SetText("Dump visible UI strings + (optional) art/layout. Export after /reload.")
 
   -- Options checkboxes (affect DumpVisibleUI)
-  local opts = { includeAll = false, includeNoise = false, includeHidden = false }
+  local opts = { includeAll = false, includeNoise = false, includeHidden = false, includeArt = false }
   f.opts = opts
 
   local function mkCheck(text, x, y, field)
@@ -71,6 +71,7 @@ function UI.CreateFrame()
   f.cbAll = mkCheck("Include translated (all)", 20, -60, "includeAll")
   f.cbNoise = mkCheck("Include noise (numbers)", 20, -85, "includeNoise")
   f.cbHidden = mkCheck("Include hidden", 20, -110, "includeHidden")
+  f.cbArt = mkCheck("Include art (textures/layout)", 20, -135, "includeArt")
 
   -- Button helper
   local function mkBtn(label, x, y, w, onClick)
@@ -92,10 +93,12 @@ function UI.CreateFrame()
       includeAll = f.opts.includeAll,
       skipNoise = not f.opts.includeNoise,
       includeHidden = f.opts.includeHidden,
+      includeArt = f.opts.includeArt,
       dedupe = true,
       maxRoots = 30,
       maxNodes = 2000,
       maxDepth = 12,
+      maxArtEntries = 6000,
     })
   end)
 
@@ -107,31 +110,31 @@ function UI.CreateFrame()
 
   -- Clear logs section
   local clearLabel = f:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  clearLabel:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -140)
+  clearLabel:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -170)
   clearLabel:SetText("Clear agent logs:")
 
-  mkBtn("Clear ALL", 20, -160, 100, function()
+  mkBtn("Clear ALL", 20, -190, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("all")
     end
   end)
-  mkBtn("Clear dump", 130, -160, 100, function()
+  mkBtn("Clear dump", 130, -190, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("dump")
     end
   end)
-  mkBtn("Clear debug", 240, -160, 100, function()
+  mkBtn("Clear debug", 240, -190, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("debug")
     end
   end)
 
-  mkBtn("Clear cache", 20, -188, 100, function()
+  mkBtn("Clear cache", 20, -218, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
       WOWTR.Debug.ClearAgentLogs("cache")
     end
   end)
-  mkBtn("/reload", 130, -188, 100, function()
+  mkBtn("/reload", 130, -218, 100, function()
     if ReloadUI then ReloadUI() end
   end)
 

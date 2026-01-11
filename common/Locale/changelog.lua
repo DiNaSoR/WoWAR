@@ -1,5 +1,5 @@
 -- Arabic locale pack changelog entries
--- Loaded before common/UI/Changelog.lua. Populates WOWTR.Changelog.entries
+-- Populates WOWTR.Changelog.entries (used by ControlCenter "Release Notes" tab).
 
 WOWTR = WOWTR or {}
 WOWTR.Changelog = WOWTR.Changelog or {}

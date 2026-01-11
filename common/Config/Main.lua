@@ -17,9 +17,17 @@ function WOWTR_SlashCommand(msg)
 end
 
 function WOWTR_WelcomePanel()
+  -- First-run welcome: show a modal with the same visual language as the ControlCenter config UI.
+  -- The user confirms via the welcome button; that marks QTR_PS["welcome"] so it doesn't re-open.
+  if WOWTR and WOWTR.Welcome and WOWTR.Welcome.Show then
+    WOWTR.Welcome.Show()
+    return
+  end
+
+  -- Fallback (shouldn't happen): open settings like legacy behavior.
   QTR_PS = QTR_PS or {}
   QTR_PS["welcome"] = "1"
-  if WOWTR.Config and WOWTR.Config.Open then
+  if WOWTR and WOWTR.Config and WOWTR.Config.Open then
     WOWTR.Config.Open()
   end
 end

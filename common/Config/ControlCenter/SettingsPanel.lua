@@ -1634,8 +1634,7 @@ do  --ChangelogTab
 
         local DivBottom = CreateDivider(Tab2, sideSectionWidth - 0.5*Def.WidgetGap);
         DivBottom:SetPoint("CENTER", LeftSection, "BOTTOM", 0, 2*Def.WidgetGap + Def.ButtonSize);
-        -- WoWLang: "Auto show changelog" is managed by WOWTR's own changelog system (common/UI/Changelog.lua),
-        -- so we omit this toggle in the embedded Release Notes tab.
+        -- WoWLang: We omit an "auto show changelog" toggle here; the embedded Release Notes tab is manual-only.
 
 
         local VersionTitle = Tab2:CreateFontString(nil, "OVERLAY", "GameFontNormal");
