@@ -11,6 +11,10 @@ Quests.Details = Quests.Details or {}
 local _lastPrepareQuestID = 0
 local _lastPrepareAt = 0
 local _postLayoutTicker
+local _postLayoutLastQuestID = 0
+local _postLayoutLastAt = 0
+local _lastForceQuestID = 0
+local _lastForceAt = 0
 
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Kept local to this file because `common/Text.lua` is loaded later in the TOC.
@@ -47,22 +51,29 @@ local function CancelPostLayoutTicker()
   end
 end
 
-function Quests.Details.SchedulePostLayoutRefresh()
+function Quests.Details.SchedulePostLayoutRefresh(opts)
+  opts = opts or {}
+  local delay = (type(opts.delay) == "number" and opts.delay) or 0.12
+  local bypassGuard = opts.force == true
   CancelPostLayoutTicker()
   if not (QuestMapFrame and QuestMapFrame:IsVisible()) then return end
   -- Intentionally always schedule while QuestMapFrame is visible.
-  -- Blizzard can overwrite quest strings after our initial translation pass; this ticker
-  -- re-applies the chosen view (translated) a few times right after layout changes.
-  local runs = 0
-  _postLayoutTicker = C_Timer.NewTicker(0.08, function()
-    runs = runs + 1
+  -- Blizzard can overwrite quest strings right after showing the details panel.
+  -- We do a single delayed re-apply pass (instead of a multi-run ticker) to avoid spam and churn.
+  _postLayoutTicker = C_Timer.NewTimer(delay, function()
+    _postLayoutTicker = nil
+    if not (QuestMapFrame and QuestMapFrame:IsVisible()) then return end
+    local now = GetTime and GetTime() or 0
+    local qid = (Quests.GetQuestID and Quests.GetQuestID()) or QTR_quest_ID or 0
+    -- Guard: avoid firing __post__ multiple times for the same quest in a short window
+    if (not bypassGuard) and qid > 0 and _postLayoutLastQuestID == qid and (now - (_postLayoutLastAt or 0)) < 0.6 then
+      return
+    end
+    _postLayoutLastQuestID = qid
+    _postLayoutLastAt = now
     if QTR_curr_trans == "1" then
       -- Pass "__post__" event to prevent duplicate processing
       QTR_Translate_On(1, "__post__")
-    end
-    local shouldStop = (runs >= 4) or not (QuestMapFrame and QuestMapFrame:IsVisible()) or (QTR_curr_trans ~= "1")
-    if shouldStop then
-      CancelPostLayoutTicker()
     end
   end)
 end
@@ -350,12 +361,22 @@ function Quests.Details.TranslateOn(typ,event)
             -- This prevents the glyph from overlapping the title text.
             local glyphReservedW = 0
             if rtl and leadingGlyph ~= "" then
-               glyphReservedW = 30 -- space for glyph + padding
+               glyphReservedW = 14 -- space for glyph (minimal, X offset handles positioning)
                local titleWWithGlyph = textW - glyphReservedW
                QuestInfoTitleHeader:SetWidth(titleWWithGlyph)
                QuestProgressTitleText:SetWidth(titleWWithGlyph)
                enforceWidth(QuestInfoTitleHeader, titleWWithGlyph)
                enforceWidth(QuestProgressTitleText, titleWWithGlyph)
+            end
+
+            -- In QuestMapFrame, toggling ON can be followed by late Blizzard updates that undo our title width/glyph layout.
+            -- Mirror the initial open behavior: schedule ONE post-layout re-apply after __toggle__ only when we actually have a glyph.
+            do
+               local inQuestMapNow = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+               if inQuestMapNow and rtl and event == "__toggle__" and leadingGlyph ~= "" then
+                  Quests.Details._PostAfterToggle = Quests.Details._PostAfterToggle or {}
+                  Quests.Details._PostAfterToggle[QTR_quest_ID] = true
+               end
             end
 
             -- Inline tags are safe to keep inside the Arabic title (they render regardless of font).
@@ -411,7 +432,9 @@ function Quests.Details.TranslateOn(typ,event)
                local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
                -- To avoid a visible "snap" (Blizzard/ElvUI can adjust anchors/fonts after our first pass),
                -- defer showing the overlay icon until the post-layout reapply pass in QuestMapFrame.
-               local allowIconShow = not (rtl and inQuestMap and event ~= "__post__")
+               -- Exception: on explicit user toggles, show the glyph immediately to avoid a 2-stage flicker.
+               -- We still run a single __post__ re-apply (when needed) to stabilize the layout.
+               local allowIconShow = not (rtl and inQuestMap and event ~= "__post__" and event ~= "__toggle__")
 
                Quests.Details._IconPosLock = Quests.Details._IconPosLock or {}
                local lockIdTitle = tostring(QTR_quest_ID or 0) .. ":title:" .. (inQuestMap and "map" or "other")
@@ -462,7 +485,7 @@ function Quests.Details.TranslateOn(typ,event)
                            if rtl then
                               -- Place the glyph in the reserved space to the LEFT of the title text.
                               -- Since we reduced the title width by glyphReservedW, the glyph goes in that gap.
-                              -- Position at RIGHT edge of title + small gap, so it sits visually before the Arabic text.
+                              -- Position at RIGHT edge of title + X offset, so it sits visually before the Arabic text.
                               iconFS:SetWidth(0) -- let it size naturally
                               iconFS:SetJustifyH("LEFT")
                               iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "RIGHT", 4, 0)
@@ -489,7 +512,7 @@ function Quests.Details.TranslateOn(typ,event)
                               -- Same positioning logic for progress title
                               iconFS2:SetWidth(0)
                               iconFS2:SetJustifyH("LEFT")
-                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", 4, 0)
+                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", 20, 0)
                            else
                               iconFS2:SetWidth(0)
                               iconFS2:SetPoint("LEFT", QuestProgressTitleText, "LEFT", 0, 0)
@@ -801,8 +824,20 @@ function Quests.Details.TranslateOn(typ,event)
          end
       end
    end
+   -- Post-layout re-apply: QuestMapFrame can overwrite strings after our first pass.
+   -- Default: schedule after initial show/refresh events.
+   -- Toggle: schedule only when the title has a glyph overlay that needs a stable second pass.
    if event ~= "__post__" then
-      Quests.Details.SchedulePostLayoutRefresh()
+      if event == "__toggle__" then
+         local post = Quests.Details._PostAfterToggle
+         if post and post[QTR_quest_ID] then
+            post[QTR_quest_ID] = nil
+            -- Force a quick post-pass after toggle to stabilize glyph/width even if a __post__ just ran.
+            Quests.Details.SchedulePostLayoutRefresh({ force = true, delay = 0.02 })
+         end
+      else
+         Quests.Details.SchedulePostLayoutRefresh()
+      end
    end
 end
 
@@ -1158,14 +1193,30 @@ function QTR_PrepareReload() return Quests.Details.QuestPrepare() end
 function Quests.Details.QuestPrepare(event)
   local startTime = GetTime()
   local QTR_QuestData = rawget(_G, "QTR_QuestData")
-  if WOWTR and WOWTR.Debug then
-    WOWTR.Debug.Enter("QuestPrepare", WOWTR.Debug.Categories.QUESTS, "Event:", event or "nil", "| Time:", startTime)
-  end
   QTR_PrepareTime = time()
   if QTR_IconAI then QTR_IconAI:Hide() end
   if GoQ_IconAI then GoQ_IconAI:Hide() end
 
   local q_ID = Quests.GetQuestID and Quests.GetQuestID() or 0
+
+  -- QuestMapFrame can fire multiple forced prepares while its details panel finishes showing.
+  -- We already schedule a single __post__ re-apply pass from TranslateOn, so suppress rapid duplicate forced calls.
+  do
+    local now = GetTime()
+    local isForced = (event == "__force__")
+    local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+    if isForced and inQuestMap and q_ID > 0 and _lastForceQuestID == q_ID and (now - (_lastForceAt or 0)) < 0.35 then
+      return
+    end
+    if isForced and q_ID > 0 then
+      _lastForceQuestID = q_ID
+      _lastForceAt = now
+    end
+  end
+
+  if WOWTR and WOWTR.Debug then
+    WOWTR.Debug.Enter("QuestPrepare", WOWTR.Debug.Categories.QUESTS, "Event:", event or "nil", "| Time:", startTime)
+  end
   if WOWTR and WOWTR.Debug then
     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Quest ID:", q_ID, "| Active frames:", 
       (QuestFrame and QuestFrame:IsVisible() and "QuestFrame") or 
@@ -1218,6 +1269,20 @@ function Quests.Details.QuestPrepare(event)
         end
         return
       elseif shouldReprocess then
+        -- QuestMapFrame can overwrite strings immediately after show.
+        -- Instead of re-running full QuestPrepare (spam/churn), schedule a single post-layout re-apply pass.
+        if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then
+          if WOWTR and WOWTR.Debug then
+            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REAPPLY | Quest", q_ID, "text was overwritten; scheduling single __post__ re-apply")
+          end
+          if Quests and Quests.Details and Quests.Details.SchedulePostLayoutRefresh then
+            Quests.Details.SchedulePostLayoutRefresh()
+          elseif QTR_Translate_On then
+            QTR_Translate_On(1, "__post__")
+          end
+          return
+        end
+
         if WOWTR and WOWTR.Debug then
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REPROCESS | Quest", q_ID, "was processed but text appears untranslated | Allowing ONE reprocessing attempt")
         end
@@ -1285,7 +1350,9 @@ function Quests.Details.QuestPrepare(event)
   do
     local now = GetTime()
     local isForced = (event == "__force__")
-    if (not isForced) and (_lastPrepareQuestID == q_ID and (now - (_lastPrepareAt or 0)) < 0.05) then
+    -- Throttle rapid duplicate calls. Forced calls can spam via QuestMapDetailsScrollFrame OnShow.
+    local throttleWindow = isForced and 0.25 or 0.05
+    if (_lastPrepareQuestID == q_ID and (now - (_lastPrepareAt or 0)) < throttleWindow) then
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Throttled duplicate call | Quest:", q_ID, "| Time since last:", string.format("%.3f", now - (_lastPrepareAt or 0)), "s")
       end

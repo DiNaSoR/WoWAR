@@ -1003,6 +1003,8 @@ Debug.Verbosity = {
 -- Default settings
 local defaultCategoryLevel = Debug.Verbosity.NORMAL
 local categoryLevels = {}
+-- Per-message dedupe for VERBOSE spam (e.g., post-layout tickers).
+local _verboseDedupeLast = {}
 
 -- Initialize category levels from config or defaults
 function Debug.Initialize()
@@ -1145,6 +1147,19 @@ function Debug.Print(category, verbosity, ...)
     end
   end
   local message = table.concat(stringArgs, " ")
+
+  -- Guard against rapid VERBOSE spam: suppress identical messages repeated in a short window.
+  -- This keeps VERBOSE useful for tracing while avoiding floods caused by tickers/hook churn.
+  if verbosity == Debug.Verbosity.VERBOSE then
+    local now = (GetTime and GetTime()) or 0
+    local key = tostring(categoryName) .. "\n" .. message
+    local last = _verboseDedupeLast[key]
+    -- Post-layout refresh tickers can run at ~0.08s; keep one copy per ~0.35s.
+    if last and (now - last) < 0.35 then
+      return
+    end
+    _verboseDedupeLast[key] = now
+  end
   
   -- Add category tag if not already present at the start
   -- Check if message starts with [CATEGORY] pattern, not just any [
