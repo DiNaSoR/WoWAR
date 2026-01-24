@@ -133,28 +133,37 @@ end
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Used to avoid reversing pure English strings when running in AR locale.
 function Text.ContainsArabic(txt)
-  if not txt or txt == "" then return false end
+  if type(txt) ~= "string" then return false end
 
-  -- Fast path: Arabic Presentation Forms-A/B live in UTF-8 sequences starting with 0xEF 0xAD..0xBB
-  if (string.find(txt, "\239\173") ~= nil)
-      or (string.find(txt, "\239\174") ~= nil)
-      or (string.find(txt, "\239\175") ~= nil)
-      or (string.find(txt, "\239\185") ~= nil)
-      or (string.find(txt, "\239\186") ~= nil)
-      or (string.find(txt, "\239\187") ~= nil) then
-    return true
-  end
+  -- Secret values can raise errors on comparison or string ops; guard with pcall.
+  local ok, hasArabic = pcall(function()
+    if txt == "" then return false end
 
-  -- Fast path: most Arabic base letters live in 2-byte UTF-8 sequences starting with 0xD8..0xDB.
-  if string.find(txt, "[\216\217\218\219]") ~= nil then
-    return true
-  end
+    -- Fast path: Arabic Presentation Forms-A/B live in UTF-8 sequences starting with 0xEF 0xAD..0xBB
+    if (string.find(txt, "\239\173") ~= nil)
+        or (string.find(txt, "\239\174") ~= nil)
+        or (string.find(txt, "\239\175") ~= nil)
+        or (string.find(txt, "\239\185") ~= nil)
+        or (string.find(txt, "\239\186") ~= nil)
+        or (string.find(txt, "\239\187") ~= nil) then
+      return true
+    end
 
-  -- Fallback: use reshaper helper if available (base Arabic letters only).
-  if type(_G.AS_ContainsArabic) == "function" then
-    return AS_ContainsArabic(txt) == true
-  end
+    -- Fast path: most Arabic base letters live in 2-byte UTF-8 sequences starting with 0xD8..0xDB.
+    if string.find(txt, "[\216\217\218\219]") ~= nil then
+      return true
+    end
 
+    -- Fallback: use reshaper helper if available (base Arabic letters only).
+    local fn = _G.AS_ContainsArabic
+    if type(fn) == "function" then
+      return fn(txt) == true
+    end
+
+    return false
+  end)
+
+  if ok then return hasArabic end
   return false
 end
 
