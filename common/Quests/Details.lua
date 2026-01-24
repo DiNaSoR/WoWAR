@@ -53,7 +53,7 @@ end
 
 function Quests.Details.SchedulePostLayoutRefresh(opts)
   opts = opts or {}
-  local delay = (type(opts.delay) == "number" and opts.delay) or 0.12
+  local delay = (type(opts.delay) == "number" and opts.delay) or 0.02
   local bypassGuard = opts.force == true
   CancelPostLayoutTicker()
   if not (QuestMapFrame and QuestMapFrame:IsVisible()) then return end
