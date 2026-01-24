@@ -1,0 +1,1197 @@
+[
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Bubbles"
+                 ],
+        "Title":  "Prevented double EN + AR chat bubble lines caused by enabling both Chat EN and Chat TR.",
+        "Files":  [
+                      "common/Config/Core.lua",
+                      "common/Config/Tabs/Bubbles.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Quests"
+                 ],
+        "Title":  "Stabilized QuestMapFrame translation behavior.",
+        "Files":  {
+
+                  }
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Quests"
+                 ],
+        "Title":  "Corrected RTL and translation application logic.",
+        "Files":  {
+
+                  }
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Tooltips"
+                 ],
+        "Title":  "Removed duplicate tooltip font and hook logic from config.",
+        "Files":  [
+                      "common/Tooltips/Hooks.lua",
+                      "common/Tooltips/Main.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Fonts"
+                 ],
+        "Title":  "Centralized Arabic font application.",
+        "Files":  "common/UI/Fonts.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "UI"
+                 ],
+        "Title":  "Introduced shared data-driven UI translation helper.",
+        "Files":  "common/UI/Translate.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "RTL"
+                 ],
+        "Title":  "Centralized RTL detection via `ns.RTL.IsRTL()`.",
+        "Files":  {
+
+                  }
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Compat"
+                 ],
+        "Title":  "Consolidated legacy `ST_*` globals.",
+        "Files":  "common/Core/Compat.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Core"
+                 ],
+        "Title":  "Deduplicated hook/ticker wiring.",
+        "Files":  [
+                      "common/Core/HookUtils.lua",
+                      "common/Core/Main.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Config"
+                 ],
+        "Title":  "Reduced config tab boilerplate.",
+        "Files":  "common/Config/Helpers.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-29",
+        "Tags":  [
+                     "Config",
+                     "Fix"
+                 ],
+        "Title":  "Fixed AceDB persistence issue.",
+        "Files":  {
+
+                  }
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "QuestMapFrame Rewards",
+                     "RTL"
+                 ],
+        "Title":  "Fixed AR reward/questline labels clipping on the right edge.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Text",
+                     "RTL"
+                 ],
+        "Title":  "Fixed missing inline quest icons (e.g. “!” / texture tags) in Arabic view.",
+        "Files":  [
+                      "\\00112\\002",
+                      "\\00221\\001",
+                      "common/Text.lua",
+                      "common/Quests/Details.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Fixed missing quest title “!” icon when switching to Arabic fonts.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Text",
+                     "RTL"
+                 ],
+        "Title":  "Preserved generic `|H...|h...|h` hyperlinks through reversal.",
+        "Files":  "common/Text.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Fixed “□1□” placeholders appearing in Arabic quest titles.",
+        "Files":  [
+                      "\\0011\\002",
+                      "common/Quests/Details.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Quest title repeatable icon extraction now supports inline atlas/texture tags inside `|H...|h...|h` display text.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Moved quest title icon overlay to the RTL side (right) for Arabic.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Unified quest text column widths for consistent wrapping.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-30",
+        "Tags":  [
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Quest title overlay icon: tooltip hover + stable placement in QuestMapFrame.",
+        "Files":  [
+                      "common/Quests/Details.lua",
+                      "OnHyperlinkEnter/Leave"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter"
+                 ],
+        "Title":  "Replaced AceConfig options UI with a Plumber-style ControlCenter settings panel.",
+        "Files":  [
+                      "WoWAR/WoWAR.toc",
+                      "common/Config/Core.lua",
+                      "common/Config/Minimap.lua",
+                      "common/Config/ControlCenter/*",
+                      "WoWAR/Images/*",
+                      "Images/ControlCenter",
+                      "Images/ExpansionLandingPage",
+                      "WoWAR/WoW_Localization_AR.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "Changelog"
+                 ],
+        "Title":  "Updated Arabic changelog entries shown in Release Notes.",
+        "Files":  [
+                      "WoWAR/Changelog_AR.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Docs",
+                     "ControlCenter"
+                 ],
+        "Title":  "Added an HTML mockup of the ControlCenter panel for design review outside WoW.",
+        "Files":  [
+                      "Docs/Mockups/ControlCenter/*",
+                      "Docs/Mockups/ControlCenter/assets/ExpansionBorder_TWW.png",
+                      "WoWAR/Images/ExpansionLandingPage/ExpansionBorder_TWW.tga",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Docs",
+                     "ControlCenter",
+                     "Mockup"
+                 ],
+        "Title":  "Made the HTML mock match the in-game ControlCenter layout 1:1 (Modules + Release Notes).",
+        "Files":  [
+                      "common/Config/ControlCenter/*",
+                      "Docs/Mockups/ControlCenter/index.html",
+                      "Docs/Mockups/ControlCenter/styles.css",
+                      "Docs/Mockups/ControlCenter/app.js",
+                      "Docs/Mockups/ControlCenter/assets/*",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Docs",
+                     "ControlCenter",
+                     "Mockup",
+                     "CSS"
+                 ],
+        "Title":  "Persisted browser-preview layout tweaks (tabbar + border sizing).",
+        "Files":  [
+                      "Docs/Mockups/ControlCenter/styles.css",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Docs",
+                     "ControlCenter",
+                     "Mockup",
+                     "CSS"
+                 ],
+        "Title":  "Restored 1:1 layout parity with in-game `common/Config/ControlCenter/*` (tabs outside frame).",
+        "Files":  [
+                      "common/Config/ControlCenter/*",
+                      "Docs/Mockups/ControlCenter/styles.css",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2025-12.md",
+        "Date":  "2025-12-31",
+        "Tags":  [
+                     "Docs",
+                     "ControlCenter",
+                     "Mockup",
+                     "CSS"
+                 ],
+        "Title":  "Fixed category header layering + fonts in the HTML mock.",
+        "Files":  [
+                      "Docs/Mockups/ControlCenter/styles.css",
+                      "Docs/Mockups/ControlCenter/assets/font1.ttf",
+                      "WoWAR/Fonts/font1.ttf",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Assets",
+                     "ControlCenter"
+                 ],
+        "Title":  "Removed unused `WoWAR/Images/ControlCenter/*` files.",
+        "Files":  [
+                      "WoWAR/Images/ControlCenter/*",
+                      "common/Config/ControlCenter/*",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Assets",
+                     "ControlCenter"
+                 ],
+        "Title":  "Restored missing ExpansionLandingPage textures required for the in-game border.",
+        "Files":  [
+                      "Images\\\\ExpansionLandingPage\\\\ExpansionBorder_TWW",
+                      "WoWAR/Images/ExpansionLandingPage/ExpansionBorder_TWW.tga",
+                      "WoWAR/Images/ExpansionLandingPage/DropdownMenu.tga",
+                      "WoWAR/Images/ExpansionLandingPage/HorizontalButtonHighlight.tga",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "Fix"
+                 ],
+        "Title":  "Fixed “Show minimap icon” toggle stuck ON in ControlCenter.",
+        "Files":  [
+                      "common/Config/ControlCenter/Registry.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "RTL"
+                 ],
+        "Title":  "Made Release Notes (مذكرات الإصدار) render RTL for Arabic only.",
+        "Files":  [
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "RTL"
+                 ],
+        "Title":  "Kept the changelog version/date header LTR in Arabic.",
+        "Files":  [
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Config",
+                     "Localization"
+                 ],
+        "Title":  "Added Arabic (easy) descriptions for all config options (Summary + Tip) and wired them into the UI.",
+        "Files":  [
+                      "WoWAR/WoW_Localization_AR.lua",
+                      "common/Config/ControlCenter/Registry.lua",
+                      "common/Config/Tabs/*",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "RTL"
+                 ],
+        "Title":  "Fixed AR option descriptions not being shaped + colored.",
+        "Files":  [
+                      "common/Text.lua",
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-01",
+        "Tags":  [
+                     "Plugins",
+                     "Storyline",
+                     "Fix",
+                     "RTL"
+                 ],
+        "Title":  "Hardened Storyline integration and improved Arabic UI.",
+        "Files":  [
+                      "common/Plugins/StorylinePlugin.lua",
+                      "common/Quests/Gossip.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-02",
+        "Tags":  [
+                     "Quests",
+                     "Fix"
+                 ],
+        "Title":  "Fixed quest title decoration glyph disappearing when switching between QuestMapFrame and QuestFrame.",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Implemented dynamic value substitution for `{1}`, `{2}`, `{3}` tooltip placeholders.",
+        "Files":  "common/Tooltips/Utils.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Added printf-style format token protection to prevent RTL reversal corruption.",
+        "Files":  "common/Text.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Added Blizzard dynamic placeholder `{1}`, `{2}` protection for defensive RTL safety.",
+        "Files":  "common/Text.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Fixed RTL reversal of substituted numeric values (\"20\" → \"02\" bug).",
+        "Files":  [
+                      "\\003...\\004",
+                      "\\001INDEX\\002",
+                      "common/Tooltips/Utils.lua",
+                      "common/Text.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Tooltips",
+                     "RTL"
+                 ],
+        "Title":  "Right-justified tooltip lines in Arabic to feel RTL.",
+        "Files":  [
+                      "common/Tooltips/Hooks.lua",
+                      "common/Tooltips/GameTooltip.lua",
+                      "common/Tooltips/Utils.lua",
+                      "regression-checklist.md",
+                      "common/Tooltips/*"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Tooltips",
+                     "Fix"
+                 ],
+        "Title":  "Fixed `{3}` placeholder showing comma instead of number.",
+        "Files":  "common/Tooltips/Utils.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-03",
+        "Tags":  [
+                     "Tooltips",
+                     "Fix"
+                 ],
+        "Title":  "Fixed RTL justification applying to English tooltips without translation.",
+        "Files":  [
+                      "common/Tooltips/GameTooltip.lua",
+                      "common/Tooltips/Hooks.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-06",
+        "Tags":  [
+                     "Config",
+                     "ControlCenter",
+                     "Fix"
+                 ],
+        "Title":  "Fixed Release Notes dates showing “today” for all versions.",
+        "Files":  [
+                      "WoWAR/Changelog_AR.lua",
+                      "common/Config/ControlCenter/Registry.lua",
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-06",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Fixed `AS_UTF8charbytes` returning nil for NUL bytes (0x00), causing arithmetic crashes.",
+        "Files":  [
+                      "WoWAR/WoW_Arabic_Reshaper.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-06",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Corrected Persian/Urdu letter presentation-form mappings (پ/چ/ژ/گ/ک/ڌ/ی).",
+        "Files":  [
+                      "WoWAR/WoW_Arabic_Reshaper.lua",
+                      "Tools/index.html",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-09",
+        "Tags":  [
+                     "Packaging",
+                     "CI"
+                 ],
+        "Title":  "Fixed GitHub Actions release workflow to package `common/` as a folder.",
+        "Files":  [
+                      "common/",
+                      "common/*",
+                      ".github/workflows/release.yml"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-10",
+        "Tags":  [
+                     "Compat",
+                     "Namespace"
+                 ],
+        "Title":  "Standardized on `WOWTR_*` as the primary namespace and kept `WoWTR_*` only as legacy aliases.",
+        "Files":  [
+                      "common/Locale/AR.lua",
+                      "common/*"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "RTL",
+                     "UI"
+                 ],
+        "Title":  "Fixed Arabic “Original” preview rendering in the reshaper tool.",
+        "Files":  [
+                      "Tools/index.html",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Fixed Latin runs (e.g. `WoWAR.lua`) not being pre-reversed for Mixed entries.",
+        "Files":  [
+                      "Tools/index.html",
+                      "common/UI/Talents.lua",
+                      "common/Bubbles/State.lua",
+                      "common/Core/Main.lua",
+                      "common/Core/Debug.lua",
+                      "common/UI/DebugUI.lua",
+                      "common/Tooltips/State.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Refactor",
+                     "Layout"
+                 ],
+        "Title":  "Moved legacy root `WoW_*.lua` files into `common/` (Option B layout).",
+        "Files":  [
+                      "common/",
+                      "common/Locale/AR.lua",
+                      "common/Locale/changelog.lua",
+                      "common/Text/Reshaper.lua",
+                      "common/Chat/Chat.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Cleanup",
+                     "Tracker"
+                 ],
+        "Title":  "Removed unused “online translation” table `QTR_Tlumacz_Online` and its helper `pairsByKeys()`.",
+        "Files":  [
+                      "common/Quests/Tracker.lua",
+                      "Translations/TlumaczOnline_AR.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Cleanup"
+                 ],
+        "Title":  "Removed orphaned `QTR_ObjectiveTracker_Check` hook call.",
+        "Files":  [
+                      "common/Core/Main.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "DevX"
+                 ],
+        "Title":  "Reduced LuaLS noise for UI globals in `common/UI/Frames.lua`.",
+        "Files":  [
+                      "common/UI/Frames.lua",
+                      ".vscode/settings.json",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "DevX",
+                     "Plugins"
+                 ],
+        "Title":  "Cleaned LuaLS “undefined global” noise in DialogueUI integration.",
+        "Files":  [
+                      "common/Plugins/DUIPlugin.lua",
+                      ".vscode/settings.json",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "DevX"
+                 ],
+        "Title":  "Added in-game command to clear agent SavedVariables logs to prevent dump buildup.",
+        "Files":  [
+                      "common/Core/Debug.lua",
+                      "common/Core/Main.lua",
+                      "/wowtrclearlogs",
+                      "regression-checklist.md",
+                      "/wowtrclearlogs all"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "DevX"
+                 ],
+        "Title":  "Added floating “Debug Tools” UI with clickable dump/clear actions; removed editor-only region markers.",
+        "Files":  [
+                      "/fstack",
+                      "common/UI/DebugToolsUI.lua",
+                      "common/Core/Main.lua",
+                      "/wowardebug",
+                      "common/Core/Debug.lua",
+                      "common/UI/Professions.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "DevX"
+                 ],
+        "Title":  "Removed automatic ticker-driven agent instrumentation from Professions + ticker clamp.",
+        "Files":  [
+                      "common/UI/Professions.lua",
+                      "common/Core/Main.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "DevX"
+                 ],
+        "Title":  "Added “Dump Visible UI” (dump everything currently visible on screen) + updated messaging to point to `/wowardebug`.",
+        "Files":  [
+                      "/wowardebug",
+                      "common/Core/Debug.lua",
+                      "common/UI/DebugToolsUI.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "DevX",
+                     "Quests"
+                 ],
+        "Title":  "Cleaned LuaLS diagnostics in quest details handling.",
+        "Files":  [
+                      "Translations/QuestData_AR.lua",
+                      "common/Quests/Details.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Docs",
+                     "Tools"
+                 ],
+        "Title":  "Added a WoWAR.lua SavedVariables explainer page (EN + Arabic notes).",
+        "Files":  [
+                      "Tools/wowar.html",
+                      "Tools/index.html",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Instrumentation"
+                 ],
+        "Title":  "Added agent NDJSON logging + Professions probes for runtime evidence.",
+        "Files":  [
+                      "common/Core/Debug.lua",
+                      "common/UI/Professions.lua",
+                      "Tools/ExportAgentDebugLog.ps1",
+                      ".cursor/debug.log",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Perf",
+                     "Professions",
+                     "Fix"
+                 ],
+        "Title":  "Clamp `StartTicker(..., 0)` intervals to prevent per-frame churn.",
+        "Files":  [
+                      "common/Core/Main.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Cleanup",
+                     "Config"
+                 ],
+        "Title":  "Removed unused legacy AceConfig “Tabs” implementation files.",
+        "Files":  [
+                      "common/Config/Tabs/*.lua",
+                      "common/Config/Tabs/*",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Instrumentation"
+                 ],
+        "Title":  "Improve agent log run separation + add Professions call-rate metrics.",
+        "Files":  [
+                      "common/Core/Debug.lua",
+                      "common/UI/Professions.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Tools",
+                     "Professions"
+                 ],
+        "Title":  "Added Professions UI string dump command for bulk extraction.",
+        "Files":  [
+                      "/fstack",
+                      "common/Core/Debug.lua",
+                      "common/Core/Main.lua",
+                      "/wowtrdumpprof",
+                      "/dumpprof",
+                      "Tools/ExportAgentDebugLog.ps1",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Tools"
+                 ],
+        "Title":  "Added clickable Debug Tools UI (`/wowardebug`) with smart Dump Visible UI.",
+        "Files":  [
+                      "/wowardebug",
+                      "common/UI/DebugToolsUI.lua",
+                      "common/Core/Debug.lua",
+                      "common/Core/Main.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Cleanup"
+                 ],
+        "Title":  "Removed manual frame targeting from Debug Tools UI.",
+        "Files":  [
+                      "common/UI/DebugToolsUI.lua",
+                      "common/Core/Debug.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Dump"
+                 ],
+        "Title":  "Filtered numeric ratio noise like `0 / 1000`.",
+        "Files":  [
+                      "0 / 1000",
+                      "common/Core/Debug.lua",
+                      "^%d+ / %d+$",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Dump"
+                 ],
+        "Title":  "Treat Arabic UI text as “already localized” in missing-only dumps.",
+        "Files":  [
+                      "common/Core/Debug.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "DevX",
+                     "Lua Diagnostics"
+                 ],
+        "Title":  "Remove implicit globals for quest de-dupe markers.",
+        "Files":  [
+                      "_lastProcessedQuestID/_lastProcessedQuestTime",
+                      "common/Quests/Main.lua",
+                      "common/Quests/Details.lua",
+                      "common/Core/Main.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Changelog"
+                 ],
+        "Title":  "Removed standalone Changelog popup UI; keep only embedded ControlCenter “Release Notes”.",
+        "Files":  [
+                      "common/Core/Main.lua",
+                      "common/UI/Changelog.lua",
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "common/Locale/changelog.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "Dump",
+                     "DevX"
+                 ],
+        "Title":  "Added “UI Art / Structure” dump (textures + layout manifest) to help recreate Blizzard-style UIs.",
+        "Files":  [
+                      "/fstack",
+                      "/wowardebug",
+                      ".cursor/ui-art.ndjson",
+                      ".cursor/ui-textures.tsv",
+                      "common/Core/Debug.lua",
+                      "common/UI/DebugToolsUI.lua",
+                      "Tools/ExportAgentDebugLog.ps1",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "UI"
+                 ],
+        "Title":  "Tweaked `/wowardebug` panel spacing + hint text after adding “Include art”.",
+        "Files":  [
+                      "/wowardebug",
+                      "common/UI/DebugToolsUI.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Welcome"
+                 ],
+        "Title":  "Added a first-run Welcome modal that matches the ControlCenter settings style.",
+        "Files":  [
+                      "common/UI/Welcome.lua",
+                      "common/Config/Main.lua",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Welcome",
+                     "RTL"
+                 ],
+        "Title":  "Switched Welcome modal border + Arabic rendering for correct bidi behavior.",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Debug",
+                     "DumpFrameArt"
+                 ],
+        "Title":  "Improved anchor path resolution in UI art dumps.",
+        "Files":  "common/Core/Debug.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Welcome"
+                 ],
+        "Title":  "Re-skinned Welcome modal to match Blizzard SplashFrame art/layout.",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Welcome",
+                     "AR"
+                 ],
+        "Title":  "Localized Welcome UI strings (Arabic-only when RTL).",
+        "Files":  [
+                      "common/UI/Welcome.lua",
+                      "common/Locale/AR.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "UI",
+                     "Welcome"
+                 ],
+        "Title":  "Switched Welcome text scrolling to use the same ScrollView/ScrollBar as ControlCenter.",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "RTL"
+                 ],
+        "Title":  "Fixed \"Keep Latin words LTR\" to not re-reverse already-reversed Latin in shaped entries.",
+        "Files":  [
+                      "Tools/index.html",
+                      "regression-checklist.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "RTL"
+                 ],
+        "Title":  "Fix slash commands like `/wowardebug` to render correctly in WoW RTL.",
+        "Files":  [
+                      "/wowardebug",
+                      "/",
+                      "wowardebug/",
+                      "gubedrawow/",
+                      "Tools/index.html"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "RTL"
+                 ],
+        "Title":  "Ensure `/command` tokens aren’t treated as “protected” during reshaping.",
+        "Files":  [
+                      "/command",
+                      "/...",
+                      "/wowardebug",
+                      "^/[A-Za-z][A-Za-z0-9_]*$",
+                      "Tools/index.html"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools"
+                 ],
+        "Title":  "Added “Unshape” mode to convert presentation-form Arabic back to base (unshaped) text.",
+        "Files":  "Tools/index.html"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "Fix",
+                     "Unshape"
+                 ],
+        "Title":  "Prevented ALEF (FE8E) mapping collisions that produced “آ” in common words.",
+        "Files":  "Tools/index.html"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "UX"
+                 ],
+        "Title":  "Added tooltips with before/after examples for Options toggles.",
+        "Files":  "Tools/index.html"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "UX"
+                 ],
+        "Title":  "Fixed option tooltips positioning so they stay within the visible page.",
+        "Files":  "Tools/index.html"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Tools",
+                     "UX"
+                 ],
+        "Title":  "Clarified tooltips with explicit Checked vs Unchecked outcomes.",
+        "Files":  "Tools/index.html"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-11",
+        "Tags":  [
+                     "Text",
+                     "RTL",
+                     "AR"
+                 ],
+        "Title":  "Auto-fix curly color span direction so `{c...}TEXT{r}` colors the intended segment.",
+        "Files":  [
+                      "{c...}/{r}",
+                      "common/Text.lua",
+                      "common/Config/Helpers.lua"
+                  ]
+    }
+]

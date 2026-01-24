@@ -19,3 +19,6 @@ lua_modules/
 
 Docs/
 Tools/
+
+# Cursor Memory System (generated)
+.cursor/memory/memory.sqlite
