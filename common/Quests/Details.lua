@@ -346,6 +346,18 @@ function Quests.Details.TranslateOn(typ,event)
                Quests.Details._TitleDecorLinks[QTR_quest_ID] = nil
             end
 
+            -- Reserve space for the glyph icon in RTL mode by reducing title width.
+            -- This prevents the glyph from overlapping the title text.
+            local glyphReservedW = 0
+            if rtl and leadingGlyph ~= "" then
+               glyphReservedW = 30 -- space for glyph + padding
+               local titleWWithGlyph = textW - glyphReservedW
+               QuestInfoTitleHeader:SetWidth(titleWWithGlyph)
+               QuestProgressTitleText:SetWidth(titleWWithGlyph)
+               enforceWidth(QuestInfoTitleHeader, titleWWithGlyph)
+               enforceWidth(QuestProgressTitleText, titleWWithGlyph)
+            end
+
             -- Inline tags are safe to keep inside the Arabic title (they render regardless of font).
             if leadingTags ~= "" and type(titleLG) == "string" and titleLG ~= "" and (not titleLG:find("|T", 1, true)) and (not titleLG:find("|A", 1, true)) then
                if rtl then
@@ -448,28 +460,12 @@ function Quests.Details.TranslateOn(typ,event)
                         if not (rtl and inQuestMap and Quests.Details._IconPosLock[lockIdTitle]) then
                            iconFS:ClearAllPoints()
                            if rtl then
-                              -- Place the icon inside the right margin created by enforceWidth() (see lessons L-013).
-                              -- Use the measured icon width (fallback for |A/|T) so we don't push it outside the frame
-                              -- when the reserved margin (dx) is smaller than our previous fixed-width guess.
-                              local dx = (Quests.Details._AppliedDelta and Quests.Details._AppliedDelta[QuestInfoTitleHeader]) or 0
-                              if dx < 0 then dx = 0 end
-                              local gap, pad, extra = 2, 0, 15
-                              local w = 0
-                              if type(leadingGlyph) == "string" and (leadingGlyph:find("^|A") or leadingGlyph:find("^|T")) then
-                                 w = 22
-                              elseif iconFS.GetStringWidth then
-                                 w = iconFS:GetStringWidth() or 0
-                              end
-                              if w < 8 then w = 8 end
-                              local desired = dx - pad
-                              local minOffset = w + gap
-                              local maxOffset = dx + extra
-                              local xOffset = desired
-                              if xOffset < minOffset then xOffset = minOffset end
-                              if xOffset > maxOffset then xOffset = maxOffset end
-                              iconFS:SetWidth(0) -- let it size naturally; we only control positioning.
-                              iconFS:SetJustifyH("RIGHT")
-                              iconFS:SetPoint("RIGHT", QuestInfoTitleHeader, "RIGHT", xOffset, 0)
+                              -- Place the glyph in the reserved space to the LEFT of the title text.
+                              -- Since we reduced the title width by glyphReservedW, the glyph goes in that gap.
+                              -- Position at RIGHT edge of title + small gap, so it sits visually before the Arabic text.
+                              iconFS:SetWidth(0) -- let it size naturally
+                              iconFS:SetJustifyH("LEFT")
+                              iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "RIGHT", 4, 0)
                            else
                               iconFS:SetWidth(0)
                               iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "LEFT", 0, 0)
@@ -490,25 +486,10 @@ function Quests.Details.TranslateOn(typ,event)
                         if not (rtl and inQuestMap and Quests.Details._IconPosLock[lockIdProg]) then
                            iconFS2:ClearAllPoints()
                            if rtl then
-                              local dx2 = (Quests.Details._AppliedDelta and Quests.Details._AppliedDelta[QuestProgressTitleText]) or 0
-                              if dx2 < 0 then dx2 = 0 end
-                              local gap2, pad2, extra2 = 2, 0, 15
-                              local w2 = 0
-                              if type(leadingGlyph) == "string" and (leadingGlyph:find("^|A") or leadingGlyph:find("^|T")) then
-                                 w2 = 22
-                              elseif iconFS2.GetStringWidth then
-                                 w2 = iconFS2:GetStringWidth() or 0
-                              end
-                              if w2 < 8 then w2 = 8 end
-                              local desired2 = dx2 - pad2
-                              local minOffset2 = w2 + gap2
-                              local maxOffset2 = dx2 + extra2
-                              local xOffset2 = desired2
-                              if xOffset2 < minOffset2 then xOffset2 = minOffset2 end
-                              if xOffset2 > maxOffset2 then xOffset2 = maxOffset2 end
+                              -- Same positioning logic for progress title
                               iconFS2:SetWidth(0)
-                              iconFS2:SetJustifyH("RIGHT")
-                              iconFS2:SetPoint("RIGHT", QuestProgressTitleText, "RIGHT", xOffset2, 0)
+                              iconFS2:SetJustifyH("LEFT")
+                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", 4, 0)
                            else
                               iconFS2:SetWidth(0)
                               iconFS2:SetPoint("LEFT", QuestProgressTitleText, "LEFT", 0, 0)
@@ -568,21 +549,27 @@ function Quests.Details.TranslateOn(typ,event)
 
             if (WorldMapFrame:IsVisible()) then
                if rtl then
-                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5, "RIGHT"))
+                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("RIGHT") end
                else
                   QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("LEFT") end
                end
             else
                if rtl then
-                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5, "RIGHT"))
+                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("RIGHT") end
                else
                   QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("LEFT") end
                end
             end
             if rtl then
-               QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5, "RIGHT"))
+               QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5))
+               if QuestProgressTitleText.SetJustifyH then QuestProgressTitleText:SetJustifyH("RIGHT") end
             else
                QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5))
+               if QuestProgressTitleText.SetJustifyH then QuestProgressTitleText:SetJustifyH("LEFT") end
             end
          end
 

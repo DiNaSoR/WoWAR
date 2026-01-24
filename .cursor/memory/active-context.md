@@ -6,14 +6,17 @@ CLEAR this file when the task is done:
 - Run `scripts/memory/clear-active.ps1`
 
 ## Current Goal
-- Fix secret-value crash in `Text.ContainsArabic` during tooltip show.
+- Fixed glyph overlap in RTL quest titles
+- Updated DebugToolsUI with tabbed interface
 
 ## Files in Focus
-- `common/Text.lua`
-- `common/Tooltips/Hooks.lua`
+- `common/Quests/Details.lua`
+- `common/UI/DebugToolsUI.lua`
 
 ## Findings / Decisions
-- Tooltip line text can be a secret value; guard comparisons/string ops.
+- Reserved 30px for glyph in RTL title width; positioned glyph at RIGHT edge of title
+- Merged DebugUI and DebugToolsUI into single tabbed panel
+- RTL reversal now auto-protects plain numeric tokens inside `Text.HandleWoWSpecialCodes` to prevent digit order flipping (e.g., "27" staying "27" after reversal).
 
 ## Temporary Constraints
 -

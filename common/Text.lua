@@ -112,6 +112,91 @@ function Text.HandleWoWSpecialCodes(msg)
     return "\001" .. (index-1) .. "\002"
   end)
 
+  -- Protect plain numeric tokens (hardcoded digits) from RTL reversal.
+  -- We must skip existing \001...\002 placeholders (their indices contain digits and are restored later).
+  -- Supports:
+  -- - ASCII digits: 0-9
+  -- - Arabic-Indic digits: U+0660..U+0669 (UTF-8: D9 A0..A9)
+  -- - Eastern Arabic-Indic digits: U+06F0..U+06F9 (UTF-8: DB B0..B9)
+  -- Token may include common separators (., , , :, /, -) and a trailing '%' (e.g., 27%, 12:34, 1,234.56).
+  do
+    local function readDigit(s, i)
+      local b1 = s:byte(i)
+      if not b1 then return nil end
+      -- ASCII digit
+      if b1 >= 48 and b1 <= 57 then
+        return s:sub(i, i), i + 1
+      end
+      -- Arabic-Indic digits (٠١٢٣٤٥٦٧٨٩): D9 A0..A9
+      local b2 = s:byte(i + 1)
+      if b2 then
+        if (b1 == 217 and b2 >= 160 and b2 <= 169) or (b1 == 219 and b2 >= 176 and b2 <= 185) then
+          return s:sub(i, i + 1), i + 2
+        end
+      end
+      return nil
+    end
+
+    local function peekIsDigit(s, i)
+      local _, nextI = readDigit(s, i)
+      return nextI ~= nil
+    end
+
+    local len = #msg
+    local out = {}
+    local i = 1
+    while i <= len do
+      local b = msg:byte(i)
+      -- Skip existing placeholders (\001...\002)
+      if b == 1 then
+        local j = msg:find("\002", i + 1, true)
+        if not j then
+          out[#out + 1] = msg:sub(i)
+          break
+        end
+        out[#out + 1] = msg:sub(i, j)
+        i = j + 1
+      else
+        local d, nextI = readDigit(msg, i)
+        if d then
+          local parts = { d }
+          i = nextI
+          while i <= len do
+            local d2, nextI2 = readDigit(msg, i)
+            if d2 then
+              parts[#parts + 1] = d2
+              i = nextI2
+            else
+              local ch = msg:sub(i, i)
+              -- Allow a trailing percent sign right after a digit run.
+              if ch == "%" then
+                parts[#parts + 1] = ch
+                i = i + 1
+                break
+              end
+              -- Allow separators only when they are between digits (e.g., 12:34, 1,234.56, 10/10, 1-2)
+              if (ch == "." or ch == "," or ch == ":" or ch == "/" or ch == "-") and peekIsDigit(msg, i + 1) then
+                parts[#parts + 1] = ch
+                i = i + 1
+              else
+                break
+              end
+            end
+          end
+
+          local token = table.concat(parts)
+          specialCodes[index] = token
+          index = index + 1
+          out[#out + 1] = "\001" .. (index - 1) .. "\002"
+        else
+          out[#out + 1] = msg:sub(i, i)
+          i = i + 1
+        end
+      end
+    end
+    msg = table.concat(out)
+  end
+
   return msg, specialCodes, prefix
 end
 
@@ -257,6 +342,8 @@ function Text.WOW_ZmienKody(message, target)
 
   if (string.find(msg, "NPC_GENDER")) then
     if (WOWTR_Localization.lang == 'AR') then
+      -- luacheck: globals QTR_NPC_GENDER
+      ---@diagnostic disable-next-line: undefined-global
       if (QTR_NPC_GENDER == 'F') then
         msg = string.gsub(msg, "NPC_GENDER", "F")
       else
