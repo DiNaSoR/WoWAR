@@ -14,9 +14,10 @@ CLEAR this file when the task is done:
 - `common/UI/DebugToolsUI.lua`
 
 ## Findings / Decisions
-- Reserved 30px for glyph in RTL title width; positioned glyph at RIGHT edge of title
+- Reserved 14px for glyph in RTL title width; positioned glyph at RIGHT edge of title
 - Merged DebugUI and DebugToolsUI into single tabbed panel
 - RTL reversal now auto-protects plain numeric tokens inside `Text.HandleWoWSpecialCodes` to prevent digit order flipping (e.g., "27" staying "27" after reversal).
+- Consolidated quest header width adjustment to a single pass (glyph reserve applied once).
 
 ## Temporary Constraints
 -

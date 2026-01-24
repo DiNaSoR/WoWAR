@@ -235,10 +235,6 @@ function Quests.Details.TranslateOn(typ,event)
 
          if (QTR_PS["transtitle"] == "1") then
             local currentHeaderTitle = (QuestInfoTitleHeader and QuestInfoTitleHeader.GetText and QuestInfoTitleHeader:GetText()) or ""
-            QuestInfoTitleHeader:SetWidth(textW)
-            QuestProgressTitleText:SetWidth(textW)
-            enforceWidth(QuestInfoTitleHeader, textW)
-            enforceWidth(QuestProgressTitleText, textW)
             -- Cache the ORIGINAL quest title font so we can render any "icon glyph" that doesn't exist in Arabic fonts.
             -- (Some decorations use private glyphs that only render correctly with the original FontString font.)
             Quests.Details._TitleIconFontCache = Quests.Details._TitleIconFontCache or {}
@@ -358,16 +354,16 @@ function Quests.Details.TranslateOn(typ,event)
             end
 
             -- Reserve space for the glyph icon in RTL mode by reducing title width.
-            -- This prevents the glyph from overlapping the title text.
+            -- This prevents the glyph from overlapping the title text (apply width once).
             local glyphReservedW = 0
             if rtl and leadingGlyph ~= "" then
                glyphReservedW = 14 -- space for glyph (minimal, X offset handles positioning)
-               local titleWWithGlyph = textW - glyphReservedW
-               QuestInfoTitleHeader:SetWidth(titleWWithGlyph)
-               QuestProgressTitleText:SetWidth(titleWWithGlyph)
-               enforceWidth(QuestInfoTitleHeader, titleWWithGlyph)
-               enforceWidth(QuestProgressTitleText, titleWWithGlyph)
             end
+            local titleTargetW = textW - glyphReservedW
+            QuestInfoTitleHeader:SetWidth(titleTargetW)
+            QuestProgressTitleText:SetWidth(titleTargetW)
+            enforceWidth(QuestInfoTitleHeader, titleTargetW)
+            enforceWidth(QuestProgressTitleText, titleTargetW)
 
             -- In QuestMapFrame, toggling ON can be followed by late Blizzard updates that undo our title width/glyph layout.
             -- Mirror the initial open behavior: schedule ONE post-layout re-apply after __toggle__ only when we actually have a glyph.
