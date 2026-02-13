@@ -437,7 +437,7 @@ function Welcome.Show()
 
   -- Title/subtitle/buttons: Arabic uses QTR_ExpandUnitInfo (keeps embedded English LTR).
   if f.Title then
-    f.Title:SetText(ExpandIfArabic(titleText, f.Title, _G.WOWTR_Font1 or _G.WOWTR_Font2, -5, false))
+    f.Title:SetText(ExpandIfArabic(titleText, f.Title, _G.WOWTR_Font1 or _G.WOWTR_Font2, -10, false))
   end
   if f.Subtitle then
     f.Subtitle:SetText(ExpandIfArabic(subText, f.Subtitle, _G.WOWTR_Font2, -5, false))

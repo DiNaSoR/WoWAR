@@ -1568,5 +1568,19 @@
                       ".cursor/rules/01-vector-search.mdc",
                       ".cursor/memory/active-context.md"
                   ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Config",
+                     "DX",
+                     "Fix"
+                 ],
+        "Title":  "Resolved LuaLS undefined globals in Config Minimap/State with runtime-safe global lookups",
+        "Files":  [
+                      "common/Config/Minimap.lua",
+                      "common/Config/State.lua"
+                  ]
     }
 ]

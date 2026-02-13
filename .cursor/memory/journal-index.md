@@ -1,6 +1,6 @@
 # Journal Index (generated)
 
-Generated: 2026-02-13T22:50:44+03:00
+Generated: 2026-02-13T22:58:29+03:00
 
 Format: YYYY-MM-DD | [Tags] | Title | Files
 
@@ -124,3 +124,4 @@ Format: YYYY-MM-DD | [Tags] | Title | Files
 2026-02-13 | [Process][DX][Reliability][Fix] | Fixed Mnemo vector layer runtime compatibility and .env key loading | scripts/memory/mnemo_vector.py, .cursor/mcp.json
 2026-02-13 | [Process] | Initialized memory system (Memory v3.2.2) | .cursor/memory/*, .cursor/rules/00-memory-system.mdc, scripts/memory/*
 2026-02-13 | [Process][DX] | Removed temporary vector smoke script and validated normal vector tool flow | scripts/memory/mnemo_vector.py, .cursor/memory/active-context.md
+2026-02-13 | [Config][DX][Fix] | Resolved LuaLS undefined globals in Config Minimap/State with runtime-safe global lookups | common/Config/Minimap.lua, common/Config/State.lua

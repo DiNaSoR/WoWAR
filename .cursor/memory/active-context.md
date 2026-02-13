@@ -11,6 +11,7 @@ CLEAR this file when the task is done:
 - Remove vector smoke script and validate normal vector tools flow
 - Enforce vector-first retrieval policy for future AI runs
 - Enforce post-vector grounding so answers do not stay digest-only
+- Record missing memory entry for Config LuaLS undefined-global fixes
 
 ## Files in Focus
 - `common/Quests/Details.lua`
@@ -18,6 +19,8 @@ CLEAR this file when the task is done:
 - `common/UI/Welcome.lua`
 - `scripts/memory/mnemo_vector.py`
 - `.cursor/rules/01-vector-search.mdc`
+- `common/Config/Minimap.lua`
+- `common/Config/State.lua`
 
 ## Findings / Decisions
 - Reserved 14px for glyph in RTL title width; positioned glyph at RIGHT edge of title
@@ -30,6 +33,7 @@ CLEAR this file when the task is done:
 - Normal vector tools currently pass with Gemini provider and return semantic hits.
 - Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.
 - Updated `.cursor/rules/01-vector-search.mdc` with mandatory post-search grounding (read top refs, expand digest -> journal) before final answers.
+- Confirmed LuaLS undefined globals in Config files are addressed via `rawget(_G, "...")` lookups (EasyMenu + reset/confirmation globals).
 
 ## Temporary Constraints
 -

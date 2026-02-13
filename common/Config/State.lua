@@ -13,9 +13,11 @@ function WOWTR_ResetVariables(nr)
     BT_SAVED = nil;
     ST_PS = nil;
     ST_PH = nil;
-    if (WOWTR_ResetButton1) then
-      WOWTR_ResetButton1:SetText(WOWTR_Localization.resultButton1);
-      if (WOWTR_Confirmation1) then WOWTR_Confirmation1:Hide(); end
+    local resetButton1 = rawget(_G, "WOWTR_ResetButton1")
+    if (resetButton1) then
+      resetButton1:SetText(WOWTR_Localization.resultButton1);
+      local confirmation1 = rawget(_G, "WOWTR_Confirmation1")
+      if (confirmation1) then confirmation1:Hide(); end
     end
   else
     QTR_PS = nil;
@@ -24,7 +26,8 @@ function WOWTR_ResetVariables(nr)
     TT_PS = nil;
     BT_PM = nil;
     ST_PM = nil;
-    if (WOWTR_Confirmation2) then WOWTR_Confirmation2:Hide(); end
+    local confirmation2 = rawget(_G, "WOWTR_Confirmation2")
+    if (confirmation2) then confirmation2:Hide(); end
   end
   WOWTR_CheckVars();
 end

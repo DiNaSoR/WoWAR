@@ -54,15 +54,20 @@ if LDB and LDBIcon then
     if WOWTR and WOWTR.Fonts and WOWTR.Fonts.HookDropdownLists then
       WOWTR.Fonts.HookDropdownLists()
     end
-    if EasyMenu then
-      EasyMenu(menu, dd, "cursor", 0, 0, "MENU", 2)
-    elseif ToggleDropDownMenu then
-      UIDropDownMenu_Initialize(dd, function(self, level)
+    local easyMenu = rawget(_G, "EasyMenu")
+    local toggleDropDownMenu = rawget(_G, "ToggleDropDownMenu")
+    local initializeDropdown = rawget(_G, "UIDropDownMenu_Initialize")
+    local addDropdownButton = rawget(_G, "UIDropDownMenu_AddButton")
+
+    if easyMenu then
+      easyMenu(menu, dd, "cursor", 0, 0, "MENU", 2)
+    elseif toggleDropDownMenu and initializeDropdown and addDropdownButton then
+      initializeDropdown(dd, function(_, level)
         for _, item in ipairs(menu) do
-          UIDropDownMenu_AddButton(item, level)
+          addDropdownButton(item, level)
         end
       end, "MENU")
-      ToggleDropDownMenu(1, nil, dd, "cursor", 0, 0)
+      toggleDropDownMenu(1, nil, dd, "cursor", 0, 0)
     end
   end
 
