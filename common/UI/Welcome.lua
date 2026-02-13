@@ -125,8 +125,9 @@ local function EnsureFrame()
   title:SetJustifyH("CENTER")
   title:SetText("Welcome to WoWAR") -- overwritten in Welcome.Show() for Arabic
   ApplyFonts(title)
-  if WOWTR_Font2 then
-    pcall(title.SetFont, title, WOWTR_Font2, 26, "")
+  local titleFont = WOWTR_Font1 or WOWTR_Font2
+  if titleFont then
+    pcall(title.SetFont, title, titleFont, 26, "")
   end
   if title.SetTextColor then
     pcall(title.SetTextColor, title, 1, 0.82, 0, 1) -- Gold
@@ -241,7 +242,7 @@ local function EnsureFrame()
       local edgePoint = isRTL and "TOPRIGHT" or "TOPLEFT"
       local padX = 4
       local width = (ScrollView.GetWidth and ScrollView:GetWidth()) or 0
-      local textWidth = math.max(1, width - 2 * padX)
+      local textWidth = math.max(1, width - 2 * padX - (isRTL and 5 or 0))
 
       -- Measure heights using the same wrapping width.
       measureBody:SetWidth(textWidth)
@@ -345,7 +346,7 @@ local function EnsureFrame()
     local function Reflow()
       local w = scroll:GetWidth()
       if w and w > 0 then
-        content:SetWidth(w)
+        content:SetWidth(math.max(1, w + (IsRTL() and -5 or 0)))
       end
       b:SetWidth(content:GetWidth())
       t:SetWidth(content:GetWidth())
@@ -436,10 +437,10 @@ function Welcome.Show()
 
   -- Title/subtitle/buttons: Arabic uses QTR_ExpandUnitInfo (keeps embedded English LTR).
   if f.Title then
-    f.Title:SetText(ExpandIfArabic(titleText, f.Title, _G.WOWTR_Font2, -5, true))
+    f.Title:SetText(ExpandIfArabic(titleText, f.Title, _G.WOWTR_Font1 or _G.WOWTR_Font2, -5, false))
   end
   if f.Subtitle then
-    f.Subtitle:SetText(ExpandIfArabic(subText, f.Subtitle, _G.WOWTR_Font2, -5, true))
+    f.Subtitle:SetText(ExpandIfArabic(subText, f.Subtitle, _G.WOWTR_Font2, -5, false))
   end
   if f.BtnOpenSettings and f.BtnOpenSettings.SetText then
     -- Do NOT run QTR_ExpandUnitInfo on buttons (can cause odd wrapping/width issues).
@@ -455,7 +456,7 @@ function Welcome.Show()
   end
 
   -- Arabic: use QTR_ExpandUnitInfo so embedded English stays LTR and bidi is stable.
-  local bodyText = ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -5)
+  local bodyText = ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -40)
   local tipsOut = ExpandIfArabic(tipsText, f.Tips, _G.WOWTR_Font2, -5)
 
   -- Store for ControlCenter-style scroll content builder, and update fallback text if used.
