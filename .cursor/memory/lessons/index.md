@@ -1,6 +1,6 @@
 # Lessons Index (generated)
 
-Generated: 2026-01-24T10:19:31+03:00
+Generated: 2026-02-13T22:50:44+03:00
 
 Format: ID | [Tags] | AppliesTo | Rule | File
 

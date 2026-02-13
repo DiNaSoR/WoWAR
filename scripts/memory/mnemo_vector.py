@@ -10,14 +10,47 @@ import hashlib
 from pathlib import Path
 
 import sqlite_vec
-from sqlite_vec import serialize_f32
+try:
+    from sqlite_vec import serialize_f32
+except ImportError:
+    # sqlite-vec>=0.1.6 exposes serialize_float32 instead of serialize_f32.
+    from sqlite_vec import serialize_float32 as serialize_f32
 from mcp.server.fastmcp import FastMCP
 
 SCHEMA_VERSION = 1
 EMBED_DIM = 1536
-MEM_ROOT = Path(".cursor/memory")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+MEM_ROOT = REPO_ROOT / ".cursor" / "memory"
 DB_PATH = MEM_ROOT / "mnemo_vector.sqlite"
-PROVIDER = os.getenv("MNEMO_PROVIDER", "openai").lower()
+ENV_PATH = REPO_ROOT / ".env"
+
+
+def _load_dotenv_if_present() -> None:
+    if not ENV_PATH.exists():
+        return
+    try:
+        for raw_line in ENV_PATH.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and (key not in os.environ or not os.environ.get(key)):
+                os.environ[key] = value
+    except OSError:
+        # Non-fatal: env vars may already be provided by the host process.
+        pass
+
+
+_load_dotenv_if_present()
+_configured_provider = os.getenv("MNEMO_PROVIDER")
+if _configured_provider:
+    PROVIDER = _configured_provider.lower()
+elif os.getenv("GEMINI_API_KEY"):
+    PROVIDER = "gemini"
+else:
+    PROVIDER = "openai"
 
 SKIP_NAMES = {
     "README.md",

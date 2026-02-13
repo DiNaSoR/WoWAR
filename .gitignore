@@ -31,3 +31,5 @@ Tools/
 .cursor/memory/.sync.lock
 
 .env
+
+__pycache__/

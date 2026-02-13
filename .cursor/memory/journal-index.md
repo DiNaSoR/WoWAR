@@ -1,6 +1,6 @@
 # Journal Index (generated)
 
-Generated: 2026-01-24T10:19:31+03:00
+Generated: 2026-02-13T22:50:44+03:00
 
 Format: YYYY-MM-DD | [Tags] | Title | Files
 
@@ -93,3 +93,34 @@ Format: YYYY-MM-DD | [Tags] | Title | Files
 2026-01-11 | [UI][Welcome] | Switched Welcome text scrolling to use the same ScrollView/ScrollBar as ControlCenter. | common/UI/Welcome.lua
 2026-01-11 | [Debug][Dump] | Treat Arabic UI text as “already localized” in missing-only dumps. | common/Core/Debug.lua, regression-checklist.md
 2026-01-11 | [Debug][UI] | Tweaked `/wowardebug` panel spacing + hint text after adding “Include art”. | /wowardebug, common/UI/DebugToolsUI.lua
+2026-01-24 | [DX][Debug] | Add /wowardebugsettings shortcut for debug toggles | common/Core/Main.lua
+2026-01-24 | [Fix][Quests][RTL][UI] | Add spacing between quest title icon glyph and text | common/Quests/Details.lua
+2026-01-24 | [Debug][Quests][UI] | Add width snapshot logs for quest translation passes | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL] | Avoid overriding decorated title on QuestMapFrame toggle | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][Reliability] | Avoid QuestMapFrame forced reprocess spam; schedule single __post__ reapply | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL] | Cache QuestMapFrame title glyph for toggle stability | common/Quests/Details.lua
+2026-01-24 | [Quests][RTL][Layout][Fix] | Consolidated quest header width adjustment | common/Quests/Details.lua
+2026-01-24 | [Quests][Fix][RTL] | Fix EN toggle showing blank text - prevent capturing Arabic as English | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL] | Force quick __post__ after toggle to keep glyph inside QuestMapFrame | common/Quests/Details.lua
+2026-01-24 | [Fix][Tooltips][Text][Reliability] | Guard Arabic detection against secret values | common/Text.lua
+2026-01-24 | [DX][Debug][UI] | Make /wowardebug a tabbed settings/tools UI | common/UI/DebugUI.lua, common/Core/Main.lua
+2026-01-24 | [DX][Debug] | Make /wowardebug open debug settings UI | common/Core/Main.lua, common/UI/DebugUI.lua
+2026-01-24 | [Fix][Quests][RTL][Reliability] | Make QuestMapFrame __post__ translation reapply run once | common/Quests/Details.lua
+2026-01-24 | [Feature][Debug][UI] | Merged DebugUI into DebugToolsUI with tabbed interface | common/UI/DebugToolsUI.lua
+2026-01-24 | [Fix][Quests][RTL][UI] | Pad only ! title glyph overlay | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL][UI] | Remove RTL title padding from quest headers | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL][Debug] | Reserve quest title glyph space + add /wowardebug debug-print toggle | common/Quests/Details.lua, common/UI/DebugToolsUI.lua
+2026-01-24 | [Fix][Quests][RTL][UI] | Reserve space for RTL quest title glyph to prevent overlap | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL] | Schedule one __post__ after toggle when title glyph present (QuestMapFrame) | common/Quests/Details.lua
+2026-01-24 | [UI][Quests][RTL] | Set quest title glyph offset X=20 and reserve width accordingly | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][RTL] | Stabilize QuestMapFrame title width when glyph offset changes | common/Quests/Details.lua
+2026-01-24 | [Fix][Quests][Reliability] | Suppress rapid duplicate QuestMapFrame __force__ QuestPrepare calls | common/Quests/Details.lua
+2026-01-24 | [Debug][UI][DX] | Tabbed /wowardebug UI with Settings + Tools tabs | common/UI/DebugToolsUI.lua
+2026-01-25 | [UI][RTL][Text][Fix] | Centered welcome title shaping and narrowed body width | common/UI/Welcome.lua
+2026-01-25 | [UI][RTL][Fonts][Fix] | Tuned welcome bidi width and title font | common/UI/Welcome.lua
+2026-02-13 | [Process][DX][Reliability][Fix] | Added tiny vector smoke test script for Mnemo vector layer | scripts/memory/vector-smoke.ps1, scripts/memory/mnemo_vector.py
+2026-02-13 | [Process][DX] | Enforced mandatory vector-first retrieval policy in Cursor rules | .cursor/rules/01-vector-search.mdc, .cursor/memory/active-context.md
+2026-02-13 | [Process][DX][Reliability] | Enforced post-vector grounding to prevent digest-only answers | .cursor/rules/01-vector-search.mdc, .cursor/memory/active-context.md
+2026-02-13 | [Process][DX][Reliability][Fix] | Fixed Mnemo vector layer runtime compatibility and .env key loading | scripts/memory/mnemo_vector.py, .cursor/mcp.json
+2026-02-13 | [Process] | Initialized memory system (Memory v3.2.2) | .cursor/memory/*, .cursor/rules/00-memory-system.mdc, scripts/memory/*
+2026-02-13 | [Process][DX] | Removed temporary vector smoke script and validated normal vector tool flow | scripts/memory/mnemo_vector.py, .cursor/memory/active-context.md

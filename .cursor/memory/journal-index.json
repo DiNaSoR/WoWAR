@@ -1193,5 +1193,380 @@
                       "common/Text.lua",
                       "common/Config/Helpers.lua"
                   ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Tooltips",
+                     "Text",
+                     "Reliability"
+                 ],
+        "Title":  "Guard Arabic detection against secret values",
+        "Files":  "common/Text.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "UI"
+                 ],
+        "Title":  "Remove RTL title padding from quest headers",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "UI"
+                 ],
+        "Title":  "Add spacing between quest title icon glyph and text",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "UI"
+                 ],
+        "Title":  "Pad only ! title glyph overlay",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Debug",
+                     "Quests",
+                     "UI"
+                 ],
+        "Title":  "Add width snapshot logs for quest translation passes",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "DX",
+                     "Debug"
+                 ],
+        "Title":  "Add /wowardebugsettings shortcut for debug toggles",
+        "Files":  "common/Core/Main.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "DX",
+                     "Debug"
+                 ],
+        "Title":  "Make /wowardebug open debug settings UI",
+        "Files":  [
+                      "common/Core/Main.lua",
+                      "common/UI/DebugUI.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "DX",
+                     "Debug",
+                     "UI"
+                 ],
+        "Title":  "Make /wowardebug a tabbed settings/tools UI",
+        "Files":  [
+                      "common/UI/DebugUI.lua",
+                      "common/Core/Main.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "Debug"
+                 ],
+        "Title":  "Reserve quest title glyph space + add /wowardebug debug-print toggle",
+        "Files":  [
+                      "common/Quests/Details.lua",
+                      "common/UI/DebugToolsUI.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Debug",
+                     "UI",
+                     "DX"
+                 ],
+        "Title":  "Tabbed /wowardebug UI with Settings + Tools tabs",
+        "Files":  "common/UI/DebugToolsUI.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Quests",
+                     "Fix",
+                     "RTL"
+                 ],
+        "Title":  "Fix EN toggle showing blank text - prevent capturing Arabic as English",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "UI"
+                 ],
+        "Title":  "Reserve space for RTL quest title glyph to prevent overlap",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Feature",
+                     "Debug",
+                     "UI"
+                 ],
+        "Title":  "Merged DebugUI into DebugToolsUI with tabbed interface",
+        "Files":  "common/UI/DebugToolsUI.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL",
+                     "Reliability"
+                 ],
+        "Title":  "Make QuestMapFrame __post__ translation reapply run once",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "Reliability"
+                 ],
+        "Title":  "Avoid QuestMapFrame forced reprocess spam; schedule single __post__ reapply",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "Reliability"
+                 ],
+        "Title":  "Suppress rapid duplicate QuestMapFrame __force__ QuestPrepare calls",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Schedule one __post__ after toggle when title glyph present (QuestMapFrame)",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Cache QuestMapFrame title glyph for toggle stability",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Avoid overriding decorated title on QuestMapFrame toggle",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Force quick __post__ after toggle to keep glyph inside QuestMapFrame",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "UI",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Set quest title glyph offset X=20 and reserve width accordingly",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Fix",
+                     "Quests",
+                     "RTL"
+                 ],
+        "Title":  "Stabilize QuestMapFrame title width when glyph offset changes",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-24",
+        "Tags":  [
+                     "Quests",
+                     "RTL",
+                     "Layout",
+                     "Fix"
+                 ],
+        "Title":  "Consolidated quest header width adjustment",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-25",
+        "Tags":  [
+                     "UI",
+                     "RTL",
+                     "Fonts",
+                     "Fix"
+                 ],
+        "Title":  "Tuned welcome bidi width and title font",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-01.md",
+        "Date":  "2026-01-25",
+        "Tags":  [
+                     "UI",
+                     "RTL",
+                     "Text",
+                     "Fix"
+                 ],
+        "Title":  "Centered welcome title shaping and narrowed body width",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process"
+                 ],
+        "Title":  "Initialized memory system (Memory v3.2.2)",
+        "Files":  [
+                      ".cursor/memory/*",
+                      ".cursor/rules/00-memory-system.mdc",
+                      "scripts/memory/*"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process",
+                     "DX",
+                     "Reliability",
+                     "Fix"
+                 ],
+        "Title":  "Fixed Mnemo vector layer runtime compatibility and .env key loading",
+        "Files":  [
+                      "scripts/memory/mnemo_vector.py",
+                      ".cursor/mcp.json"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process",
+                     "DX",
+                     "Reliability",
+                     "Fix"
+                 ],
+        "Title":  "Added tiny vector smoke test script for Mnemo vector layer",
+        "Files":  [
+                      "scripts/memory/vector-smoke.ps1",
+                      "scripts/memory/mnemo_vector.py"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process",
+                     "DX"
+                 ],
+        "Title":  "Removed temporary vector smoke script and validated normal vector tool flow",
+        "Files":  [
+                      "scripts/memory/mnemo_vector.py",
+                      ".cursor/memory/active-context.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process",
+                     "DX"
+                 ],
+        "Title":  "Enforced mandatory vector-first retrieval policy in Cursor rules",
+        "Files":  [
+                      ".cursor/rules/01-vector-search.mdc",
+                      ".cursor/memory/active-context.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Process",
+                     "DX",
+                     "Reliability"
+                 ],
+        "Title":  "Enforced post-vector grounding to prevent digest-only answers",
+        "Files":  [
+                      ".cursor/rules/01-vector-search.mdc",
+                      ".cursor/memory/active-context.md"
+                  ]
     }
 ]

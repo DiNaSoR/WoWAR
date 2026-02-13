@@ -1,22 +1,45 @@
 ---
-description: Mnemo vector semantic retrieval layer (optional)
+description: Mnemo vector semantic retrieval layer (mandatory, vector-first)
 globs:
   - "**/*"
 alwaysApply: true
 ---
-# Vector Memory Layer (Optional)
+# Vector Memory Layer (MANDATORY)
 
 This rule supplements 00-memory-system.mdc and does not replace governance.
 
-## Use vector tools when:
-- You do not know the exact keyword for prior context.
-- Keyword/FTS search did not find relevant history.
+## Default policy (enforced)
+- For memory/context retrieval, use MnemoVector first.
+- Start each session with `vector_health`.
+- If healthy, run `vector_search` before non-vector memory lookup.
+- Use non-vector memory search only as fallback when vector is unavailable or insufficient.
+
+## Use vector tools first for:
+- Prior decisions, historical fixes, and lesson discovery.
+- Fuzzy/semantic intent where exact keyword is unknown.
+- Cross-file memory retrieval where terminology may differ.
 
 ## MCP tools
 - vector_search - semantic retrieval with cosine similarity.
 - vector_sync - incremental indexing.
 - vector_forget - remove stale entries.
 - vector_health - DB/API health check.
+
+## Sync policy
+- Run `vector_sync` after memory updates (journal/lessons/digests) and when search quality drops.
+- If health reports zero chunks or stale results, sync before continuing.
+
+## Grounding policy (mandatory after vector_search)
+- Do not answer from vector snippets alone.
+- After `vector_search`, open and read at least top 2 referenced sources before final answer.
+- If top hit is a digest summary, expand to the underlying month journal and read the relevant date section.
+- Prefer this grounding order when available: lessons -> active-context -> memo -> digests -> journal.
+- When answering historical questions (for example "what happened in January"), include concrete items from grounded source sections, not only digest headers.
+
+## Response quality guardrails
+- If vector results are generic or low-confidence, run a refined query and re-ground before answering.
+- If only summaries are returned, explicitly fetch deeper sections before concluding.
+- Cite the grounded memory sources used in the final response.
 
 ## Fallback
 If vector search is unavailable, keep using:
