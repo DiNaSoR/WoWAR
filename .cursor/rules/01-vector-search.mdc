@@ -1,0 +1,24 @@
+---
+description: Mnemo vector semantic retrieval layer (optional)
+globs:
+  - "**/*"
+alwaysApply: true
+---
+# Vector Memory Layer (Optional)
+
+This rule supplements 00-memory-system.mdc and does not replace governance.
+
+## Use vector tools when:
+- You do not know the exact keyword for prior context.
+- Keyword/FTS search did not find relevant history.
+
+## MCP tools
+- vector_search - semantic retrieval with cosine similarity.
+- vector_sync - incremental indexing.
+- vector_forget - remove stale entries.
+- vector_health - DB/API health check.
+
+## Fallback
+If vector search is unavailable, keep using:
+- scripts/memory/query-memory.ps1 -Query "..."
+- scripts/memory/query-memory.ps1 -Query "..." -UseSqlite

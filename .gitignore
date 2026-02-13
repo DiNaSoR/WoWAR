@@ -22,3 +22,12 @@ Tools/
 
 # Cursor Memory System (generated)
 .cursor/memory/memory.sqlite
+
+# Cursor Memory System (generated)
+.cursor/memory/mnemo_vector.sqlite
+.cursor/memory/mnemo_vector.sqlite-journal
+.cursor/memory/mnemo_vector.sqlite-wal
+.cursor/memory/mnemo_vector.sqlite-shm
+.cursor/memory/.sync.lock
+
+.env
