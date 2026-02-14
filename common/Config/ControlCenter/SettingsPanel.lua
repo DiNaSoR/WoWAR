@@ -46,6 +46,7 @@ local Def = {
     PageHeight = 576,
     CategoryGap = 40,
     TabButtonHeight = 40,
+    TabAttachOffsetY = 8,
 
 
     ChangelogLineSpacing = 4,
@@ -2032,7 +2033,12 @@ do  --ChangelogTab
                         offsetX = edgeOffsetX - indentSign * 1,
                         setupFunc = function(obj)
                             obj:SetSize(objectWidth + 32, 8);
-                            SetTexCoord(obj, 424, 864, 132, 148)
+                            if rtl then
+                                -- Mirror the divider artwork for RTL so decorative direction reads correctly.
+                                SetTexCoord(obj, 864, 424, 132, 148)
+                            else
+                                SetTexCoord(obj, 424, 864, 132, 148)
+                            end
                             obj:SetVertexColor(1, 1, 1);
                             obj:SetTexture(Def.TextureFile, nil, nil, "TRILINEAR");
                             DisableSharpening(obj, true);
@@ -2189,13 +2195,15 @@ do  --Tab Buttons
 
             for k, v in ipairs(TabInfo) do
                 local button = self.tabButtonPool:Acquire();
-                button:SetPoint("TOPLEFT", self, "BOTTOMLEFT", offsetX, 0);
+                button:ClearAllPoints();
+                button:SetPoint("TOPLEFT", self.TabButtonContainer, "TOPLEFT", offsetX, 0);
                 local width = button:SetTabInfo(v);
                 button.index = k;
                 offsetX = offsetX + width + gap;
             end
 
-            self.TabButtonContainer:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+            -- Attach tabs slightly upward so they visually meet the bottom frame art (no floating gap).
+            self.TabButtonContainer:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, Def.TabAttachOffsetY);
             self.TabButtonContainer:SetSize(offsetX, Def.TabButtonHeight);
         end
 

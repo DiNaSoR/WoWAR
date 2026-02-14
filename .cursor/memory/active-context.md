@@ -43,6 +43,9 @@ CLEAR this file when the task is done:
 - Changelog color styling tuned for readability: accent-only (date/title), while body text, bullets, and version list remain neutral.
 - Changelog title styling: `h1` now uses `WOWTR_Font1` with increased size for stronger heading hierarchy.
 - Fixed pooled FontString bleed in changelog renderer: non-title lines now force body font reset so bullet lines cannot inherit enlarged title size.
+- Changelog date divider texture now flips horizontally in RTL so decorative direction matches Arabic layout.
+- Settings panel tab strip now attaches 8px higher to remove perceived gap between main panel border and bottom tabs.
+- Fixed tab strip anchoring bug: tab buttons are now anchored to `TabButtonContainer` (not `MainFrame`), so `TabAttachOffsetY` actually affects layout.
 - Removed `scripts/memory/vector-smoke.ps1` and switched back to normal vector tool validation (`vector_health`, `vector_sync`, `vector_search`).
 - Normal vector tools currently pass with Gemini provider and return semantic hits.
 - Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.
