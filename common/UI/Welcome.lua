@@ -34,6 +34,40 @@ local function ExpandIfArabic(text, obj, font, offset, noWrap)
   return text
 end
 
+-- QTR_ExpandUnitInfo line-wrapping depends on the target object's width.
+-- On first show that width can still be 0, so compute a safe fallback width.
+local function ComputeWelcomeWrapWidth(frame, isRTL)
+  local width = 0
+
+  if frame and frame.ScrollView and frame.ScrollView.GetWidth then
+    width = frame.ScrollView:GetWidth() or 0
+    if width > 0 then
+      local padX = 4
+      width = width - (2 * padX) - (isRTL and 5 or 0)
+    end
+  end
+
+  if width <= 0 and frame and frame.ScrollFrame and frame.ScrollFrame.GetWidth then
+    width = frame.ScrollFrame:GetWidth() or 0
+    if width > 0 then
+      width = width + (isRTL and -5 or 0)
+    end
+  end
+
+  if width <= 0 and frame and frame.GetWidth then
+    -- Frame(720) - side margins(80) - scrollbar reserve(24) - inner padding(8)
+    width = (frame:GetWidth() or 720) - 112 - (isRTL and 5 or 0)
+  end
+
+  return math.max(1, math.floor(width))
+end
+
+local function ConfigureWrappedFontString(obj)
+  if not obj then return end
+  if obj.SetWordWrap then obj:SetWordWrap(true) end
+  if obj.SetNonSpaceWrap then obj:SetNonSpaceWrap(false) end
+end
+
 local function ApplyFonts(obj)
   if WOWTR and WOWTR.Fonts and WOWTR.Fonts.Apply then
     WOWTR.Fonts.Apply(obj)
@@ -196,6 +230,7 @@ local function EnsureFrame()
       local obj = ScrollView:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
       obj:SetJustifyV("TOP")
       obj:SetSpacing(5)
+      ConfigureWrappedFontString(obj)
       if ns and ns.RTL and ns.RTL.JustifyFontString then
         ns.RTL.JustifyFontString(obj, IsRTL() and "RIGHT" or "LEFT")
       end
@@ -218,6 +253,7 @@ local function EnsureFrame()
     measureBody:Hide()
     measureBody:SetJustifyV("TOP")
     measureBody:SetSpacing(5)
+    ConfigureWrappedFontString(measureBody)
     if ns and ns.RTL and ns.RTL.JustifyFontString then
       ns.RTL.JustifyFontString(measureBody, IsRTL() and "RIGHT" or "LEFT")
     end
@@ -227,6 +263,7 @@ local function EnsureFrame()
     measureTips:Hide()
     measureTips:SetJustifyV("TOP")
     measureTips:SetSpacing(5)
+    ConfigureWrappedFontString(measureTips)
     if ns and ns.RTL and ns.RTL.JustifyFontString then
       ns.RTL.JustifyFontString(measureTips, IsRTL() and "RIGHT" or "LEFT")
     end
@@ -269,6 +306,7 @@ local function EnsureFrame()
           obj:SetWidth(textWidth)
           obj:SetFontObject("GameFontHighlight")
           obj:SetText(f._welcomeBodyText or "")
+          ConfigureWrappedFontString(obj)
           obj:SetJustifyH(isRTL and "RIGHT" or "LEFT")
           ApplyFonts(obj)
           obj:Show()
@@ -289,6 +327,7 @@ local function EnsureFrame()
           obj:SetWidth(textWidth)
           obj:SetFontObject("GameFontNormal")
           obj:SetText(f._welcomeTipsText or "")
+          ConfigureWrappedFontString(obj)
           obj:SetJustifyH(isRTL and "RIGHT" or "LEFT")
           ApplyFonts(obj)
           obj:Show()
@@ -326,6 +365,7 @@ local function EnsureFrame()
     b:SetPoint("TOPRIGHT", content, "TOPRIGHT", 0, 0)
     b:SetJustifyV("TOP")
     b:SetSpacing(5)
+    ConfigureWrappedFontString(b)
     if ns and ns.RTL and ns.RTL.JustifyFontString then
       ns.RTL.JustifyFontString(b, IsRTL() and "RIGHT" or "LEFT")
     end
@@ -335,6 +375,7 @@ local function EnsureFrame()
     t:SetPoint("TOPLEFT", b, "BOTTOMLEFT", 0, -18)
     t:SetPoint("TOPRIGHT", b, "BOTTOMRIGHT", 0, -18)
     t:SetJustifyV("TOP")
+    ConfigureWrappedFontString(t)
     if ns and ns.RTL and ns.RTL.JustifyFontString then
       ns.RTL.JustifyFontString(t, IsRTL() and "RIGHT" or "LEFT")
     end
@@ -456,7 +497,11 @@ function Welcome.Show()
   end
 
   -- Arabic: use QTR_ExpandUnitInfo so embedded English stays LTR and bidi is stable.
-  local bodyText = ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -40)
+  -- Ensure target width is valid before shaping, otherwise wrapping can be wrong.
+  local wrapWidth = ComputeWelcomeWrapWidth(f, isRTL)
+  if f.Body and f.Body.SetWidth then f.Body:SetWidth(wrapWidth) end
+  if f.Tips and f.Tips.SetWidth then f.Tips:SetWidth(wrapWidth) end
+  local bodyText = ExpandIfArabic(text, f.Body, _G.WOWTR_Font2, -10)
   local tipsOut = ExpandIfArabic(tipsText, f.Tips, _G.WOWTR_Font2, -5)
 
   -- Store for ControlCenter-style scroll content builder, and update fallback text if used.

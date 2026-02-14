@@ -1,6 +1,6 @@
 # WoWLang / WoWAR – Project Memo
 
-Last updated: 2026-01-10
+Last updated: 2026-02-13
 
 ## High signal (current state)
 
@@ -19,6 +19,7 @@ Last updated: 2026-01-10
   - Locale changelog entries: `common/Locale/changelog.lua`
   - Arabic reshaper: `common/Text/Reshaper.lua`
   - Arabic chat: `common/Chat/Chat.lua`
+- Changelog copy in `common/Locale/changelog.lua` should be player-facing and non-technical (avoid internal function/API names).
 - All legacy `ST_*` globals are registered only in `common/Core/Compat.lua`.
 - Hook/ticker wiring uses shared helpers from `common/Core/HookUtils.lua`.
 - Primary settings UI is the Plumber-style **ControlCenter panel** in `common/Config/ControlCenter/*` (AceConfig UI is disabled).
