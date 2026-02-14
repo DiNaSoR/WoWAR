@@ -46,6 +46,10 @@ CLEAR this file when the task is done:
 - Changelog date divider texture now flips horizontally in RTL so decorative direction matches Arabic layout.
 - Settings panel tab strip now attaches 8px higher to remove perceived gap between main panel border and bottom tabs.
 - Fixed tab strip anchoring bug: tab buttons are now anchored to `TabButtonContainer` (not `MainFrame`), so `TabAttachOffsetY` actually affects layout.
+- SettingsPanel version labels now use version-first ordering in RTL (e.g., `12.00 الإصدار`) for better Arabic readability.
+- ControlCenter module search now uses Arabic-aware variant matching (raw + reversed/reshaped transforms) so typed Arabic reliably filters and updates right-side preview.
+- Search input in ControlCenter now renders Arabic through a shaped preview overlay (while keeping raw EditBox text for matching), so typing looks correctly shaped and results still update.
+- ControlCenter settings preview now supports per-setting `preview_wowar_[prefix].png` images with placeholder fallback; generated placeholder-backed PNG files for sub-settings missing dedicated art.
 - Removed `scripts/memory/vector-smoke.ps1` and switched back to normal vector tool validation (`vector_health`, `vector_sync`, `vector_search`).
 - Normal vector tools currently pass with Gemini provider and return semantic hits.
 - Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.

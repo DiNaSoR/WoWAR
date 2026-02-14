@@ -22,6 +22,7 @@ Last updated: 2026-02-13
 - Changelog copy in `common/Locale/changelog.lua` should be player-facing and non-technical (avoid internal function/API names).
 - Changelog `color` tokens from `common/Locale/changelog.lua` are consumed by ControlCenter Release Notes rendering (`Registry.lua` -> `SettingsPanel.lua`).
 - Changelog color policy: accent-only for readability (date/title colored, body/bullets/version list neutral unless explicitly changed).
+- ControlCenter search matches Arabic input via variant normalization (raw + QTR/reshaper transforms) to bridge base/pre-shaped/reversed localization forms.
 - All legacy `ST_*` globals are registered only in `common/Core/Compat.lua`.
 - Hook/ticker wiring uses shared helpers from `common/Core/HookUtils.lua`.
 - Primary settings UI is the Plumber-style **ControlCenter panel** in `common/Config/ControlCenter/*` (AceConfig UI is disabled).
