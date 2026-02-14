@@ -907,6 +907,7 @@ function ControlCenter:InitializeModules()
         local id = VersionToID(e.version) or tonumber(e.version)
         if id then
           local list = {}
+          local entryColor = tostring(e.color or "")
 
           local dateText = tostring(e.date or "")
           local ts = ParseChangelogDateToTimestamp(dateText) or time()
@@ -915,12 +916,13 @@ function ControlCenter:InitializeModules()
             versionText = tostring(e.version or ""),
             timestamp = ts,
             dateText = dateText,
+            color = entryColor,
           }
 
           if e.title and e.title ~= "" then
-            list[#list + 1] = { type = "h1", text = tostring(e.title) }
+            list[#list + 1] = { type = "h1", text = tostring(e.title), color = entryColor }
           elseif e.type and e.type ~= "" then
-            list[#list + 1] = { type = "h1", text = tostring(e.type) }
+            list[#list + 1] = { type = "h1", text = tostring(e.type), color = entryColor }
           end
 
           local desc = tostring(e.description or "")
@@ -930,9 +932,9 @@ function ControlCenter:InitializeModules()
             else
               local bulletText = line:match("^%s*[-*]%s+(.+)$")
               if bulletText then
-                list[#list + 1] = { type = "p", bullet = true, text = bulletText }
+                list[#list + 1] = { type = "p", bullet = true, text = bulletText, color = entryColor }
               else
-                list[#list + 1] = { type = "p", text = line }
+                list[#list + 1] = { type = "p", text = line, color = entryColor }
               end
             end
           end

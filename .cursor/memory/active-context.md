@@ -18,6 +18,8 @@ CLEAR this file when the task is done:
 - `common/UI/DebugToolsUI.lua`
 - `common/UI/Welcome.lua`
 - `common/Locale/changelog.lua`
+- `common/Config/ControlCenter/Registry.lua`
+- `common/Config/ControlCenter/SettingsPanel.lua`
 - `Tools/index.html`
 - `Tools/changelog_Unshaped.lua`
 - `scripts/memory/mnemo_vector.py`
@@ -37,6 +39,10 @@ CLEAR this file when the task is done:
 - Tools reshaper now explicitly supports both `WoW_Localization_AR.lua` and `changelog.lua`, with export suffixes (`_Reshaped`/`_Unshaped`) to produce safe copies.
 - Added `Tools/changelog_Unshaped.lua` as an unshaped working copy for changelog reshaping flow.
 - Revised historical changelog entries (before 13 Feb 2026) in `Tools/changelog_Unshaped.lua` with cleaner player-facing Arabic wording.
+- Changelog entry `color` is now wired end-to-end: preserved in registry conversion and applied in Release Notes date/title/body/bullets + version list labels.
+- Changelog color styling tuned for readability: accent-only (date/title), while body text, bullets, and version list remain neutral.
+- Changelog title styling: `h1` now uses `WOWTR_Font1` with increased size for stronger heading hierarchy.
+- Fixed pooled FontString bleed in changelog renderer: non-title lines now force body font reset so bullet lines cannot inherit enlarged title size.
 - Removed `scripts/memory/vector-smoke.ps1` and switched back to normal vector tool validation (`vector_health`, `vector_sync`, `vector_search`).
 - Normal vector tools currently pass with Gemini provider and return semantic hits.
 - Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.

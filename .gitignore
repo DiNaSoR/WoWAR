@@ -32,4 +32,4 @@ Tools/
 
 .env
 
-__pycache__/
+scripts/*

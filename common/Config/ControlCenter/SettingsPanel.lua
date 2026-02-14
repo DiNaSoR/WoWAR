@@ -99,6 +99,91 @@ local function SetTextColor(obj, color)
     obj:SetTextColor(color[1], color[2], color[3])
 end
 
+local CHANGELOG_TITLE_FONT_SIZE = 20;
+
+-- Changelog entry colors from `common/Locale/changelog.lua` (`color = "legendary"`, etc).
+local CHANGELOG_ENTRY_COLORS = {
+    legendary = {1.000, 0.500, 0.000},
+    purple = {0.640, 0.210, 0.930},
+    blue = {0.000, 0.440, 0.870},
+    red = {1.000, 0.125, 0.125},
+}
+
+local function GetChangelogColor(colorToken, fallbackColor)
+    if type(colorToken) ~= "string" or colorToken == "" then
+        return fallbackColor
+    end
+
+    local key = string.lower(colorToken)
+    local named = CHANGELOG_ENTRY_COLORS[key]
+    if named then
+        return named
+    end
+
+    -- Optional custom color format support: "#RRGGBB" or "RRGGBB".
+    local hex = key:match("^#?(%x%x%x%x%x%x)$")
+    if hex then
+        local r = tonumber(hex:sub(1, 2), 16) / 255
+        local g = tonumber(hex:sub(3, 4), 16) / 255
+        local b = tonumber(hex:sub(5, 6), 16) / 255
+        return {r, g, b}
+    end
+
+    return fallbackColor
+end
+
+local function ApplyChangelogTitleFont(obj)
+    if not obj or type(obj.SetFont) ~= "function" then
+        return
+    end
+    if type(_G.WOWTR_Font1) ~= "string" or _G.WOWTR_Font1 == "" then
+        return
+    end
+
+    local flags = "";
+    if type(obj.GetFont) == "function" then
+        local ok, _, _, existingFlags = pcall(obj.GetFont, obj);
+        if ok and type(existingFlags) == "string" then
+            flags = existingFlags;
+        end
+    end
+
+    pcall(obj.SetFont, obj, _G.WOWTR_Font1, CHANGELOG_TITLE_FONT_SIZE, flags);
+end
+
+local function ApplyChangelogBodyFont(obj, fontObjectName)
+    if not obj or type(obj.SetFont) ~= "function" then
+        return
+    end
+    if type(_G.WOWTR_Font2) ~= "string" or _G.WOWTR_Font2 == "" then
+        return
+    end
+
+    local size = 13;
+    local flags = "";
+
+    local fo = type(fontObjectName) == "string" and _G[fontObjectName] or nil
+    if fo and type(fo.GetFont) == "function" then
+        local ok, _, s, f = pcall(fo.GetFont, fo);
+        if ok and type(s) == "number" then
+            size = s;
+        end
+        if ok and type(f) == "string" then
+            flags = f;
+        end
+    else
+        local ok, _, s, f = pcall(obj.GetFont, obj);
+        if ok and type(s) == "number" then
+            size = s;
+        end
+        if ok and type(f) == "string" then
+            flags = f;
+        end
+    end
+
+    pcall(obj.SetFont, obj, _G.WOWTR_Font2, size, flags);
+end
+
 local function ApplyArabicFonts(obj)
     if WOWTR and WOWTR.Fonts and WOWTR.Fonts.Apply then
         WOWTR.Fonts.Apply(obj);
@@ -1438,6 +1523,10 @@ do
         self.Label:SetText(string.format("%d.%d.%d", x, y, z));
     end
 
+    function VersionButtonMixin:SetBaseColor(color)
+        self.baseColor = color
+    end
+
     function VersionButtonMixin:OnClick()
         MainFrame:ShowChangelog(self.versionID);
         LandingPageUtil.PlayUISound("ScrollBarStep");
@@ -1514,6 +1603,11 @@ do  --ChangelogTab
             self.utilityFontTag = fontTag;
             self.UtilityFontString:SetFontObject(self.TagFonts[fontTag]);
             ApplyArabicFonts(self.UtilityFontString);
+        end
+        if fontTag == "h1" then
+            ApplyChangelogTitleFont(self.UtilityFontString);
+        else
+            ApplyChangelogBodyFont(self.UtilityFontString, self.TagFonts[fontTag]);
         end
         self.UtilityFontString:SetText(ShapeTextIfArabic(text));
         local height = self.UtilityFontString:GetHeight();
@@ -1737,6 +1831,9 @@ do  --ChangelogTab
                 if info.isNewFeature then
                     text = text .. postfixNewFeature;
                 end
+                local entryTextColor = (info.type == "h1")
+                    and GetChangelogColor(info.color, Def.TextColorReadable)
+                    or Def.TextColorReadable;
                 local textWidthShrink;
                 if info.bullet then
                     textWidthShrink = Def.ChangelogIndent;
@@ -1763,8 +1860,13 @@ do  --ChangelogTab
                         obj:SetFontObject(Formatter.TagFonts[info.type]);
                         obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
                         obj:SetText(ShapeTextIfArabic(text));
-                        SetTextColor(obj, Def.TextColorReadable);
+                        SetTextColor(obj, entryTextColor);
                         ApplyArabicFonts(obj);
+                        if info.type == "h1" then
+                            ApplyChangelogTitleFont(obj);
+                        else
+                            ApplyChangelogBodyFont(obj, Formatter.TagFonts[info.type]);
+                        end
 
                         if redacted then
                             local redactor = self.redactorPool:Acquire();
@@ -1893,6 +1995,7 @@ do  --ChangelogTab
                     local versionLabel = _Label("ControlCenter_Version", GAME_VERSION_LABEL or "Version")
                     local dateText = (info.dateText and info.dateText ~= "") and info.dateText or API.SecondsToDate(info.timestamp)
                     local text = string.format("%s %s   %s", versionLabel, info.versionText, dateText);
+                    local dateColor = GetChangelogColor(info.color, Def.TextColorNonInteractable);
                     objectHeight = Formatter:GetTextHeight("p", text);
                     bottom = top + objectHeight;
                     n = n + 1;
@@ -1909,8 +2012,9 @@ do  --ChangelogTab
                             obj:SetFontObject(Formatter.TagFonts["p"]);
                             obj:SetText(text);
                             obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
-                            SetTextColor(obj, Def.TextColorNonInteractable);
+                            SetTextColor(obj, dateColor);
                             ApplyArabicFonts(obj);
+                            ApplyChangelogBodyFont(obj, Formatter.TagFonts["p"]);
                         end;
                     };
 
@@ -1971,6 +2075,8 @@ do  --ChangelogTab
             for index, v in ipairs(tbl) do
                 local button = pool:Acquire();
                 button:SetVersionID(v.versionID);
+                local dateInfo = v.changelog and v.changelog[1];
+                button:SetBaseColor(GetChangelogColor(dateInfo and dateInfo.color, nil));
                 button:SetPoint("TOP", self.LeftSection, "TOP", 0, fromOffsetY - (index - 1) * Def.ButtonSize);
             end
         end
