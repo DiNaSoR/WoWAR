@@ -824,15 +824,32 @@ function Quests.Details.TranslateOn(typ,event)
    -- Default: schedule after initial show/refresh events.
    -- Toggle: schedule only when the title has a glyph overlay that needs a stable second pass.
    if event ~= "__post__" then
-      if event == "__toggle__" then
-         local post = Quests.Details._PostAfterToggle
-         if post and post[QTR_quest_ID] then
-            post[QTR_quest_ID] = nil
-            -- Force a quick post-pass after toggle to stabilize glyph/width even if a __post__ just ran.
-            Quests.Details.SchedulePostLayoutRefresh({ force = true, delay = 0.02 })
+      local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+      if inQuestMap then
+         if event == "__toggle__" then
+            local post = Quests.Details._PostAfterToggle
+            if post and post[QTR_quest_ID] then
+               post[QTR_quest_ID] = nil
+               -- Force a quick post-pass after toggle to stabilize glyph/width even if a __post__ just ran.
+               Quests.Details.SchedulePostLayoutRefresh({ force = true, delay = 0.02 })
+            end
+         else
+            Quests.Details.SchedulePostLayoutRefresh()
          end
-      else
-         Quests.Details.SchedulePostLayoutRefresh()
+      elseif QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible() and StartDelayedFunction then
+         -- QuestFrame can also apply a late rewards refresh; re-apply constants once after layout settles.
+         StartDelayedFunction(function()
+            if QTR_curr_trans ~= "1" then return end
+            if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then return end
+            if not (QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible()) then return end
+            if QTR_display_constants then QTR_display_constants(1) end
+         end, 0.03)
+         StartDelayedFunction(function()
+            if QTR_curr_trans ~= "1" then return end
+            if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then return end
+            if not (QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible()) then return end
+            if QTR_display_constants then QTR_display_constants(1) end
+         end, 0.10)
       end
    end
 end
@@ -854,6 +871,19 @@ function Quests.Details.TranslateOff(typ,event)
    if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
    if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
    if QTR_QuestReward_InfoXP then QTR_QuestReward_InfoXP:Hide() end
+   if QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
+      local receive = QuestInfoRewardsFrame.ItemReceiveText
+      if receive.ClearAllPoints and receive.SetPoint and QuestInfoRewardsFrame.Header then
+         receive:ClearAllPoints()
+         receive:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+      end
+      if receive.SetWidth then receive:SetWidth(0) end
+      if receive.SetJustifyH then receive:SetJustifyH("LEFT") end
+   end
+   if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint and QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
+      QuestInfoMoneyFrame:ClearAllPoints()
+      QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+   end
 
    -- Restore QuestMapFrame rewards labels to original English/LTR.
    -- QuestMapFrame uses pooled MapQuestInfoRewardsFrame instances which keep our previous Arabic text unless we revert it.
@@ -1127,12 +1157,25 @@ function Quests.Details.TranslateOff(typ,event)
          QuestInfoXPFrame.ReceiveText:SetText(EXPERIENCE_COLON)
          QuestInfoXPFrame.ReceiveText:SetFont(Original_Font2, 13)
          QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+         if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
+            QuestInfoXPFrame.ValueText:ClearAllPoints()
+            QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
+         end
          QuestInfoRewardsFrame.ItemChooseText:SetText(QTR_quest_EN[QTR_quest_ID].itemchoose)
          QuestInfoRewardsFrame.ItemReceiveText:SetText(QTR_quest_EN[QTR_quest_ID].itemreceive)
          QuestInfoRewardsFrame.ItemChooseText:SetFont(Original_Font2, 13)
          QuestInfoRewardsFrame.ItemReceiveText:SetFont(Original_Font2, 13)
          QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT")
          QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
+         if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
+         if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+            QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+            QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+         end
+         if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+            QuestInfoMoneyFrame:ClearAllPoints()
+            QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+         end
          if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
          if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
          if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
@@ -1229,6 +1272,7 @@ function Quests.Details.QuestPrepare(event)
       -- But only allow ONE reprocessing attempt to avoid infinite loops
       local isActuallyTranslated = false
       local shouldReprocess = false
+      local reprocessKey = "_reprocess_" .. q_ID
       
       if QuestInfoDescriptionText and QuestInfoDescriptionText:IsVisible() then
         local currentText = QuestInfoDescriptionText:GetText() or ""
@@ -1246,7 +1290,6 @@ function Quests.Details.QuestPrepare(event)
           -- If current text matches English length but we have translation, check if we've already tried reprocessing
           elseif currentLen == englishLen and currentText == englishText then
             -- Check if we've already attempted reprocessing for this quest
-            local reprocessKey = "_reprocess_" .. q_ID
             if not _G[reprocessKey] then
               -- First time seeing English text after processing - allow one reprocessing attempt
               _G[reprocessKey] = true
@@ -1254,6 +1297,27 @@ function Quests.Details.QuestPrepare(event)
             else
               -- Already tried reprocessing, don't allow again (to prevent infinite loop)
               isActuallyTranslated = false -- Treat as translated to stop reprocessing
+            end
+          end
+        end
+      end
+
+      -- Some late UI refreshes overwrite only reward labels (description stays translated).
+      -- Detect this case so we still allow one re-apply pass.
+      do
+        local rewardFS = QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText
+        local expectedReward = QTR_quest_LG[q_ID] and QTR_quest_LG[q_ID].itemreceive or ""
+        local rewardVisible = rewardFS and rewardFS.IsVisible and rewardFS:IsVisible()
+        if rewardVisible and type(expectedReward) == "string" and expectedReward ~= "" and ContainsArabic(expectedReward) then
+          local currentReward = rewardFS:GetText() or ""
+          if currentReward ~= "" and not ContainsArabic(currentReward) then
+            if not _G[reprocessKey] then
+              _G[reprocessKey] = true
+              shouldReprocess = true
+              isActuallyTranslated = false
+            else
+              -- Already attempted; avoid infinite loop churn.
+              isActuallyTranslated = false
             end
           end
         end
@@ -1881,123 +1945,63 @@ function Quests.Details.DisplayConstants(lg)
             local itemReceiveText = (lgData and lgData.itemreceive) or QTR_Messages.itemreceiv0
 
             if isArabic then
+               local itemChooseAR = AS_UTF8reverse(itemChooseText)
+               local itemReceiveAR = AS_UTF8reverse(itemReceiveText)
+               local experienceAR = AS_UTF8reverse(QTR_Messages.experience)
+
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 14)
                QuestInfoRewardsFrame.ItemChooseText:SetWidth(260)
                QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("RIGHT")
-               QuestInfoRewardsFrame.ItemChooseText:SetText(AS_UTF8reverse(itemChooseText))
+               QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseAR)
 
-               QuestInfoRewardsFrame.ItemReceiveText:SetText(" ")
-               QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(" ")
-               QuestInfoXPFrame.ReceiveText:SetText(" ")
-
-               if (not QTR_QuestDetail_ItemReceiveText) then
-                  QTR_QuestDetail_ItemReceiveText = QuestDetailScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestDetail_ItemReceiveText:SetFontObject(GameFontBlack)
-                  QTR_QuestDetail_ItemReceiveText:SetJustifyH("RIGHT")
-                  QTR_QuestDetail_ItemReceiveText:SetJustifyV("TOP")
-                  QTR_QuestDetail_ItemReceiveText:ClearAllPoints()
-                  QTR_QuestDetail_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestDetail_ItemReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveAR)
+               QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("RIGHT")
+               QuestInfoRewardsFrame.ItemReceiveText:SetWidth(260)
+               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
                end
-               QTR_QuestDetail_ItemReceiveText:SetText(AS_UTF8reverse(itemReceiveText))
-               QTR_QuestDetail_ItemReceiveText:Show()
-
-               if (not QTR_QuestReward_ItemReceiveText) then 
-                  QTR_QuestReward_ItemReceiveText = QuestRewardScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestReward_ItemReceiveText:SetFontObject(GameFontBlack)
-                  QTR_QuestReward_ItemReceiveText:SetJustifyH("RIGHT")
-                  QTR_QuestReward_ItemReceiveText:SetJustifyV("TOP")
-                  QTR_QuestReward_ItemReceiveText:ClearAllPoints()
-                  QTR_QuestReward_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestReward_ItemReceiveText:SetFont(WOWTR_Font2, 14)
+               if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+                  -- Keep money inside rewards pane in RTL even when receive label uses a wide right-justified column.
+                  QuestInfoMoneyFrame:ClearAllPoints()
+                  local moneyX = 15
+                  if QuestInfoMoneyFrame.GetWidth and QuestInfoRewardsFrame.GetWidth and QuestInfoRewardsFrame.ItemReceiveText.GetWidth then
+                     local moneyW = tonumber(QuestInfoMoneyFrame:GetWidth()) or 0
+                     if moneyW < 1 then moneyW = 80 end
+                     local rewardsW = tonumber(QuestInfoRewardsFrame:GetWidth()) or 285
+                     local labelW = tonumber(QuestInfoRewardsFrame.ItemReceiveText:GetWidth()) or 0
+                     if labelW < 1 then labelW = 260 end
+                     local targetRight = rewardsW - 80
+                     local predictedRight = labelW + moneyX + moneyW
+                     local overflow = predictedRight - targetRight
+                     if overflow > 0 then
+                        moneyX = moneyX - overflow
+                     end
+                  end
+                  QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", moneyX, 0)
                end
-               QTR_QuestReward_ItemReceiveText:SetText(AS_UTF8reverse(itemReceiveText))
-               QTR_QuestReward_ItemReceiveText:Show()
 
-               if (not QTR_QuestDetail_InfoXP) then 
-                  QTR_QuestDetail_InfoXP = QuestDetailScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestDetail_InfoXP:SetFontObject(GameFontBlack)
-                  QTR_QuestDetail_InfoXP:SetJustifyH("RIGHT")
-                  QTR_QuestDetail_InfoXP:SetJustifyV("TOP")
-                  QTR_QuestDetail_InfoXP:ClearAllPoints()
-                  QTR_QuestDetail_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestDetail_InfoXP:SetFont(WOWTR_Font2, 14)
+               if QuestInfoRewardsFrame.XPFrame and QuestInfoRewardsFrame.XPFrame.ReceiveText then
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(experienceAR)
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetJustifyH("RIGHT")
                end
-               QTR_QuestDetail_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience))
-               QTR_QuestDetail_InfoXP:Show()
+               QuestInfoXPFrame.ReceiveText:SetText(experienceAR)
+               QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoXPFrame.ReceiveText:SetJustifyH("RIGHT")
 
-               if (not QTR_QuestReward_InfoXP) then 
-                  QTR_QuestReward_InfoXP = QuestRewardScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestReward_InfoXP:SetFontObject(GameFontBlack)
-                  QTR_QuestReward_InfoXP:SetJustifyH("RIGHT")
-                  QTR_QuestReward_InfoXP:SetJustifyV("TOP")
-                  QTR_QuestReward_InfoXP:ClearAllPoints()
-                  QTR_QuestReward_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestReward_InfoXP:SetFont(WOWTR_Font2, 14)
-               end
-               QTR_QuestReward_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience))
-               QTR_QuestReward_InfoXP:Show()
-
-               if (QuestInfoMoneyFrame:IsVisible()) then
+               -- Keep Blizzard default XP value anchor; custom TOPRIGHT anchor can collapse reward spacing.
+               if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
                   QuestInfoXPFrame.ValueText:ClearAllPoints()
-                  QuestInfoXPFrame.ValueText:SetPoint("TOPRIGHT", QuestInfoMoneyFrame, "BOTTOMRIGHT", -10, 0)
+                  QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
                end
 
-               local max_len = AS_UTF8len(QTR_QuestDetail_ItemReceiveText:GetText())
-               local money_len = QuestInfoMoneyFrame:GetWidth()
-               local spaces05 = "     "
-               local spaces10 = "          "
-               local spaces15 = "               "
-               local spaces20 = "                    "
-               if (max_len < 10) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces20)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces20)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces20)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces15)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces15)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces15)
-                  elseif (money_len < 110) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 130) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 20) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces15)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces15)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces15)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 110) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 30) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 40) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               end
+               -- Keep legacy overlay labels hidden to avoid duplicate/overlapping text stacks.
+               if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
+               if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
+               if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
+               if QTR_QuestReward_InfoXP then QTR_QuestReward_InfoXP:Hide() end
             else
                QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseText)
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 13)
@@ -2006,10 +2010,19 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveText)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
+               if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
+               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+               end
 
                QuestInfoXPFrame.ReceiveText:SetText(QTR_Messages.experience)
                QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+               if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+                  QuestInfoMoneyFrame:ClearAllPoints()
+                  QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+               end
 
                if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
                if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end

@@ -12,9 +12,12 @@ CLEAR this file when the task is done:
 - Enforce vector-first retrieval policy for future AI runs
 - Enforce post-vector grounding so answers do not stay digest-only
 - Record missing memory entry for Config LuaLS undefined-global fixes
+- Fix GossipFrame quest-option title fallback to use QuestData by questID
+- Fix Arabic QuestFrame rewards layout overlap around money/skill rows
 
 ## Files in Focus
 - `common/Quests/Details.lua`
+- `common/Quests/Gossip.lua`
 - `common/UI/DebugToolsUI.lua`
 - `common/UI/Welcome.lua`
 - `common/Locale/changelog.lua`
@@ -55,6 +58,13 @@ CLEAR this file when the task is done:
 - Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.
 - Updated `.cursor/rules/01-vector-search.mdc` with mandatory post-search grounding (read top refs, expand digest -> journal) before final answers.
 - Confirmed LuaLS undefined globals in Config files are addressed via `rawget(_G, "...")` lookups (EasyMenu + reset/confirmation globals).
+- GossipFrame option translation now resolves `questID` from row element data (or C_GossipInfo quest lists) and prefers `QTR_QuestData[questID].Title` before hash-based `GS_Gossip`.
+- Removed RTL reward spacer/overlay hack in quest details (`ItemReceiveText` blank spaces based on `QuestInfoMoneyFrame:GetWidth()`); now uses native QuestInfo reward labels and default XP value anchor to prevent money/reward overlap.
+- Adjusted RTL reward header layout: `ItemReceiveText` now anchors to the right side and `QuestInfoMoneyFrame` is mirrored to the left of that label; default anchors restore on TranslateOff.
+- Reverted risky reward-row anchor mirroring after it pushed reward boxes out of frame; current approach keeps Blizzard row flow and only adjusts RTL label rendering/width + dynamic money inset to keep gold text/icons inside pane.
+- Investigated intermittent English reward label (`QuestInfoRewardsFrame.ItemReceiveText`): duplicate QuestPrepare skip logic could consider description translated and skip while reward label was still overwritten; added reward-label check in reprocess gate.
+- Added non-Map delayed `QTR_display_constants(1)` re-apply (QuestFrame at 0.03s/0.10s) to catch late Blizzard reward-label refresh.
+- Reward anchor restoration hardened on `TranslateOff`/EN/no-translation: reset `ItemReceiveText` to default point (`Header` -> `BOTTOMLEFT`), width auto, and money anchor back to default.
 
 ## Temporary Constraints
 -
