@@ -67,6 +67,120 @@ local function RestoreFontInGossipScrollTarget()
    for _, child in ipairs(children) do restoreFonts(child) end
 end
 
+local function ToQuestID(value)
+   local questID = tonumber(value)
+   if questID and questID > 0 then
+      return questID
+   end
+   return nil
+end
+
+local function NormalizeGossipOptionForQuestLookup(text)
+   if type(text) ~= "string" or text == "" then
+      return nil
+   end
+   local normalized = WOWTR_DetectAndReplacePlayerName(text, nil, '$N')
+   normalized = WOWTR_StripWoWColors(normalized)
+   normalized = WOWTR_DeleteSpecialCodes(normalized, '$N')
+   normalized = WOWTR_NormalizeForHash(normalized)
+   if normalized == "" then
+      return nil
+   end
+   return normalized
+end
+
+local function ExtractQuestIDFromGossipRow(row)
+   if not row then
+      return nil
+   end
+
+   local questID = ToQuestID(row.questID)
+   if questID then
+      return questID
+   end
+
+   if not row.GetElementData then
+      return nil
+   end
+
+   local elementData = row:GetElementData()
+   if type(elementData) ~= "table" then
+      return nil
+   end
+
+   local candidates = {
+      elementData,
+      elementData.info,
+      elementData.data,
+      elementData.optionInfo,
+      elementData.optionData,
+   }
+
+   for _, candidate in ipairs(candidates) do
+      if type(candidate) == "table" then
+         questID = ToQuestID(candidate.questID or candidate.questId)
+         if questID then
+            return questID
+         end
+      end
+   end
+
+   return nil
+end
+
+local function BuildGossipQuestTitleMap()
+   if not C_GossipInfo then
+      return nil
+   end
+
+   local titleToQuestID = {}
+
+   local function ingest(list)
+      if type(list) ~= "table" then
+         return
+      end
+      for _, entry in ipairs(list) do
+         if type(entry) == "table" then
+            local questID = ToQuestID(entry.questID or entry.questId)
+            local key = NormalizeGossipOptionForQuestLookup(entry.title or entry.name)
+            if questID and key then
+               titleToQuestID[key] = questID
+            end
+         end
+      end
+   end
+
+   if C_GossipInfo.GetAvailableQuests then
+      ingest(C_GossipInfo.GetAvailableQuests())
+   end
+   if C_GossipInfo.GetActiveQuests then
+      ingest(C_GossipInfo.GetActiveQuests())
+   end
+
+   if next(titleToQuestID) then
+      return titleToQuestID
+   end
+   return nil
+end
+
+local function ResolveQuestIDFromGossipRow(row, rawText, titleToQuestID)
+   local questID = ExtractQuestIDFromGossipRow(row)
+   if questID then
+      return questID
+   end
+
+   if not titleToQuestID then
+      return nil
+   end
+
+   local key = NormalizeGossipOptionForQuestLookup(rawText)
+   if not key then
+      return nil
+   end
+
+   return titleToQuestID[key]
+end
+
 function Quests.Gossip.ToggleNPCGossip()
    if (QTR_curr_goss=="1") then         -- turn off translation, show original
       QTR_curr_goss="0"
@@ -290,6 +404,7 @@ function Quests.Gossip.Show()
       local GO_resized = 0
       QTR_goss_optionsEN = {}
       QTR_goss_optionsTR = {}
+      local gossipQuestTitleMap = BuildGossipQuestTitleMap()
       for _, GTxtframe in GossipFrame.GreetingPanel.ScrollBox:EnumerateFrames() do
          if (GTxtframe.GreetingText) then GossipTextFrame = GTxtframe end
       end
@@ -443,13 +558,27 @@ function Quests.Gossip.Show()
                   end
                   GOptionText = stripped
                end
-               local Czysty_Text = WOWTR_DeleteSpecialCodes(GOptionText, '$N')
-               local OptHash = StringHash(Czysty_Text)
                local transTR
-               if (GS_Gossip[OptHash]) then
-                  local fontStringRegion = Quests.Utils and Quests.Utils.GetFirstFontStringRegion and Quests.Utils.GetFirstFontStringRegion(GTxtframe)
-                  local clean = QTR_ExpandUnitInfo(GS_Gossip[OptHash], false, fontStringRegion or GTxtframe, WOWTR_Font2, -40)
-                  transTR = prefix .. clean .. sufix .. NONBREAKINGSPACE
+               local questID = ResolveQuestIDFromGossipRow(GTxtframe, rawText, gossipQuestTitleMap)
+               if questID and QTR_PS["transtitle"] == "1" and QTR_QuestData then
+                  local str_ID = tostring(questID)
+                  local questData = QTR_QuestData[str_ID]
+                  if questData and questData["Title"] then
+                     local fontStringRegion = Quests.Utils and Quests.Utils.GetFirstFontStringRegion and Quests.Utils.GetFirstFontStringRegion(GTxtframe)
+                     local cleanTitle = QTR_ExpandUnitInfo(questData["Title"], false, fontStringRegion or GTxtframe, WOWTR_Font2, -40)
+                     transTR = prefix .. cleanTitle .. sufix .. NONBREAKINGSPACE
+                  end
+               end
+
+               local OptHash = 0
+               if not transTR then
+                  local Czysty_Text = WOWTR_DeleteSpecialCodes(GOptionText, '$N')
+                  OptHash = StringHash(Czysty_Text)
+                  if (GS_Gossip[OptHash]) then
+                     local fontStringRegion = Quests.Utils and Quests.Utils.GetFirstFontStringRegion and Quests.Utils.GetFirstFontStringRegion(GTxtframe)
+                     local clean = QTR_ExpandUnitInfo(GS_Gossip[OptHash], false, fontStringRegion or GTxtframe, WOWTR_Font2, -40)
+                     transTR = prefix .. clean .. sufix .. NONBREAKINGSPACE
+                  end
                end
                if transTR then
                   local GO_height = GTxtframe:GetHeight()
