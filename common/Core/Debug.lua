@@ -1,5 +1,5 @@
 -- Debug.lua
--- Centralized debug system with categories, verbosity levels, and filtering
+-- Centralized debug system with categories, verbosity levels, filtering, and smart logging
 
 local addonName, ns = ...
 ns = ns or {}
@@ -35,15 +35,32 @@ Debug.Verbosity = {
 local defaultCategoryLevel = Debug.Verbosity.NORMAL
 local categoryLevels = {}
 
+-- Smart Log Buffer
+Debug.LogBuffer = {}
+Debug.MaxLogSize = 500 -- Keep last 500 entries
+Debug.Filters = {
+    ID = nil,       -- Filter by ID (number or string)
+    Text = nil,     -- Filter by text match
+}
+
+-- Runtime Settings (can be toggled without saving)
+Debug.Settings = {
+    PrintToChat = false, -- If true, prints to standard chat frame
+    CaptureAll = true,   -- If true, captures to buffer even if PrintToChat is false
+}
+
 -- Initialize category levels from config or defaults
 function Debug.Initialize()
   if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
     -- Load category levels from config if they exist
     local debugConfig = WOWTR.db.profile.core.debugConfig or {}
     for categoryKey, categoryValue in pairs(Debug.Categories) do
-      -- Store using the category VALUE (lowercase string like "quests") to match what's passed to ShouldPrint
-      -- Config also uses lowercase keys, so this matches both
+      -- Store using the category VALUE (lowercase string like "quests")
       categoryLevels[categoryValue] = debugConfig[categoryValue] or defaultCategoryLevel
+    end
+    -- Load PrintToChat setting if exists (default to false to avoid spam if using window)
+    if WOWTR.db.profile.core.printToChat ~= nil then
+        Debug.Settings.PrintToChat = WOWTR.db.profile.core.printToChat
     end
   else
     -- Set defaults
@@ -61,7 +78,6 @@ end
 -- Check if a category should output at given verbosity
 function Debug.ShouldPrint(category, verbosity)
   if not Debug.IsEnabled() then return false end
-  -- Category is passed as the VALUE (e.g., "quests"), so look it up directly
   local categoryLevel = categoryLevels[category] or defaultCategoryLevel
   return verbosity <= categoryLevel
 end
@@ -94,30 +110,23 @@ local CategoryColors = {
 
 -- Detect message type and apply appropriate color
 local function GetMessageColor(message)
-  -- Check for success indicators
   if string.find(message, "%[OK%]") or string.find(message, "FOUND") or string.find(message, "completed") or string.find(message, "successfully") then
     return Colors.SUCCESS
   end
-  -- Check for error indicators
   if string.find(message, "%[X%]") or string.find(message, "ERROR") or string.find(message, "failed") or string.find(message, "No translation") or string.find(message, "not found") then
     return Colors.ERROR
   end
-  -- Check for warnings/skips
   if string.find(message, "SKIP") or string.find(message, "skipping") or string.find(message, "WARNING") then
     return Colors.WARNING
   end
-  -- Default to info color
   return Colors.INFO
 end
 
 -- Format values with colors
 local function FormatValue(value)
   if type(value) == "boolean" then
-    if value then
-      return Colors.BOOLEAN_TRUE .. "true" .. Colors.RESET
-    else
-      return Colors.BOOLEAN_FALSE .. "false" .. Colors.RESET
-    end
+    if value then return Colors.BOOLEAN_TRUE .. "true" .. Colors.RESET
+    else return Colors.BOOLEAN_FALSE .. "false" .. Colors.RESET end
   elseif type(value) == "number" then
     return Colors.VALUE .. tostring(value) .. Colors.RESET
   elseif value == nil then
@@ -129,40 +138,49 @@ end
 
 -- Highlight quest IDs and important numbers in the message
 local function HighlightImportantValues(message)
-  -- Highlight quest IDs (numbers after "quest" or "Quest ID:")
   message = string.gsub(message, "(quest%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
   message = string.gsub(message, "(Quest%s+ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
   message = string.gsub(message, "(QTR_quest_ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  -- Highlight standalone large numbers (likely IDs) - but avoid double-coloring
-  -- Only highlight numbers that aren't already part of a colored section
   message = string.gsub(message, "([^|])(%d%d%d+)", function(prefix, num)
-    -- Skip if this number is already colored or part of a pattern we've already handled
-    if string.find(prefix, Colors.VALUE) or string.find(prefix, Colors.RESET) then
-      return prefix .. num
-    end
-    if tonumber(num) and tonumber(num) > 100 then -- Likely an ID
-      return prefix .. Colors.VALUE .. num .. Colors.RESET
-    end
+    if string.find(prefix, Colors.VALUE) or string.find(prefix, Colors.RESET) then return prefix .. num end
+    if tonumber(num) and tonumber(num) > 100 then return prefix .. Colors.VALUE .. num .. Colors.RESET end
     return prefix .. num
   end)
   return message
 end
 
+-- Helper: Get Player Location Text
+local function GetPlayerContext()
+    if not C_Map or not C_Map.GetBestMapForUnit then return nil end
+    local mapID = C_Map.GetBestMapForUnit("player")
+    if not mapID then return "No Map" end
+    local pos = C_Map.GetPlayerMapPosition(mapID, "player")
+    if not pos then return string.format("Map:%s [Unknown]", tostring(mapID)) end
+    local x, y = pos.x, pos.y
+    return string.format("Map:%s [%.1f, %.1f]", tostring(mapID), (x or 0)*100, (y or 0)*100)
+end
+
 -- Main debug print function
--- Usage: Debug.Print(Debug.Categories.QUESTS, Debug.Verbosity.NORMAL, "message", arg1, arg2, ...)
 function Debug.Print(category, verbosity, ...)
   if not Debug.ShouldPrint(category, verbosity) then return end
   
+  -- Check Filters (Early exit if filtered out by specific runtime filters)
+  -- Note: We usually filter at display time, but if we want to save memory we could filter here.
+  -- For now, we capture everything allowed by category/verbosity settings.
+
   local prefix = Colors.PREFIX .. "WoWTR Debug:" .. Colors.RESET
   local categoryName = category or "general"
   local categoryColor = CategoryColors[categoryName] or Colors.INFO
   
-  -- Format the message with category prefix
   local args = {...}
-  -- Convert all arguments to strings with color formatting
   local stringArgs = {}
+  local rawMessage = "" -- For raw text filtering
+
   for i = 1, #args do
     local arg = args[i]
+    local strVal = tostring(arg)
+    rawMessage = rawMessage .. strVal .. " "
+
     if arg == nil then
       stringArgs[i] = Colors.WARNING .. "nil" .. Colors.RESET
     elseif type(arg) == "boolean" then
@@ -172,41 +190,82 @@ function Debug.Print(category, verbosity, ...)
     elseif type(arg) == "string" then
       stringArgs[i] = arg
     else
-      stringArgs[i] = tostring(arg)
+      stringArgs[i] = strVal
     end
   end
   local message = table.concat(stringArgs, " ")
   
-  -- Add category tag if not already present at the start
-  -- Check if message starts with [CATEGORY] pattern, not just any [
-  if not string.match(message, "^%[[A-Z]+%]") then
-    message = categoryColor .. "[" .. string.upper(categoryName) .. "]" .. Colors.RESET .. " " .. message
+  -- Smart ID Filtering (if active)
+  if Debug.Filters.ID then
+      local idStr = tostring(Debug.Filters.ID)
+      if not string.find(rawMessage, idStr) then return end
+  end
+
+  -- Smart Text Filtering (if active)
+  if Debug.Filters.Text then
+      if not string.find(string.lower(rawMessage), string.lower(Debug.Filters.Text)) then return end
+  end
+  
+  -- Format with Category
+  local displayMessage = message
+  if not string.match(displayMessage, "^%[[A-Z]+%]") then
+    displayMessage = categoryColor .. "[" .. string.upper(categoryName) .. "]" .. Colors.RESET .. " " .. displayMessage
   else
-    -- Replace existing category tag with colored version
-    message = string.gsub(message, "^%[([A-Z]+)%]", categoryColor .. "[%1]" .. Colors.RESET)
+    displayMessage = string.gsub(displayMessage, "^%[([A-Z]+)%]", categoryColor .. "[%1]" .. Colors.RESET)
   end
   
-  -- Check if message already has color codes (like red [X] messages)
-  local hasColorCodes = string.find(message, "|c")
-  
-  -- Highlight important values in the message (before applying message color)
+  local hasColorCodes = string.find(displayMessage, "|c")
   if not hasColorCodes then
-    message = HighlightImportantValues(message)
+    displayMessage = HighlightImportantValues(displayMessage)
   end
   
-  -- Detect message type and apply color
-  local messageColor = GetMessageColor(message)
-  
-  -- Apply message color to the main message (but preserve existing color codes)
-  -- Only apply if message doesn't already have color codes
+  local messageColor = GetMessageColor(displayMessage)
   if not hasColorCodes then
-    message = messageColor .. message .. Colors.RESET
+    displayMessage = messageColor .. displayMessage .. Colors.RESET
   end
-  
-  print(prefix, message)
+
+  -- Create Log Entry Object
+  local entry = {
+      timestamp = GetTime(),
+      date = date("%H:%M:%S"),
+      category = categoryName,
+      verbosity = verbosity,
+      message = displayMessage,
+      rawMessage = rawMessage, -- useful for uncolored filtering
+      context = (verbosity >= Debug.Verbosity.VERBOSE) and GetPlayerContext() or nil
+  }
+
+  Debug.AddLog(entry)
+
+  -- Print to Chat if enabled
+  if Debug.Settings.PrintToChat then
+      print(prefix, displayMessage)
+  end
 end
 
--- Convenience functions for each verbosity level
+-- Log Buffer Management
+function Debug.AddLog(entry)
+  table.insert(Debug.LogBuffer, entry)
+  if #Debug.LogBuffer > Debug.MaxLogSize then
+      table.remove(Debug.LogBuffer, 1)
+  end
+  
+  -- Notify UI Callback
+  if Debug.OnLogAdded then
+      Debug.OnLogAdded(entry)
+  end
+end
+
+function Debug.GetLogBuffer()
+    return Debug.LogBuffer
+end
+
+function Debug.ClearLogBuffer()
+    Debug.LogBuffer = {}
+    if Debug.OnClearLogs then Debug.OnClearLogs() end
+end
+
+-- Convenience functions
 function Debug.Error(category, ...)
   Debug.Print(category, Debug.Verbosity.ERRORS, ...)
 end
@@ -243,7 +302,7 @@ function Debug.Exit(functionName, category, ...)
   end
 end
 
--- Group related prints together (suppresses intermediate prints if same quest/object)
+-- Group related prints together
 local lastGroupKey = nil
 local groupSuppressCount = 0
 
@@ -265,7 +324,7 @@ function Debug.GroupEnd()
   groupSuppressCount = 0
 end
 
--- Global wrapper for backward compatibility
+-- Global wrapper
 WOWTR = WOWTR or {}
 WOWTR.Debug = Debug
 
@@ -273,4 +332,3 @@ WOWTR.Debug = Debug
 Debug.Initialize()
 
 return Debug
-
