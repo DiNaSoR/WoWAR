@@ -534,14 +534,45 @@ function Text.AnsiReverse(txt)
   return text
 end
 
+local function escapeLuaPatternLiteral(s)
+  if type(s) ~= "string" or s == "" then
+    return ""
+  end
+  return (s:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1"))
+end
+
+local function replaceLiteral(text, literal, replacer)
+  if type(text) ~= "string" then
+    return ""
+  end
+  if type(literal) ~= "string" or literal == "" then
+    return text
+  end
+  local pattern = escapeLuaPatternLiteral(literal)
+  if pattern == "" then
+    return text
+  end
+  return (text:gsub(pattern, replacer))
+end
+
 function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
+  if type(txt) ~= "string" then
+    return ""
+  end
+  if type(finder) ~= "string" or finder == "" then
+    return txt
+  end
   local result = txt
   local last = 1
-  local nr_poz, nr_end = string.find(result, finder)
+  local finderPattern = escapeLuaPatternLiteral(finder)
+  if finderPattern == "" then
+    return result
+  end
+  local nr_poz, nr_end = string.find(result, finderPattern)
   while (nr_poz and nr_poz > 0) do
     if ((nr_poz == 1) or ((nr_poz > 1) and (string.sub(result, nr_poz - 1, nr_poz - 1) == ' ')) or ((nr_poz > 2) and (string.sub(result, nr_poz - 2, nr_poz - 1) == '$B'))) then
       local char_after = string.sub(result, nr_end + 1, nr_end + 1)
-      if ((char_after == '.') or (char_after == ',') or (char_after == '?') or (char_after == '!') or (char_after == ' ') or (char_after == ';') or (char_after == ':') or (char_after == '>') or (char_after == '-')) then
+      if ((char_after == '') or (char_after == '.') or (char_after == ',') or (char_after == '?') or (char_after == '!') or (char_after == ' ') or (char_after == ';') or (char_after == ':') or (char_after == '>') or (char_after == '-')) then
         result = string.sub(result, 1, nr_poz - 1) .. replacer .. string.sub(result, nr_end + 1)
         last = nr_poz + strlen(replacer)
       else
@@ -550,7 +581,7 @@ function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
     else
       last = nr_poz + strlen(finder)
     end
-    nr_poz, nr_end = string.find(result, finder, last)
+    nr_poz, nr_end = string.find(result, finderPattern, last)
   end
   return result
 end
@@ -562,9 +593,10 @@ function Text.DetectAndReplacePlayerName(txt, target, part)
     text = string.gsub(text, '\n', "$B")
   end
   if (part == nil) or (part == '$N') then
-    local upperCaseName = string.upper(WOWTR_player_name or "")
-    text = string.gsub(text, WOWTR_player_name or "", "$N")
-    text = string.gsub(text, upperCaseName, "$N")
+    local playerName = WOWTR_player_name or ""
+    local upperCaseName = string.upper(playerName)
+    text = replaceLiteral(text, playerName, "$N")
+    text = replaceLiteral(text, upperCaseName, "$N")
   end
   if (part == nil) or (part == '$R') then
     text = Text.ReplaceOnlyWholeWords(text, WOWTR_player_race or "", '$R')

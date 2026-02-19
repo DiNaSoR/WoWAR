@@ -14,6 +14,7 @@ CLEAR this file when the task is done:
 - Record missing memory entry for Config LuaLS undefined-global fixes
 - Fix GossipFrame quest-option title fallback to use QuestData by questID
 - Fix Arabic QuestFrame rewards layout overlap around money/skill rows
+- Fix bubble capture duplication for dynamic player-realm NPC speeches
 
 ## Files in Focus
 - `common/Quests/Details.lua`
@@ -29,6 +30,8 @@ CLEAR this file when the task is done:
 - `.cursor/rules/01-vector-search.mdc`
 - `common/Config/Minimap.lua`
 - `common/Config/State.lua`
+- `common/Bubbles/Main.lua`
+- `common/Text.lua`
 
 ## Findings / Decisions
 - Reserved 14px for glyph in RTL title width; positioned glyph at RIGHT edge of title
@@ -65,6 +68,10 @@ CLEAR this file when the task is done:
 - Investigated intermittent English reward label (`QuestInfoRewardsFrame.ItemReceiveText`): duplicate QuestPrepare skip logic could consider description translated and skip while reward label was still overwritten; added reward-label check in reprocess gate.
 - Added non-Map delayed `QTR_display_constants(1)` re-apply (QuestFrame at 0.03s/0.10s) to catch late Blizzard reward-label refresh.
 - Reward anchor restoration hardened on `TranslateOff`/EN/no-translation: reset `ItemReceiveText` to default point (`Header` -> `BOTTOMLEFT`), width auto, and money anchor back to default.
+- Root cause for duplicated `BB_PS` entries: player-target replacement in bubble hashing used Lua pattern matching without escaping, so names with `-` (e.g. `Name-Realm`) were not replaced with `$N`.
+- `Text.ReplaceOnlyWholeWords` now escapes matcher literals and ignores empty finders, preventing placeholder misses and malformed replacements.
+- `Bubbles.ChatFilter` now hashes using `WOWTR_NormalizeForHash`, normalizes saved target metadata to placeholders, and maps both known General Hammond honor phrase variants to stable hash `4192543970`.
+- Removed NPC-name hardcoding from bubble exception path: honor-speech fallback now matches by text template only (no specific NPC-name gate).
 
 ## Temporary Constraints
 -
