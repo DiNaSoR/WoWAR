@@ -294,7 +294,7 @@ function Core.OnEvent(self, event, name, ...)
     end
     C_ChatInfo.RegisterAddonMessagePrefix(WOWTR_ADDON_PREFIX)
 
-    DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. WOWTR_Localization.addonName .. "  ver. " .. WOWTR_version .. " - " .. WOWTR_Localization.started)
+    DEFAULT_CHAT_FRAME:AddMessage("|cffffff00" .. WOWTR_Localization.addonName .. "  ver. " .. WOWTR_version .. " - " .. QTR_ReverseIfAR(WOWTR_Localization.started))
     if ((not QTR_PS["welcome"]) and WOWTR_Config_Interface and (string.len(WOWTR_Config_Interface.welcomeText or "") > 1)) then
       if WOWTR_WelcomePanel then WOWTR_WelcomePanel() end
     end
