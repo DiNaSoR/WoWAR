@@ -6,78 +6,13 @@ CLEAR this file when the task is done:
 - Run `scripts/memory/clear-active.ps1`
 
 ## Current Goal
-- Fixed glyph overlap in RTL quest titles
-- Updated DebugToolsUI with tabbed interface
-- Remove vector smoke script and validate normal vector tools flow
-- Enforce vector-first retrieval policy for future AI runs
-- Enforce post-vector grounding so answers do not stay digest-only
-- Record missing memory entry for Config LuaLS undefined-global fixes
-- Fix GossipFrame quest-option title fallback to use QuestData by questID
-- Fix Arabic QuestFrame rewards layout overlap around money/skill rows
-- Fix bubble capture duplication for dynamic player-realm NPC speeches
-- Align GitHub release workflow with root `.toc` addon packaging layout
+-
 
 ## Files in Focus
-- `common/Quests/Details.lua`
-- `common/Quests/Gossip.lua`
-- `common/UI/DebugToolsUI.lua`
-- `common/UI/Welcome.lua`
-- `common/Locale/changelog.lua`
-- `common/Config/ControlCenter/Registry.lua`
-- `common/Config/ControlCenter/SettingsPanel.lua`
-- `Tools/index.html`
-- `Tools/changelog_Unshaped.lua`
-- `scripts/memory/mnemo_vector.py`
-- `.cursor/rules/01-vector-search.mdc`
-- `common/Config/Minimap.lua`
-- `common/Config/State.lua`
-- `common/Bubbles/Main.lua`
-- `common/Text.lua`
-- `.github/workflows/release.yml`
+-
 
 ## Findings / Decisions
-- Reserved 14px for glyph in RTL title width; positioned glyph at RIGHT edge of title
-- Merged DebugUI and DebugToolsUI into single tabbed panel
-- RTL reversal now auto-protects plain numeric tokens inside `Text.HandleWoWSpecialCodes` to prevent digit order flipping (e.g., "27" staying "27" after reversal).
-- Consolidated quest header width adjustment to a single pass (glyph reserve applied once).
-- Welcome screen: reduce RTL text width by 5px and use `WOWTR_Font1` for the title to improve bidi rendering.
-- Welcome screen: compute stable body/tips wrap width before `QTR_ExpandUnitInfo`; enforce word-wrap mode and use a small body correction (`-10`) to prevent RTL orphan/reordered words.
-- Changelog: updated latest entry (`12.00`) to reflect welcome RTL wrapping fixes and current release date.
-- Changelog wording preference: keep Release Notes non-technical and user-facing.
-- Tools reshaper now explicitly supports both `WoW_Localization_AR.lua` and `changelog.lua`, with export suffixes (`_Reshaped`/`_Unshaped`) to produce safe copies.
-- Added `Tools/changelog_Unshaped.lua` as an unshaped working copy for changelog reshaping flow.
-- Revised historical changelog entries (before 13 Feb 2026) in `Tools/changelog_Unshaped.lua` with cleaner player-facing Arabic wording.
-- Changelog entry `color` is now wired end-to-end: preserved in registry conversion and applied in Release Notes date/title/body/bullets + version list labels.
-- Changelog color styling tuned for readability: accent-only (date/title), while body text, bullets, and version list remain neutral.
-- Changelog title styling: `h1` now uses `WOWTR_Font1` with increased size for stronger heading hierarchy.
-- Fixed pooled FontString bleed in changelog renderer: non-title lines now force body font reset so bullet lines cannot inherit enlarged title size.
-- Changelog date divider texture now flips horizontally in RTL so decorative direction matches Arabic layout.
-- Settings panel tab strip now attaches 8px higher to remove perceived gap between main panel border and bottom tabs.
-- Fixed tab strip anchoring bug: tab buttons are now anchored to `TabButtonContainer` (not `MainFrame`), so `TabAttachOffsetY` actually affects layout.
-- SettingsPanel version labels now use version-first ordering in RTL (e.g., `12.00 الإصدار`) for better Arabic readability.
-- ControlCenter module search now uses Arabic-aware variant matching (raw + reversed/reshaped transforms) so typed Arabic reliably filters and updates right-side preview.
-- Search input in ControlCenter now renders Arabic through a shaped preview overlay (while keeping raw EditBox text for matching), so typing looks correctly shaped and results still update.
-- ControlCenter settings preview now supports per-setting `preview_wowar_[prefix].png` images with placeholder fallback; generated placeholder-backed PNG files for sub-settings missing dedicated art.
-- Removed `scripts/memory/vector-smoke.ps1` and switched back to normal vector tool validation (`vector_health`, `vector_sync`, `vector_search`).
-- Normal vector tools currently pass with Gemini provider and return semantic hits.
-- Updated `.cursor/rules/01-vector-search.mdc` to mandatory vector-first retrieval with fallback-only non-vector search.
-- Updated `.cursor/rules/01-vector-search.mdc` with mandatory post-search grounding (read top refs, expand digest -> journal) before final answers.
-- Confirmed LuaLS undefined globals in Config files are addressed via `rawget(_G, "...")` lookups (EasyMenu + reset/confirmation globals).
-- GossipFrame option translation now resolves `questID` from row element data (or C_GossipInfo quest lists) and prefers `QTR_QuestData[questID].Title` before hash-based `GS_Gossip`.
-- Removed RTL reward spacer/overlay hack in quest details (`ItemReceiveText` blank spaces based on `QuestInfoMoneyFrame:GetWidth()`); now uses native QuestInfo reward labels and default XP value anchor to prevent money/reward overlap.
-- Adjusted RTL reward header layout: `ItemReceiveText` now anchors to the right side and `QuestInfoMoneyFrame` is mirrored to the left of that label; default anchors restore on TranslateOff.
-- Reverted risky reward-row anchor mirroring after it pushed reward boxes out of frame; current approach keeps Blizzard row flow and only adjusts RTL label rendering/width + dynamic money inset to keep gold text/icons inside pane.
-- Investigated intermittent English reward label (`QuestInfoRewardsFrame.ItemReceiveText`): duplicate QuestPrepare skip logic could consider description translated and skip while reward label was still overwritten; added reward-label check in reprocess gate.
-- Added non-Map delayed `QTR_display_constants(1)` re-apply (QuestFrame at 0.03s/0.10s) to catch late Blizzard reward-label refresh.
-- Reward anchor restoration hardened on `TranslateOff`/EN/no-translation: reset `ItemReceiveText` to default point (`Header` -> `BOTTOMLEFT`), width auto, and money anchor back to default.
-- Root cause for duplicated `BB_PS` entries: player-target replacement in bubble hashing used Lua pattern matching without escaping, so names with `-` (e.g. `Name-Realm`) were not replaced with `$N`.
-- `Text.ReplaceOnlyWholeWords` now escapes matcher literals and ignores empty finders, preventing placeholder misses and malformed replacements.
-- `Bubbles.ChatFilter` now hashes using `WOWTR_NormalizeForHash`, normalizes saved target metadata to placeholders, and maps both known General Hammond honor phrase variants to stable hash `4192543970`.
-- Removed NPC-name hardcoding from bubble exception path: honor-speech fallback now matches by text template only (no specific NPC-name gate).
-- Chat-frame monster message rendering now uses content-based direction: Arabic translated lines render RTL, while English (including untranslated/no-translation fallback) stays native LTR; `%s` speaker substitution is resolved consistently in both directions.
-- Release workflow now discovers addons from root `*.toc` files, packages TOC-root runtime paths (+ `Fonts`/`Images`), and no longer depends on missing `WoWAR/`, `WoWPL/`, etc. directories.
-- Release trigger/history matching now uses `v*` tags (project-compatible), and release-note commit grouping now matches current commit style (`Fix/Enhance/Update/Refactor/...`).
-- Hardened release workflow logic: added `workflow_dispatch` dry-run, enforced TOC-vs-Tag version validation, modernized to `gh release`, safely overwrites notes on tag updates, and tightened TOC parse boundaries.
+-
 
 ## Temporary Constraints
 -
