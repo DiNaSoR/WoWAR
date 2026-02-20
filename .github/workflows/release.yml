@@ -1,0 +1,413 @@
+name: Create Add-On Releases
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (package only, do not create release)'
+        required: true
+        type: boolean
+        default: false
+      version_tag:
+        description: 'Version tag to use (e.g., v12.00). Used only for workflow_dispatch.'
+        required: false
+        type: string
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  TZ: UTC
+permissions:
+  contents: write
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Build and Release Add-Ons
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        IS_DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && 'true' || 'false' }}
+        INPUT_VERSION_TAG: ${{ github.event.inputs.version_tag }}
+      run: |
+        set -euo pipefail
+        IFS=$'\n\t'
+
+        log_error() {
+          echo "ERROR: $1" >&2
+        }
+
+        die() {
+          log_error "$1"
+          exit 1
+        }
+
+        require_tool() {
+          if ! command -v "$1" >/dev/null 2>&1; then
+            die "Required tool '$1' is not available on the runner."
+          fi
+        }
+
+        require_tool zip
+        require_tool sed
+        require_tool find
+        require_tool gh
+
+        if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+          die "GITHUB_TOKEN is not set."
+        fi
+
+        # Resolve the effective tag reference.
+        # On push:tag this is the pushed tag; on workflow_dispatch an optional
+        # manual override allows re-publishing or dry-run testing a specific version.
+        if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && -n "$INPUT_VERSION_TAG" ]]; then
+          REF_NAME="$INPUT_VERSION_TAG"
+        else
+          REF_NAME="${GITHUB_REF_NAME}"
+        fi
+
+        VERSION="${REF_NAME#v}"
+        if [[ -z "$VERSION" || "$VERSION" == "$REF_NAME" ]]; then
+          die "Tag or input version must start with 'v' (examples: v12.00, v1.2.3). Got: $REF_NAME"
+        fi
+
+        # Detect pre-release: any tag containing a hyphen qualifier (e.g. v12.00-beta, v12.00-rc1).
+        IS_PRERELEASE="false"
+        if [[ "$VERSION" == *"-"* ]]; then
+          IS_PRERELEASE="true"
+          echo "Pre-release detected from tag suffix: $VERSION"
+        fi
+
+        DATE="$(date -u +'%Y-%m-%d')"
+
+        BUILD_DIR="$PWD/builds"
+        WORK_DIR="$(mktemp -d)"
+        mkdir -p "$BUILD_DIR"
+
+        cleanup() {
+          rm -rf "$WORK_DIR"
+        }
+        trap cleanup EXIT
+
+        shopt -s nullglob
+        TOC_FILES=( *.toc )
+        if [[ ${#TOC_FILES[@]} -eq 0 ]]; then
+          die "No .toc files found at repository root. Expected at least one addon TOC (for example: WoWAR.toc)."
+        fi
+
+        BUILT_ADDONS=()
+        TOC_INTERFACE_VERSIONS=""
+        TOC_INTERFACE_NOTE=""
+
+        for toc_file in "${TOC_FILES[@]}"; do
+          addon="${toc_file%.toc}"
+          if [[ -z "$addon" ]]; then
+            echo "Warning: invalid TOC filename '$toc_file', skipping..."
+            continue
+          fi
+
+          # --- Version consistency check ---
+          TOC_VERSION=$(awk -F':' '/^[[:space:]]*##[[:space:]]+Version:/{print $2}' "$toc_file" | xargs || true)
+          if [[ -n "$TOC_VERSION" && "$TOC_VERSION" != "$VERSION" ]]; then
+            die "Version mismatch in $toc_file: TOC says '$TOC_VERSION' but release tag says '$VERSION'. Update ## Version in the TOC before tagging."
+          fi
+
+          # --- Collect WoW Interface versions for release notes ---
+          RAW_IFACE=$(awk -F':' '/^[[:space:]]*##[[:space:]]+Interface:/{print $2}' "$toc_file" | xargs || true)
+          if [[ -n "$RAW_IFACE" && -z "$TOC_INTERFACE_VERSIONS" ]]; then
+            TOC_INTERFACE_VERSIONS="$RAW_IFACE"
+          fi
+
+          echo "Building $addon from $toc_file..."
+          addon_dir="$WORK_DIR/$addon"
+          mkdir -p "$addon_dir"
+          cp -a "$toc_file" "$addon_dir/"
+
+          # --- Discover runtime roots from TOC file entries ---
+          unset TOC_ROOTS
+          declare -A TOC_ROOTS=()
+          while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
+            line="${raw_line%$'\r'}"
+            [[ -z "$line" ]] && continue
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+
+            normalized="${line//\\//}"
+            normalized="${normalized#"${normalized%%[![:space:]]*}"}"
+            normalized="${normalized%"${normalized##*[![:space:]]}"}"
+            [[ -z "$normalized" ]] && continue
+
+            root="${normalized%%/*}"
+            [[ -n "$root" ]] && TOC_ROOTS["$root"]=1
+          done < "$toc_file"
+
+          # Always include shared runtime asset folders when present.
+          for optional_root in Fonts Images Libs; do
+            if [[ -e "$optional_root" ]]; then
+              TOC_ROOTS["$optional_root"]=1
+            fi
+          done
+
+          if [[ ${#TOC_ROOTS[@]} -eq 0 ]]; then
+            echo "Warning: no runtime paths discovered from $toc_file; packaging TOC only."
+          fi
+
+          for root in "${!TOC_ROOTS[@]}"; do
+            if [[ -e "$root" ]]; then
+              cp -a "$root" "$addon_dir/"
+            else
+              echo "Warning: path '$root' referenced by $toc_file was not found, skipping..."
+            fi
+          done
+
+          BUILT_ADDONS+=("$addon")
+
+          # Remove BOM from text files.
+          while IFS= read -r -d '' file; do
+            sed -i '1s/^\xEF\xBB\xBF//' "$file"
+          done < <(
+            find "$addon_dir" -type f \( -name "*.lua" -o -name "*.toc" -o -name "*.xml" -o -name "*.txt" \) -print0
+          )
+
+          # Stamp a build header into every Lua file.
+          while IFS= read -r -d '' file; do
+            sed -i "1s|^|-- Addon: $addon (Version: $VERSION) (Date: $DATE)\n|" "$file"
+          done < <(find "$addon_dir" -type f -name "*.lua" -print0)
+
+          # Zip name includes version and build date for traceability.
+          # Note: --clobber on gh release upload matches exact filename, so a same-tag
+          # rebuild on a different day will leave the old dated zip alongside the new one.
+          # Delete stale same-version assets first to keep the release clean.
+          filename="${addon}_v${VERSION}_${DATE}.zip"
+          (cd "$WORK_DIR" && zip -r -X "$BUILD_DIR/$filename" "$addon" >/dev/null)
+          echo "Packaged: $filename ($(du -sh "$BUILD_DIR/$filename" | cut -f1))"
+        done
+
+        if [[ ${#BUILT_ADDONS[@]} -eq 0 ]]; then
+          die "No addons were built. Check directory names and workflow configuration."
+        fi
+
+        INCLUDED_ADDONS=$(printf '%s, ' "${BUILT_ADDONS[@]}")
+        INCLUDED_ADDONS="${INCLUDED_ADDONS%, }"
+
+        # Parse translation database metadata from Translations/*.lua files.
+        # Each file declares: {PREFIX}_lang, {PREFIX}_type, {PREFIX}_date, {PREFIX}_base
+        TRANS_NOTE=""
+        TRANS_TOTAL=0
+        if [[ -d "Translations" ]]; then
+          while IFS= read -r lua_file; do
+            # Auto-detect the variable prefix from the first 15 lines.
+            prefix=$(head -15 "$lua_file" | grep -oE '^[A-Za-z][A-Za-z0-9]*_lang' | sed 's/_lang//' | head -1 || true)
+            [[ -z "$prefix" ]] && continue
+
+            extract_meta() {
+              head -15 "$1" | grep -E "^${2}_${3}[[:space:]]*=" | grep -oE '"[^"]*"' | tr -d '"' | head -1 || true
+            }
+
+            tr_lang=$(extract_meta "$lua_file" "$prefix" "lang")
+            tr_type=$(extract_meta "$lua_file" "$prefix" "type")
+            tr_date=$(extract_meta "$lua_file" "$prefix" "date")
+            tr_base=$(extract_meta "$lua_file" "$prefix" "base")
+
+            [[ -z "$tr_base" ]] && continue
+
+            fname=$(basename "$lua_file")
+            # Strip _AR[0-9]*.lua suffix, then trailing Data[0-9]* word
+            # e.g. TutorialsData7_AR.lua → Tutorials, QuestData_AR.lua → Quest
+            display_name=$(echo "$fname" | sed -E 's/_AR[0-9]*\.lua$//; s/Data[0-9]*$//')
+            base_int="${tr_base//,/}"
+            if [[ "$base_int" =~ ^[0-9]+$ ]]; then
+              TRANS_TOTAL=$(( TRANS_TOTAL + base_int ))
+              formatted_base=$(printf "%'d" "$base_int" 2>/dev/null || echo "$base_int")
+            else
+              formatted_base="$tr_base"
+            fi
+
+            date_note=""
+            [[ -n "$tr_date" ]] && date_note=" · updated ${tr_date}"
+            TRANS_NOTE+="  - **${display_name}** \`Translations\`: ${formatted_base}${date_note}"$'\n'
+          done < <(find "Translations" -maxdepth 1 -name "*.lua" | sort)
+
+          if [[ -n "$TRANS_NOTE" ]]; then
+            formatted_total=$(printf "%'d" "$TRANS_TOTAL" 2>/dev/null || echo "$TRANS_TOTAL")
+            TRANS_NOTE=$'\n## 📖 Translation Databases\n\n'"${TRANS_NOTE}"$'\n> Total: **'"${formatted_total}"'** translated entries across all databases.'
+          fi
+        fi
+
+        # Format WoW Interface version list for release notes.
+        if [[ -n "$TOC_INTERFACE_VERSIONS" ]]; then
+          # Build a human-readable patch list from comma-separated interface numbers.
+          PATCH_LIST=$(printf '%s' "$TOC_INTERFACE_VERSIONS" | tr ',' '\n' | xargs -I{} sh -c '
+            n="{}"; n="${n//[[:space:]]/}"
+            if [[ ${#n} -ge 5 ]]; then
+              maj="${n:0:${#n}-4}"; minor="${n: -4:2}"; patch="${n: -2}"
+              echo "  - ${maj}.${minor#0}.${patch#0} (${n})"
+            else
+              echo "  - ${n}"
+            fi
+          ')
+          TOC_INTERFACE_NOTE=$'\n## 🎮 Supported WoW Patches\n'"${PATCH_LIST}"
+        fi
+
+        echo "Generating release notes..."
+        # Previous tag lookup — works on push:tag; gracefully falls back on dispatch.
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 --match "v*" "${REF_NAME}^" 2>/dev/null || \
+                       git describe --tags --abbrev=0 --match "v*" HEAD 2>/dev/null || true)
+        # Exclude the current tag from PREVIOUS_TAG if they're the same.
+        [[ "$PREVIOUS_TAG" == "$REF_NAME" ]] && PREVIOUS_TAG=""
+
+        if [[ -n "$PREVIOUS_TAG" ]]; then
+          COMMITS=$(git log "${PREVIOUS_TAG}..HEAD" --format="%h%x09%s" --no-merges 2>/dev/null || git log -n 50 --format="%h%x09%s" --no-merges || true)
+        else
+          COMMITS=$(git log -n 50 --format="%h%x09%s" --no-merges || true)
+        fi
+
+        LABEL_KEYS=(fix enhance update refactor add remove docs chore)
+        declare -A LABEL_TITLES=(
+          ["fix"]="🐛 Fixes"
+          ["enhance"]="✨ Enhancements"
+          ["update"]="🔄 Updates"
+          ["refactor"]="🔧 Refactors"
+          ["add"]="➕ Additions"
+          ["remove"]="🧹 Removals"
+          ["docs"]="📚 Docs"
+          ["chore"]="🛠 Maintenance"
+        )
+        declare -A SECTION_LINES=()
+        OTHER_LINES=()
+
+        if [[ -n "$COMMITS" ]]; then
+          while IFS=$'\t' read -r commit_hash commit_msg; do
+            [[ -z "$commit_hash" ]] && continue
+            lower_msg=$(printf '%s' "$commit_msg" | tr '[:upper:]' '[:lower:]')
+            categorized=0
+            for label in "${LABEL_KEYS[@]}"; do
+              if [[ "$lower_msg" =~ ^${label}([[:space:]:-]|$) || "$lower_msg" == *"[$label]"* ]]; then
+                clean_msg=$(printf '%s' "$commit_msg" | sed -E "s/^(${label})([[:space:]:-]+)?//I; s/\\[$label\\][[:space:]]*//Ig")
+                clean_msg="${clean_msg#"${clean_msg%%[![:space:]]*}"}"
+                clean_msg="${clean_msg%"${clean_msg##*[![:space:]]}"}"
+                [[ -z "$clean_msg" ]] && clean_msg="$commit_msg"
+                SECTION_LINES[$label]="${SECTION_LINES[$label]}- $clean_msg ([${commit_hash}](https://github.com/${GITHUB_REPOSITORY}/commit/${commit_hash}))"$'\n'
+                categorized=1
+                break
+              fi
+            done
+
+            if [[ "$categorized" -eq 0 ]]; then
+              OTHER_LINES+=("- $commit_msg ([${commit_hash}](https://github.com/${GITHUB_REPOSITORY}/commit/${commit_hash}))")
+            fi
+          done <<< "$COMMITS"
+        fi
+
+        NEW_BODY=$'## 📦 Addons\n'"$INCLUDED_ADDONS"
+
+        if [[ -n "$TOC_INTERFACE_NOTE" ]]; then
+          NEW_BODY+="${TOC_INTERFACE_NOTE}"
+        fi
+
+        if [[ -n "$TRANS_NOTE" ]]; then
+          NEW_BODY+="${TRANS_NOTE}"
+        fi
+
+        NEW_BODY+=$'\n\n## 🔍 Changes\n'
+
+        if [[ -n "$COMMITS" ]]; then
+          for label in "${LABEL_KEYS[@]}"; do
+            if [[ -n "${SECTION_LINES[$label]:-}" ]]; then
+              NEW_BODY+=$'\n### '"${LABEL_TITLES[$label]}"$'\n\n'"${SECTION_LINES[$label]}"$'\n'
+            fi
+          done
+
+          if [[ ${#OTHER_LINES[@]} -gt 0 ]]; then
+            NEW_BODY+=$'\n### 🔀 Other Changes\n\n'"$(printf "%s\n" "${OTHER_LINES[@]}")"$'\n'
+          fi
+        else
+          NEW_BODY+=$'\n_No changes detected since the previous release._\n'
+        fi
+
+        if [[ -n "$PREVIOUS_TAG" ]]; then
+          NEW_BODY+=$'\n---\n\n🔗 Compare: https://github.com/'"$GITHUB_REPOSITORY"'/compare/'"$PREVIOUS_TAG"'...'"$REF_NAME"$'\n'
+        fi
+
+        NEW_BODY+=$'\n📅 Released on: '"$DATE"$'\n\nWoWLang Team\n'
+
+        notes_file="$WORK_DIR/release_notes.md"
+        printf '%s\n' "$NEW_BODY" > "$notes_file"
+
+        {
+          echo "### Release summary"
+          echo "- Tag: ${REF_NAME}"
+          echo "- Date (UTC): ${DATE}"
+          echo "- Addons: ${INCLUDED_ADDONS}"
+          [[ -n "$TOC_INTERFACE_VERSIONS" ]] && echo "- WoW Interface: ${TOC_INTERFACE_VERSIONS}"
+          [[ "$IS_PRERELEASE" == "true" ]] && echo "- Type: Pre-release"
+        } >> "$GITHUB_STEP_SUMMARY"
+
+        if [[ "$IS_DRY_RUN" == "true" ]]; then
+          echo "Dry run enabled — skipping GitHub Release creation/upload."
+          echo ""
+          echo "=== Generated Release Notes ==="
+          cat "$notes_file"
+          echo ""
+          echo "=== Assets built ==="
+          ls -1 "$BUILD_DIR"
+          exit 0
+        fi
+
+        release_title="${BUILT_ADDONS[0]} ${REF_NAME}"
+
+        # Check if release already exists before deciding to create or update.
+        echo "Checking for existing release $REF_NAME..."
+        if gh release view "$REF_NAME" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
+          echo "Release $REF_NAME already exists — updating notes..."
+          gh release edit "$REF_NAME" \
+            --title "$release_title" \
+            --notes-file "$notes_file" \
+            $([[ "$IS_PRERELEASE" == "true" ]] && echo "--prerelease" || echo "--no-discussion")
+        else
+          echo "Creating new release $REF_NAME..."
+          gh release create "$REF_NAME" \
+            --title "$release_title" \
+            --notes-file "$notes_file" \
+            $([[ "$IS_PRERELEASE" == "true" ]] && echo "--prerelease" || echo "--latest")
+        fi
+
+        echo "- Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${REF_NAME}" >> "$GITHUB_STEP_SUMMARY"
+
+        echo "Uploading assets..."
+        echo "- Assets:" >> "$GITHUB_STEP_SUMMARY"
+        for addon in "${BUILT_ADDONS[@]}"; do
+          filename="${addon}_v${VERSION}_${DATE}.zip"
+          filepath="$BUILD_DIR/$filename"
+
+          if [[ ! -f "$filepath" ]]; then
+            echo "Skipping upload for $addon: file not found."
+            continue
+          fi
+
+          # Delete stale dated zips for the same version before uploading the new one.
+          # This prevents old dated files piling up on re-runs across different days.
+          stale_pattern="${addon}_v${VERSION}_"
+          while IFS= read -r stale_asset; do
+            [[ -z "$stale_asset" || "$stale_asset" == "$filename" ]] && continue
+            echo "Removing stale asset: $stale_asset"
+            gh release delete-asset "$REF_NAME" "$stale_asset" --yes 2>/dev/null || true
+          done < <(gh release view "$REF_NAME" --json assets --jq ".assets[].name" 2>/dev/null \
+                   | grep "^${stale_pattern}" || true)
+
+          echo "Uploading $filename..."
+          gh release upload "$REF_NAME" "$filepath" --clobber
+          echo "  - $filename" >> "$GITHUB_STEP_SUMMARY"
+        done
+
+        echo "Release process completed successfully."

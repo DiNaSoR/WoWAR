@@ -1,4 +1,4 @@
-﻿-- Description: The addon supports chat for entering and displaying messages in Arabic.
+-- Description: The addon supports chat for entering and displaying messages in Arabic.
 -- Authors: Platine, Dragonarab[DiNaSoR]
 -------------------------------------------------------------------------------------------------------
 
@@ -119,23 +119,33 @@ end
 -------------------------------------------------------------------------------------------------------
 
 local function CH_Check_Arabic_Letters(txt)
-   local result = false;
-   if (txt) then
-      local bytes = strlen(txt);
-      local pos = 1;
-      local char0 = '';
-      local charbytes0;
-      while (pos <= bytes) do
-         charbytes0 = AS_UTF8charbytes(txt, pos);         -- count of bytes (liczba bajtów znaku)
-         char0 = strsub(txt, pos, pos + charbytes0 - 1);  -- current character
-         pos = pos + charbytes0;
-         if (char0 >= "؀") then      -- it is an arabic letter
-            result = true;
-            break;
-         end
+   if (type(txt) ~= "string") or (txt == "") then
+      return false;
+   end
+
+   -- Prefer the shared detector so all chat paths use one Arabic/LTR decision rule.
+   local containsArabic = rawget(_G, "WOWTR_ContainsArabic");
+   if (type(containsArabic) == "function") then
+      local ok, hasArabic = pcall(containsArabic, txt);
+      if ok then
+         return hasArabic == true;
       end
    end
-   return result;
+
+   -- Fallback for early init/failure paths.
+   local bytes = strlen(txt);
+   local pos = 1;
+   local char0 = '';
+   local charbytes0;
+   while (pos <= bytes) do
+      charbytes0 = AS_UTF8charbytes(txt, pos);         -- count of bytes (liczba bajtów znaku)
+      char0 = strsub(txt, pos, pos + charbytes0 - 1);  -- current character
+      pos = pos + charbytes0;
+      if (char0 >= "؀") then      -- it is an arabic letter
+         return true;
+      end
+   end
+   return false;
 end
 
 -------------------------------------------------------------------------------------------------------

@@ -668,6 +668,7 @@ function RestoreWoWSpecialCodes(msg, sc) return Text.RestoreWoWSpecialCodes(msg,
 function WOW_ZmienKody(message, target) return Text.WOW_ZmienKody(message, target) end
 function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) return Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) end
 function QTR_ReverseIfAR(txt) return Text.ReverseIfAR(txt) end
+function WOWTR_ContainsArabic(txt) return Text.ContainsArabic(txt) end
 function WOWTR_AnsiReverse(txt) return Text.AnsiReverse(txt) end
 function WOWTR_ReplaceOnlyWholeWords(txt, f, r) return Text.ReplaceOnlyWholeWords(txt, f, r) end
 function WOWTR_DetectAndReplacePlayerName(txt, target, part) return Text.DetectAndReplacePlayerName(txt, target, part) end

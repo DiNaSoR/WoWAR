@@ -15,6 +15,7 @@ CLEAR this file when the task is done:
 - Fix GossipFrame quest-option title fallback to use QuestData by questID
 - Fix Arabic QuestFrame rewards layout overlap around money/skill rows
 - Fix bubble capture duplication for dynamic player-realm NPC speeches
+- Align GitHub release workflow with root `.toc` addon packaging layout
 
 ## Files in Focus
 - `common/Quests/Details.lua`
@@ -32,6 +33,7 @@ CLEAR this file when the task is done:
 - `common/Config/State.lua`
 - `common/Bubbles/Main.lua`
 - `common/Text.lua`
+- `.github/workflows/release.yml`
 
 ## Findings / Decisions
 - Reserved 14px for glyph in RTL title width; positioned glyph at RIGHT edge of title
@@ -72,6 +74,10 @@ CLEAR this file when the task is done:
 - `Text.ReplaceOnlyWholeWords` now escapes matcher literals and ignores empty finders, preventing placeholder misses and malformed replacements.
 - `Bubbles.ChatFilter` now hashes using `WOWTR_NormalizeForHash`, normalizes saved target metadata to placeholders, and maps both known General Hammond honor phrase variants to stable hash `4192543970`.
 - Removed NPC-name hardcoding from bubble exception path: honor-speech fallback now matches by text template only (no specific NPC-name gate).
+- Chat-frame monster message rendering now uses content-based direction: Arabic translated lines render RTL, while English (including untranslated/no-translation fallback) stays native LTR; `%s` speaker substitution is resolved consistently in both directions.
+- Release workflow now discovers addons from root `*.toc` files, packages TOC-root runtime paths (+ `Fonts`/`Images`), and no longer depends on missing `WoWAR/`, `WoWPL/`, etc. directories.
+- Release trigger/history matching now uses `v*` tags (project-compatible), and release-note commit grouping now matches current commit style (`Fix/Enhance/Update/Refactor/...`).
+- Hardened release workflow logic: added `workflow_dispatch` dry-run, enforced TOC-vs-Tag version validation, modernized to `gh release`, safely overwrites notes on tag updates, and tightened TOC parse boundaries.
 
 ## Temporary Constraints
 -

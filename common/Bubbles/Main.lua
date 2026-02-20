@@ -4,6 +4,7 @@ ns.Bubbles = ns.Bubbles or {}
 local Bubbles = ns.Bubbles
 local S = Bubbles.State
 local RTL = ns and ns.RTL
+local Text = ns and ns.Text
 local Tutorials = ns and ns.Tutorials
 
 S.trControls = S.trControls or {}
@@ -73,6 +74,26 @@ local function normalizeSavedTarget(targetName)
     return WOWTR_DetectAndReplacePlayerName(targetName, targetName)
   end
   return targetName
+end
+
+local function containsArabicForDirection(text)
+  if type(text) ~= "string" or text == "" then
+    return false
+  end
+  if Text and Text.ContainsArabic then
+    local ok, hasArabic = pcall(Text.ContainsArabic, text)
+    if ok then
+      return hasArabic == true
+    end
+  end
+  local fallback = rawget(_G, "AS_ContainsArabic")
+  if type(fallback) == "function" then
+    local ok, hasArabic = pcall(fallback, text)
+    if ok then
+      return hasArabic == true
+    end
+  end
+  return false
 end
 
 local function applyBubbleTranslation(region, sourceText, translatedText)
@@ -457,28 +478,31 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
         if (WOWTR_Localization and WOWTR_Localization.lang ~= 'TR') then
           DEFAULT_CHAT_FRAME:SetFont(WOWTR_Font2, _sizeC, _C)
         end
+        local messageHasArabic = containsArabicForDirection(NewMessage)
+        local shouldRenderRTL = messageHasArabic and (RTL and RTL.IsRTL and RTL.IsRTL())
+        local speakerName = shouldRenderRTL and WOWTR_AnsiReverse(name_NPC) or name_NPC
         if (nr_poz > 0) then
           local fixed_message = ""
           if (nr_poz == 1) then
-            fixed_message = WOWTR_AnsiReverse(name_NPC) .. strsub(NewMessage, 3)
+            fixed_message = speakerName .. strsub(NewMessage, 3)
           else
-            fixed_message = strsub(NewMessage, 1, nr_poz - 1) .. WOWTR_AnsiReverse(name_NPC) .. strsub(NewMessage, nr_poz + 2)
+            fixed_message = strsub(NewMessage, 1, nr_poz - 1) .. speakerName .. strsub(NewMessage, nr_poz + 2)
           end
-          if (RTL and RTL.IsRTL and RTL.IsRTL()) then
+          if shouldRenderRTL then
             local qtrOffset = -10
             if C_AddOns.IsAddOnLoaded("Prat-3.0") then qtrOffset = -50 end
             DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(fixed_message, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
           else
-            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
+            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(fixed_message, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
           end
         elseif (strsub(NewMessage, 1, 2) == "%o") then
           NewMessage = strsub(NewMessage, 3)
           DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(NewMessage:gsub("^%s*", ""), false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
         else
-          if (RTL and RTL.IsRTL and RTL.IsRTL()) then
+          if shouldRenderRTL then
             local qtrOffset = -10
             if C_AddOns.IsAddOnLoaded("Prat-3.0") then qtrOffset = -50 end
-            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo("{r}" .. WOWTR_AnsiReverse(name_NPC) .. ":{cFFFFFFFF} " .. NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
+            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo("{r}" .. speakerName .. ":{cFFFFFFFF} " .. NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
           else
             DEFAULT_CHAT_FRAME:AddMessage(colorText .. "|cCCDDEEFF" .. name_NPC .. ":|r " .. QTR_ExpandUnitInfo(NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -100, true) .. mark_AI)
           end
