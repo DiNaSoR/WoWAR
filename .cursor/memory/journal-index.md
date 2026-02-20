@@ -1,6 +1,6 @@
 # Journal Index (generated)
 
-Generated: 2026-02-13T22:58:29+03:00
+Generated: 2026-02-20T16:42:53+03:00
 
 Format: YYYY-MM-DD | [Tags] | Title | Files
 
@@ -118,10 +118,38 @@ Format: YYYY-MM-DD | [Tags] | Title | Files
 2026-01-24 | [Debug][UI][DX] | Tabbed /wowardebug UI with Settings + Tools tabs | common/UI/DebugToolsUI.lua
 2026-01-25 | [UI][RTL][Text][Fix] | Centered welcome title shaping and narrowed body width | common/UI/Welcome.lua
 2026-01-25 | [UI][RTL][Fonts][Fix] | Tuned welcome bidi width and title font | common/UI/Welcome.lua
+2026-02-13 | [Tools][Reshaper][Update] | Added changelog.lua workflow support and unshaped changelog copy | Tools/index.html, Tools/changelog_Unshaped.lua
+2026-02-13 | [UI][ControlCenter][Preview][Assets] | Added per-setting preview fallback chain and generated wowar-named placeholders | common/Config/ControlCenter/SettingsPanel.lua, Images/ControlCenter/preview_wowar_*.png, Images/ControlCenter/placeholder_temp.png
+2026-02-13 | [UI][ControlCenter][Search][RTL] | Added shaped Arabic preview rendering in search EditBox | common/Config/ControlCenter/SettingsPanel.lua
 2026-02-13 | [Process][DX][Reliability][Fix] | Added tiny vector smoke test script for Mnemo vector layer | scripts/memory/vector-smoke.ps1, scripts/memory/mnemo_vector.py
+2026-02-13 | [UI][ControlCenter][Layout][Fix] | Corrected tab button anchoring so attach offset works | common/Config/ControlCenter/SettingsPanel.lua
 2026-02-13 | [Process][DX] | Enforced mandatory vector-first retrieval policy in Cursor rules | .cursor/rules/01-vector-search.mdc, .cursor/memory/active-context.md
 2026-02-13 | [Process][DX][Reliability] | Enforced post-vector grounding to prevent digest-only answers | .cursor/rules/01-vector-search.mdc, .cursor/memory/active-context.md
 2026-02-13 | [Process][DX][Reliability][Fix] | Fixed Mnemo vector layer runtime compatibility and .env key loading | scripts/memory/mnemo_vector.py, .cursor/mcp.json
+2026-02-13 | [UI][ControlCenter][Search][RTL] | Improved Arabic search matching across localization text forms | common/Config/ControlCenter/Registry.lua
+2026-02-13 | [UI][ControlCenter][Changelog][Typography] | Increased changelog title size and applied Font1 | common/Config/ControlCenter/SettingsPanel.lua
 2026-02-13 | [Process] | Initialized memory system (Memory v3.2.2) | .cursor/memory/*, .cursor/rules/00-memory-system.mdc, scripts/memory/*
+2026-02-13 | [UI][ControlCenter][Changelog][RTL] | Mirrored date divider texture for Arabic layout | common/Config/ControlCenter/SettingsPanel.lua
+2026-02-13 | [UI][ControlCenter][Changelog][Fix] | Prevented enlarged title font from leaking into body bullet lines | common/Config/ControlCenter/SettingsPanel.lua
+2026-02-13 | [UI][Welcome][RTL][Tweak] | Reduced RTL orphan word/swap cases in welcome body text | common/UI/Welcome.lua
+2026-02-13 | [UI][ControlCenter][Layout][Tweak] | Reduced visual gap between panel border and bottom tab strip | common/Config/ControlCenter/SettingsPanel.lua
 2026-02-13 | [Process][DX] | Removed temporary vector smoke script and validated normal vector tool flow | scripts/memory/mnemo_vector.py, .cursor/memory/active-context.md
 2026-02-13 | [Config][DX][Fix] | Resolved LuaLS undefined globals in Config Minimap/State with runtime-safe global lookups | common/Config/Minimap.lua, common/Config/State.lua
+2026-02-13 | [Locale][Changelog][Style] | Reworded latest changelog entry to non-technical player-facing language | common/Locale/changelog.lua, .cursor/memory/memo.md
+2026-02-13 | [Locale][Changelog][Content] | Rewrote pre-2026-02-13 entries in unshaped changelog copy | Tools/changelog_Unshaped.lua
+2026-02-13 | [UI][Welcome][RTL][Fix] | Stabilized `welcomeText` wrapping by setting width before Arabic shaping | common/UI/Welcome.lua
+2026-02-13 | [UI][ControlCenter][RTL][Text] | Switched version label ordering to version-first in Arabic | common/Config/ControlCenter/SettingsPanel.lua
+2026-02-13 | [UI][ControlCenter][Changelog][UX] | Tuned changelog colors to accent-only readability mode | common/Config/ControlCenter/SettingsPanel.lua, .cursor/memory/memo.md
+2026-02-13 | [Locale][Changelog][Update] | Updated latest release notes to match delivered Welcome RTL fixes | common/Locale/changelog.lua
+2026-02-13 | [UI][ControlCenter][Changelog][Fix] | Wired locale changelog `color` field to Release Notes rendering | common/Locale/changelog.lua, common/Config/ControlCenter/Registry.lua, common/Config/ControlCenter/SettingsPanel.lua
+2026-02-18 | [Quests][Rewards][RTL][Fix] | Mirrored receive-label/money anchors so Arabic reward header aligns right | common/Quests/Details.lua
+2026-02-18 | [Quests][Rewards][Reliability][Fix] | Prevented intermittent English `ItemReceiveText` on translated quest pages | common/Quests/Details.lua
+2026-02-18 | [Quests][Rewards][RTL][Fix] | Removed spacer-based reward-label hack that caused money/reward overlap | common/Quests/Details.lua
+2026-02-18 | [Quests][Rewards][RTL][Fix] | Reworked reward label alignment without moving Blizzard reward-row origin | common/Quests/Details.lua
+2026-02-18 | [Quests][Gossip][Fix] | Use questID-based QuestData title fallback for GossipFrame options | common/Quests/Gossip.lua
+2026-02-19 | [Bubbles][Text][Fix] | Prevented `BB_PS` duplication for NPC lines containing player-realm names | common/Text.lua, common/Bubbles/Main.lua
+2026-02-19 | [Bubbles][Architecture][Tweak] | Removed NPC-name hardcoding from honor-speech fallback path | common/Bubbles/Main.lua
+2026-02-20 | [Packaging][CI][Fix] | Aligned GitHub release workflow with root `.toc` addon layout | WoWAR/, WoWPL/, .github/workflows/release.yml
+2026-02-20 | [Packaging][CI][Enhancement] | Hardened release workflow logic and added manual test mode | gh release create/edit/upload --clobber, .github/workflows/release.yml
+2026-02-20 | [Debug][DX][Refactor] | Smart Debug Unification - Regression Checklist | -
+2026-02-20 | [Debug][Refactor][Architecture][DX] | Unified Smart Debug System — full implementation | /wowtrdump, /wowardebug on, /wowardebug off, /wowardebug toggle, /wowardebug status, /wowardebug preset quest-investigation, /wowardebug preset off, /wowardebug help, /wowardebug

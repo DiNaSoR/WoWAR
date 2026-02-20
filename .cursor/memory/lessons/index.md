@@ -1,6 +1,6 @@
 # Lessons Index (generated)
 
-Generated: 2026-02-13T22:58:29+03:00
+Generated: 2026-02-20T16:42:53+03:00
 
 Format: ID | [Tags] | AppliesTo | Rule | File
 
@@ -15,3 +15,4 @@ L-008 | [Tooltips][RTL] | common/Tooltips/** | Apply RTL justification only when
 L-009 | [Config] | common/Config/**, common/Locale/** | Store historical changelog dates as stable data strings (or parsed stable timestamps), never `date()`/`time()` at load/build time. | `L-009-changelog-dates-must-be-data-not-runtime.md`
 L-010 | [Text][RTL][Reliability] | common/Text/**, WoWAR/WoW_Arabic_Reshaper.lua | Ensure all paths in UTF-8 byte-length helpers return a number; for invalid/unexpected bytes return 1. | `L-010-utf8-charbyte-helpers-must-never-return-nil.md`
 L-011 | [Text][RTL] | common/Text/**, WoWAR/WoW_Arabic_Reshaper.lua | For Persian/Urdu extended letters, map to the correct Presentation Forms-A (FB50–FDFF) code points, not Forms-B (FE70–FEFF). | `L-011-persian-urdu-shaping-must-use-presentation-forms-a.md`
+L-012 | [Debug][DX][Architecture] | * | Use /wowardebug preset <name> to switch between off/minimal/quest-investigation/ui-dump/full-trace. Each preset sets Debug.IsEnabled and per-category verbosity levels atomically. Debug.SetPreset() persists to AceDB profile. Never hardcode local debug flags in modules; always gate on WOWTR.Debug.ShouldPrint(category, verbosity). | `L-012-debug-presets-via-wowardebug-preset-name.md`

@@ -2,7 +2,17 @@
 -- Authors: Platine, Dragonarab[DiNaSoR]
 -------------------------------------------------------------------------------------------------------
 
-local CH_on_debug = false;
+-- CH_on_debug has been replaced by the unified WOWTR.Debug gate (chat category, VERBOSE level).
+-- Use /wowardebug on  then  /wowardebug preset quest-investigation  to enable chat diagnostics.
+local function CH_Debug(...)
+  if WOWTR and WOWTR.Debug and WOWTR.Debug.Verbose then
+    WOWTR.Debug.Verbose("chat", ...)
+  end
+end
+local function CH_IsDebug()
+  return WOWTR and WOWTR.Debug and WOWTR.Debug.ShouldPrint
+    and WOWTR.Debug.ShouldPrint("chat", 4)
+end
 -- General Variables
 local CH_ctrFrame = CreateFrame("FRAME", "WoWinArabic-Chat");
 local CH_ED_mode = 0;           -- włączony tryb arabski, wyrównanie do prawej strony
@@ -212,8 +222,7 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, ar
          playerNameOnly = string.sub(playerFullName, 1, poz-1)
       end
 
-      -- Debugging Output 1: Show names being processed
-      if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Processing player:", playerFullName, "| Name for UnitClass:", playerNameOnly) end
+      CH_Debug("Processing player:", playerFullName, "| Name for UnitClass:", playerNameOnly)
 
       -- Try to get the class name and color using pcall for safety
       local success, classNameOrErr = pcall(UnitClass, playerNameOnly);
@@ -221,36 +230,31 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, ar
       local className = success and classNameOrErr or nil
       local classNameUpper = nil -- Variable to hold the uppercase version
 
-      -- Debugging Output 2: Show result of UnitClass
-       if CH_on_debug then
-           if success then
-               print("|cFF00FF00WoWAR Debug:|r UnitClass result for", playerNameOnly, "is:", className or "nil")
-           else
-               print("|cFFFF0000WoWAR Debug:|r UnitClass call failed for", playerNameOnly, ":", tostring(classNameOrErr))
-           end
-       end
+      if CH_IsDebug() then
+        if success then
+          CH_Debug("UnitClass result for", playerNameOnly, "is:", className or "nil")
+        else
+          CH_Debug("UnitClass call FAILED for", playerNameOnly, ":", tostring(classNameOrErr))
+        end
+      end
 
       -- Trim and convert to uppercase if successful
       if success and className then
           className = string.trim(className) -- Trim first
           classNameUpper = string.upper(className) -- Then convert to uppercase
-          if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Trimmed className:", className, "| Uppercase for lookup:", classNameUpper) end
+          CH_Debug("Trimmed className:", className, "| Uppercase for lookup:", classNameUpper)
       end
 
       -- Use the uppercase version for the lookup
       if classNameUpper and RAID_CLASS_COLORS[classNameUpper] then
          -- Class found, use the specific class color
          playerColorStr = RAID_CLASS_COLORS[classNameUpper].colorStr;
-         if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Class color FOUND for", classNameUpper, ": |c"..playerColorStr..playerColorStr.."|r") end
+         CH_Debug("Class color FOUND for", classNameUpper)
       else
-         -- Debugging Output 4: Indicate fallback reason
-         if CH_on_debug then
-            if not classNameUpper then
-               print("|cFF00FF00WoWAR Debug:|r ClassName was nil, failed, or became empty after processing. Using default white.")
-            else
-               -- Print the uppercase name that failed the lookup
-               print("|cFF00FF00WoWAR Debug:|r Uppercase ClassName '", classNameUpper, "' not found in RAID_CLASS_COLORS. Using default white.")
-            end
+         if not classNameUpper then
+           CH_Debug("ClassName was nil/empty after processing — using default white.")
+         else
+           CH_Debug("Uppercase ClassName '", classNameUpper, "' not found in RAID_CLASS_COLORS — using default white.")
          end
       end
 
@@ -258,8 +262,7 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, ar
       -- Note: We still display the original Capitalized playerNameOnly, just use classNameUpper for color lookup
       local playerLink = GetPlayerLink(playerFullName, ("[|c"..playerColorStr.."%s|r]"):format(playerNameOnly), lineID);
 
-      -- Debugging Output 5: Show the final link generated
-      if CH_on_debug then print("|cFF00FF00WoWAR Debug:|r Generated playerLink:", playerLink or "nil") end
+      CH_Debug("Generated playerLink:", playerLink or "nil")
 
       local _fontC, _sizeC, _C = self:GetFont();   -- odczytaj aktualną czcionkę, rozmiar i typ
       -- Font should be handled by hooks/guardian, setting it here might be redundant/cause issues
@@ -908,12 +911,12 @@ local function CH_OnKeyUp(self, key)      -- puszczono klawisz key: sprawdź czy
       CH_BuforLength = 0;
       CH_BuforCursor = 0;
    end
-   if (CH_on_debug) then
+   if CH_IsDebug() then
       local aaa = "";
       for i = 1, CH_BuforLength, 1 do
          aaa = aaa.." "..CH_BuforEditBox[i];
       end
-      print("BuforLength="..CH_BuforLength,"BuforCursor="..CH_BuforCursor,"Data:"..aaa);
+      CH_Debug("BuforLength="..CH_BuforLength,"BuforCursor="..CH_BuforCursor,"Data:"..aaa);
    end
 end
   

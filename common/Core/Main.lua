@@ -3,22 +3,15 @@ local addonName, ns = ...
 ns.Core = ns.Core or {}
 local Core = ns.Core
 
--- Debug system: centralized debug printing that can be toggled
--- Usage: Core.DebugPrint("message", arg1, arg2, ...)
--- Or: WOWTR.DebugPrint("message", arg1, arg2, ...)
--- Or better: WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "message", ...)
+-- Core.DebugPrint routes through the unified WOWTR.Debug system.
+-- Prefer WOWTR.Debug.Normal(WOWTR.Debug.Categories.GENERAL, ...) in new code.
 function Core.DebugPrint(...)
   if WOWTR and WOWTR.Debug and WOWTR.Debug.Normal then
-    -- Use new debug system if available
     WOWTR.Debug.Normal(WOWTR.Debug.Categories.GENERAL, ...)
-  elseif WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debug then
-    -- Fallback to simple debug print
-    local prefix = "|cFF00FF00WOWTR Debug:|r"
-    print(prefix, ...)
   end
 end
 
--- Global wrapper for backward compatibility
+-- Global shim kept for any third-party code that calls WOWTR.DebugPrint directly.
 WOWTR = WOWTR or {}
 WOWTR.DebugPrint = function(...) return Core.DebugPrint(...) end
 
@@ -222,12 +215,68 @@ function Core.OnEvent(self, event, name, ...)
     SLASH_WOWTR_BUBBLES5 = "/btr"
     SLASH_WOWTR_BUBBLES6 = "/str"
 
-    -- Single entrypoint for debug tools UI (clickable dump/clear buttons)
+    -- Smart /wowardebug command router.
+    -- Subcommands: on | off | toggle | status | preset <name> | help
+    -- Default (no args) opens the visual Debug Tools panel.
     SlashCmdList["WOWAR_DEBUG"] = function(msg)
-      if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.Toggle then
-        WOWTR.DebugToolsUI.Toggle()
+      msg = (msg or ""):lower():match("^%s*(.-)%s*$")
+
+      if msg == "on" then
+        if WOWTR and WOWTR.Debug then
+          WOWTR.Debug.SetEnabled(true)
+          local line = WOWTR.Debug.GetStatusLine and WOWTR.Debug.GetStatusLine()
+                    or "|cFF00FF00[WoWAR]|r Debug: |cFF00FF88ON|r"
+          DEFAULT_CHAT_FRAME:AddMessage(line)
+        end
+
+      elseif msg == "off" then
+        if WOWTR and WOWTR.Debug then
+          WOWTR.Debug.SetEnabled(false)
+          DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR]|r Debug: |cFF666666OFF|r")
+        end
+
+      elseif msg == "toggle" then
+        if WOWTR and WOWTR.Debug then
+          local was = WOWTR.Debug.IsEnabled and WOWTR.Debug.IsEnabled()
+          WOWTR.Debug.SetEnabled(not was)
+          if not was then
+            local line = WOWTR.Debug.GetStatusLine and WOWTR.Debug.GetStatusLine()
+                      or "|cFF00FF00[WoWAR]|r Debug: |cFF00FF88ON|r"
+            DEFAULT_CHAT_FRAME:AddMessage(line)
+          else
+            DEFAULT_CHAT_FRAME:AddMessage("|cFF00FF00[WoWAR]|r Debug: |cFF666666OFF|r")
+          end
+        end
+
+      elseif msg == "status" then
+        if WOWTR and WOWTR.Debug and WOWTR.Debug.Status then
+          WOWTR.Debug.Status()
+        else
+          DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug system not available")
+        end
+
+      elseif msg:sub(1, 6) == "preset" then
+        local presetName = msg:sub(8):match("^%s*(.-)%s*$") or ""
+        if WOWTR and WOWTR.Debug and WOWTR.Debug.SetPreset then
+          WOWTR.Debug.SetPreset(presetName ~= "" and presetName or "minimal")
+        end
+
+      elseif msg == "help" or msg == "?" then
+        local h = "|cFF00FF00[WoWAR]|r |cFFFFD700/wowardebug|r commands:"
+        DEFAULT_CHAT_FRAME:AddMessage(h)
+        DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFon|r / |cFF00BFFFoff|r / |cFF00BFFftoggle|r  — enable/disable debug output")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFstatus|r               — show category verbosity levels")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFpreset <name>|r        — apply preset:")
+        DEFAULT_CHAT_FRAME:AddMessage("    |cFF888888off  minimal  quest-investigation  ui-dump  full-trace|r")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFF(no args)|r            — open visual Debug Tools panel")
+
       else
-        DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug UI not available")
+        -- Default: open the UI panel
+        if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.Toggle then
+          WOWTR.DebugToolsUI.Toggle()
+        else
+          DEFAULT_CHAT_FRAME:AddMessage("|cFFFF0000[WoWAR]|r Debug UI not available")
+        end
       end
     end
     SLASH_WOWAR_DEBUG1 = "/wowardebug"
@@ -334,11 +383,6 @@ function Core.OnEvent(self, event, name, ...)
       WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestFrame visible:", QuestFrame and QuestFrame:IsVisible())
       WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "isImmersion:", isImmersion and isImmersion())
       WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "IsDUIQuestFrame:", IsDUIQuestFrame and IsDUIQuestFrame())
-    else
-      WOWTR.DebugPrint("Checking visible quest frames...")
-      WOWTR.DebugPrint("QuestFrame visible:", QuestFrame and QuestFrame:IsVisible())
-      WOWTR.DebugPrint("isImmersion:", isImmersion and isImmersion())
-      WOWTR.DebugPrint("IsDUIQuestFrame:", IsDUIQuestFrame and IsDUIQuestFrame())
     end
     if ((QuestFrame and QuestFrame:IsVisible()) or (isImmersion and isImmersion()) or (IsDUIQuestFrame and IsDUIQuestFrame())) then
       if WOWTR and WOWTR.Debug then

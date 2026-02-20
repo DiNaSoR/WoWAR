@@ -178,5 +178,22 @@
                       ],
         "Rule":  "For Persian/Urdu extended letters, map to the correct Presentation Forms-A (FB50–FDFF) code points, not Forms-B (FE70–FEFF).",
         "File":  "L-011-persian-urdu-shaping-must-use-presentation-forms-a.md"
+    },
+    {
+        "Id":  "L-012",
+        "Num":  12,
+        "Title":  "Debug presets via /wowardebug preset \u003cname\u003e",
+        "Status":  "Active",
+        "Introduced":  "2026-02-20",
+        "Tags":  [
+                     "Debug",
+                     "DX",
+                     "Architecture"
+                 ],
+        "AppliesTo":  [
+                          "*"
+                      ],
+        "Rule":  "Use /wowardebug preset \u003cname\u003e to switch between off/minimal/quest-investigation/ui-dump/full-trace. Each preset sets Debug.IsEnabled and per-category verbosity levels atomically. Debug.SetPreset() persists to AceDB profile. Never hardcode local debug flags in modules; always gate on WOWTR.Debug.ShouldPrint(category, verbosity).",
+        "File":  "L-012-debug-presets-via-wowardebug-preset-name.md"
     }
 ]

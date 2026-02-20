@@ -9,10 +9,10 @@ local Quests = ns.Quests
 Quests.Utils = Quests.Utils or {}
 
 -- Debug print wrapper for quest module
--- Usage: Quests.Utils.DebugPrint("message", arg1, arg2, ...)
+-- Routes through the unified WOWTR.Debug system (quests category, NORMAL verbosity).
 function Quests.Utils.DebugPrint(...)
-  if WOWTR and WOWTR.DebugPrint then
-    WOWTR.DebugPrint(...)
+  if WOWTR and WOWTR.Debug and WOWTR.Debug.Normal then
+    WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, ...)
   end
 end
 

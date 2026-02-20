@@ -3,10 +3,12 @@
 -- Enhanced: Added diacritics, Persian/Urdu support, performance optimizations, and bug fixes
 -------------------------------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------------------------------
--- This variable controls whether or not to show the debug form.
--------------------------------------------------------------------------------------------------------
-local debug_show_form = 0;
+-- debug_show_form has been replaced by the unified WOWTR.Debug gate (general category, VERBOSE level).
+-- Set via /wowardebug preset full-trace  (or  /wowardebug on  +  set general verbosity to 4 in the panel).
+local function RS_IsDebugForm()
+  return WOWTR and WOWTR.Debug and WOWTR.Debug.ShouldPrint
+    and WOWTR.Debug.ShouldPrint("general", 4)
+end
 
 -------------------------------------------------------------------------------------------------------
 -- Arabic Diacritics (Harakat/Tashkeel) - These are combining marks that don't change shape
@@ -997,8 +999,8 @@ function AS_UTF8reverseRS(s, fixNumbers)
                end
             end
             
-            -- Add debug info if enabled
-            if (debug_show_form == 1) then
+            -- Add position prefix when reshaper debug is enabled (general VERBOSE)
+            if RS_IsDebugForm() then
                outputChar = tostring(position) .. outputChar;
             end
             

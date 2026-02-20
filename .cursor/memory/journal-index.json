@@ -1582,5 +1582,370 @@
                       "common/Config/Minimap.lua",
                       "common/Config/State.lua"
                   ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "Welcome",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Stabilized `welcomeText` wrapping by setting width before Arabic shaping",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "Welcome",
+                     "RTL",
+                     "Tweak"
+                 ],
+        "Title":  "Reduced RTL orphan word/swap cases in welcome body text",
+        "Files":  "common/UI/Welcome.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Locale",
+                     "Changelog",
+                     "Update"
+                 ],
+        "Title":  "Updated latest release notes to match delivered Welcome RTL fixes",
+        "Files":  "common/Locale/changelog.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Locale",
+                     "Changelog",
+                     "Style"
+                 ],
+        "Title":  "Reworded latest changelog entry to non-technical player-facing language",
+        "Files":  [
+                      "common/Locale/changelog.lua",
+                      ".cursor/memory/memo.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Tools",
+                     "Reshaper",
+                     "Update"
+                 ],
+        "Title":  "Added changelog.lua workflow support and unshaped changelog copy",
+        "Files":  [
+                      "Tools/index.html",
+                      "Tools/changelog_Unshaped.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "Locale",
+                     "Changelog",
+                     "Content"
+                 ],
+        "Title":  "Rewrote pre-2026-02-13 entries in unshaped changelog copy",
+        "Files":  "Tools/changelog_Unshaped.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Changelog",
+                     "Fix"
+                 ],
+        "Title":  "Wired locale changelog `color` field to Release Notes rendering",
+        "Files":  [
+                      "common/Locale/changelog.lua",
+                      "common/Config/ControlCenter/Registry.lua",
+                      "common/Config/ControlCenter/SettingsPanel.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Changelog",
+                     "UX"
+                 ],
+        "Title":  "Tuned changelog colors to accent-only readability mode",
+        "Files":  [
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      ".cursor/memory/memo.md"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Changelog",
+                     "Typography"
+                 ],
+        "Title":  "Increased changelog title size and applied Font1",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Changelog",
+                     "Fix"
+                 ],
+        "Title":  "Prevented enlarged title font from leaking into body bullet lines",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Changelog",
+                     "RTL"
+                 ],
+        "Title":  "Mirrored date divider texture for Arabic layout",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Layout",
+                     "Tweak"
+                 ],
+        "Title":  "Reduced visual gap between panel border and bottom tab strip",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Layout",
+                     "Fix"
+                 ],
+        "Title":  "Corrected tab button anchoring so attach offset works",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "RTL",
+                     "Text"
+                 ],
+        "Title":  "Switched version label ordering to version-first in Arabic",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Search",
+                     "RTL"
+                 ],
+        "Title":  "Improved Arabic search matching across localization text forms",
+        "Files":  "common/Config/ControlCenter/Registry.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Search",
+                     "RTL"
+                 ],
+        "Title":  "Added shaped Arabic preview rendering in search EditBox",
+        "Files":  "common/Config/ControlCenter/SettingsPanel.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-13",
+        "Tags":  [
+                     "UI",
+                     "ControlCenter",
+                     "Preview",
+                     "Assets"
+                 ],
+        "Title":  "Added per-setting preview fallback chain and generated wowar-named placeholders",
+        "Files":  [
+                      "common/Config/ControlCenter/SettingsPanel.lua",
+                      "Images/ControlCenter/preview_wowar_*.png",
+                      "Images/ControlCenter/placeholder_temp.png"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-18",
+        "Tags":  [
+                     "Quests",
+                     "Gossip",
+                     "Fix"
+                 ],
+        "Title":  "Use questID-based QuestData title fallback for GossipFrame options",
+        "Files":  "common/Quests/Gossip.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-18",
+        "Tags":  [
+                     "Quests",
+                     "Rewards",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Removed spacer-based reward-label hack that caused money/reward overlap",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-18",
+        "Tags":  [
+                     "Quests",
+                     "Rewards",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Mirrored receive-label/money anchors so Arabic reward header aligns right",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-18",
+        "Tags":  [
+                     "Quests",
+                     "Rewards",
+                     "RTL",
+                     "Fix"
+                 ],
+        "Title":  "Reworked reward label alignment without moving Blizzard reward-row origin",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-18",
+        "Tags":  [
+                     "Quests",
+                     "Rewards",
+                     "Reliability",
+                     "Fix"
+                 ],
+        "Title":  "Prevented intermittent English `ItemReceiveText` on translated quest pages",
+        "Files":  "common/Quests/Details.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-19",
+        "Tags":  [
+                     "Bubbles",
+                     "Text",
+                     "Fix"
+                 ],
+        "Title":  "Prevented `BB_PS` duplication for NPC lines containing player-realm names",
+        "Files":  [
+                      "common/Text.lua",
+                      "common/Bubbles/Main.lua"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-19",
+        "Tags":  [
+                     "Bubbles",
+                     "Architecture",
+                     "Tweak"
+                 ],
+        "Title":  "Removed NPC-name hardcoding from honor-speech fallback path",
+        "Files":  "common/Bubbles/Main.lua"
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-20",
+        "Tags":  [
+                     "Packaging",
+                     "CI",
+                     "Fix"
+                 ],
+        "Title":  "Aligned GitHub release workflow with root `.toc` addon layout",
+        "Files":  [
+                      "WoWAR/",
+                      "WoWPL/",
+                      ".github/workflows/release.yml"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-20",
+        "Tags":  [
+                     "Packaging",
+                     "CI",
+                     "Enhancement"
+                 ],
+        "Title":  "Hardened release workflow logic and added manual test mode",
+        "Files":  [
+                      "gh release create/edit/upload --clobber",
+                      ".github/workflows/release.yml"
+                  ]
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-20",
+        "Tags":  [
+                     "Debug",
+                     "DX",
+                     "Refactor"
+                 ],
+        "Title":  "Smart Debug Unification - Regression Checklist",
+        "Files":  {
+
+                  }
+    },
+    {
+        "MonthFile":  "2026-02.md",
+        "Date":  "2026-02-20",
+        "Tags":  [
+                     "Debug",
+                     "Refactor",
+                     "Architecture",
+                     "DX"
+                 ],
+        "Title":  "Unified Smart Debug System — full implementation",
+        "Files":  [
+                      "/wowtrdump",
+                      "/wowardebug on",
+                      "/wowardebug off",
+                      "/wowardebug toggle",
+                      "/wowardebug status",
+                      "/wowardebug preset quest-investigation",
+                      "/wowardebug preset off",
+                      "/wowardebug help",
+                      "/wowardebug"
+                  ]
     }
 ]

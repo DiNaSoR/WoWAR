@@ -625,29 +625,16 @@ function Quests.Details.TranslateOn(typ,event)
          end
          
          -- Check which panels are visible
-         if QuestFrame then
-            if WOWTR and WOWTR.Debug then
-              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
-              if QuestFrame.DetailPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
-              end
-              if QuestFrame.ProgressPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
-              end
-              if QuestFrame.RewardPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
-              end
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
-              if QuestFrame.DetailPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
-              end
-              if QuestFrame.ProgressPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
-              end
-              if QuestFrame.RewardPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
-              end
+         if QuestFrame and WOWTR and WOWTR.Debug then
+            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
+            if QuestFrame.DetailPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
+            end
+            if QuestFrame.ProgressPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
+            end
+            if QuestFrame.RewardPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
             end
          end
          
@@ -656,23 +643,16 @@ function Quests.Details.TranslateOn(typ,event)
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText visible:", QuestInfoDescriptionText:IsVisible())
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText parent visible:", QuestInfoDescriptionText:GetParent() and QuestInfoDescriptionText:GetParent():IsVisible())
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText visible:", QuestInfoDescriptionText:IsVisible())
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText parent visible:", QuestInfoDescriptionText:GetParent() and QuestInfoDescriptionText:GetParent():IsVisible())
             end
             local currentText = QuestInfoDescriptionText:GetText()
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText current text length:", currentText and string.len(currentText) or 0)
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText current text length:", currentText and string.len(currentText) or 0)
             end
             
             -- If text field is hidden, try to show it and its parent
             if not QuestInfoDescriptionText:IsVisible() then
                if WOWTR and WOWTR.Debug then
                  WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText is hidden, attempting to show...")
-               else
-                 WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText is hidden, attempting to show...")
                end
                if QuestInfoDescriptionText.Show then QuestInfoDescriptionText:Show() end
                local parent = QuestInfoDescriptionText:GetParent()
@@ -680,8 +660,6 @@ function Quests.Details.TranslateOn(typ,event)
                   parent:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed parent of QuestInfoDescriptionText")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed parent of QuestInfoDescriptionText")
                   end
                end
                -- Try showing DetailPanel if it exists
@@ -689,8 +667,6 @@ function Quests.Details.TranslateOn(typ,event)
                   QuestFrame.DetailPanel:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed QuestFrame.DetailPanel")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed QuestFrame.DetailPanel")
                   end
                end
             end
@@ -699,23 +675,16 @@ function Quests.Details.TranslateOn(typ,event)
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText visible:", QuestInfoObjectivesText:IsVisible())
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText parent visible:", QuestInfoObjectivesText:GetParent() and QuestInfoObjectivesText:GetParent():IsVisible())
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText visible:", QuestInfoObjectivesText:IsVisible())
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText parent visible:", QuestInfoObjectivesText:GetParent() and QuestInfoObjectivesText:GetParent():IsVisible())
             end
             local currentText = QuestInfoObjectivesText:GetText()
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText current text length:", currentText and string.len(currentText) or 0)
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText current text length:", currentText and string.len(currentText) or 0)
             end
             
             -- If text field is hidden, try to show it
             if not QuestInfoObjectivesText:IsVisible() then
                if WOWTR and WOWTR.Debug then
                  WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText is hidden, attempting to show...")
-               else
-                 WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText is hidden, attempting to show...")
                end
                if QuestInfoObjectivesText.Show then QuestInfoObjectivesText:Show() end
                local parent = QuestInfoObjectivesText:GetParent()
@@ -723,8 +692,6 @@ function Quests.Details.TranslateOn(typ,event)
                   parent:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed parent of QuestInfoObjectivesText")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed parent of QuestInfoObjectivesText")
                   end
                end
             end
@@ -735,8 +702,6 @@ function Quests.Details.TranslateOn(typ,event)
          if QuestInfoDescriptionText and not QuestInfoDescriptionText:IsVisible() then
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText is hidden, showing it...")
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText is hidden, showing it...")
             end
             if QuestInfoDescriptionText.Show then QuestInfoDescriptionText:Show() end
             local parent = QuestInfoDescriptionText:GetParent()
@@ -749,8 +714,6 @@ function Quests.Details.TranslateOn(typ,event)
          if QuestInfoObjectivesText and not QuestInfoObjectivesText:IsVisible() then
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText is hidden, showing it...")
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText is hidden, showing it...")
             end
             if QuestInfoObjectivesText.Show then QuestInfoObjectivesText:Show() end
             local parent = QuestInfoObjectivesText:GetParent()
@@ -762,8 +725,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestInfoDescriptionText:SetJustifyH("RIGHT") else QuestInfoDescriptionText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Description text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Description text set")
             end
          end
          if QuestInfoObjectivesText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].objectives then
@@ -771,8 +732,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestInfoObjectivesText:SetJustifyH("RIGHT") else QuestInfoObjectivesText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Objectives text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Objectives text set")
             end
          end
          if QuestProgressText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].progress then
@@ -780,8 +739,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestProgressText:SetJustifyH("RIGHT") else QuestProgressText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Progress text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Progress text set")
             end
          end
          if QuestInfoRewardText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].completion then
@@ -792,14 +749,10 @@ function Quests.Details.TranslateOn(typ,event)
             end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Reward text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Reward text set")
             end
          end
          if WOWTR and WOWTR.Debug then
            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: All quest text set successfully")
-         else
-           WOWTR.DebugPrint("TranslateOn: All quest text set successfully")
          end
          
          -- Set fonts immediately (these shouldn't conflict)
@@ -1747,7 +1700,7 @@ function Quests.Details.QuestPrepare(event)
     if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Disable() end
     
     -- Capture quest text data even when active is off (needed for display)
-    WOWTR.DebugPrint("QuestPrepare: Capturing quest text...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Capturing quest text...") end
     if (not QTR_quest_EN[QTR_quest_ID].title) then
       local apiTitle = (GetTitleText and GetTitleText()) or ""
       local headerTitle = (QuestInfoTitleHeader and QuestInfoTitleHeader.GetText and QuestInfoTitleHeader:GetText()) or ""
@@ -1759,25 +1712,27 @@ function Quests.Details.QuestPrepare(event)
       end
       if chosen == "" then chosen = headerTitle end
       QTR_quest_EN[QTR_quest_ID].title = chosen
-      WOWTR.DebugPrint("QuestPrepare: Captured title:", QTR_quest_EN[QTR_quest_ID].title and string.len(QTR_quest_EN[QTR_quest_ID].title) or 0, "chars")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured title:", QTR_quest_EN[QTR_quest_ID].title and string.len(QTR_quest_EN[QTR_quest_ID].title) or 0, "chars") end
     end
     
     if (event == "QUEST_DETAIL") then
       if (not QTR_quest_EN[QTR_quest_ID].details) then
         QTR_quest_EN[QTR_quest_ID].details = GetQuestText() or ""
         QTR_quest_EN[QTR_quest_ID].objectives = GetObjectiveText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured details:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
-        WOWTR.DebugPrint("QuestPrepare: Captured objectives:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        if WOWTR and WOWTR.Debug then
+          WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured details:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
+          WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured objectives:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        end
       end
     elseif QuestInfoDescriptionText and QuestInfoDescriptionText.GetText then
       -- For map quest panel or other events, read from visible frames
       if (not QTR_quest_EN[QTR_quest_ID].details) then
         QTR_quest_EN[QTR_quest_ID].details = QuestInfoDescriptionText:GetText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured details from frame:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
+        if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured details from frame:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars") end
       end
       if (not QTR_quest_EN[QTR_quest_ID].objectives and QuestInfoObjectivesText and QuestInfoObjectivesText.GetText) then
         QTR_quest_EN[QTR_quest_ID].objectives = QuestInfoObjectivesText:GetText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured objectives from frame:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured objectives from frame:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars") end
       end
     end
     
@@ -1786,16 +1741,16 @@ function Quests.Details.QuestPrepare(event)
     QTR_quest_EN[QTR_quest_ID].itemreceive = QTR_quest_EN[QTR_quest_ID].itemreceive or QTR_MessOrig.itemreceiv0
     
     -- Save quest data even when active is off (so we have it if user re-enables)
-    WOWTR.DebugPrint("QuestPrepare: Saving quest data...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Saving quest data...") end
     QTR_SaveQuest(event)
     
     -- Ensure quest is displayed in English (not translated)
-    WOWTR.DebugPrint("QuestPrepare: Calling QTR_Translate_Off...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Calling QTR_Translate_Off...") end
     if QTR_Translate_Off then
       QTR_Translate_Off(1, "__keep_state__")
-      WOWTR.DebugPrint("QuestPrepare: QTR_Translate_Off completed")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: QTR_Translate_Off completed") end
     else
-      WOWTR.DebugPrint("QuestPrepare: ERROR - QTR_Translate_Off is nil!")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Error(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: QTR_Translate_Off is nil!") end
     end
     
     -- Handle Immersion frame if visible

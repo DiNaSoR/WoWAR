@@ -980,239 +980,287 @@ end
 
 -- Debug categories
 Debug.Categories = {
-  QUESTS = "quests",
-  GOSSIP = "gossip",
+  QUESTS   = "quests",
+  GOSSIP   = "gossip",
   TOOLTIPS = "tooltips",
-  BOOKS = "books",
-  MOVIES = "movies",
-  BUBBLES = "bubbles",
-  CHAT = "chat",
-  CONFIG = "config",
-  GENERAL = "general",
+  BOOKS    = "books",
+  MOVIES   = "movies",
+  BUBBLES  = "bubbles",
+  CHAT     = "chat",
+  CONFIG   = "config",
+  GENERAL  = "general",
 }
 
 -- Verbosity levels
 Debug.Verbosity = {
-  NONE = 0,      -- No debug output
-  ERRORS = 1,    -- Only errors
-  MINIMAL = 2,   -- Key events only
-  NORMAL = 3,    -- Standard debugging
-  VERBOSE = 4,   -- Everything including detailed state
+  NONE    = 0,
+  ERRORS  = 1,
+  MINIMAL = 2,
+  NORMAL  = 3,
+  VERBOSE = 4,
 }
+
+-- ============================================================
+-- Visual badge system (WoW-safe, chat-renderable)
+-- Category 3-letter badges keep output compact and scannable.
+-- Severity icons use stable Blizzard raid-frame textures that
+-- have shipped in every version since WotLK.
+-- ============================================================
+local RESET  = "|r"
+local PREFIX = "|cFF00FF00[WoWAR]" .. RESET
+
+-- Per-category badge: 3-letter tag + colour
+local _catBadge = {
+  quests   = { tag = "QST", color = "|cFF4DB8FF" },
+  gossip   = { tag = "GSP", color = "|cFFFF9EC7" },
+  tooltips = { tag = "TIP", color = "|cFFBB80FF" },
+  books    = { tag = "BKS", color = "|cFFFFB347" },
+  movies   = { tag = "MOV", color = "|cFF5AE55A" },
+  bubbles  = { tag = "BBL", color = "|cFF87CEEB" },
+  chat     = { tag = "CHT", color = "|cFFFFD700" },
+  config   = { tag = "CFG", color = "|cFFDDA0DD" },
+  general  = { tag = "GEN", color = "|cFFFFFFFF" },
+}
+
+-- Per-verbosity severity badge
+-- Texture paths: ReadyCheck-Ready/Waiting/NotReady are present in every WoW client.
+local _sevBadge = {
+  [1] = { icon = "|TInterface\\RaidFrame\\ReadyCheck-NotReady:12:12:0:0|t", label = "ERR", color = "|cFFFF4444" },
+  [2] = { icon = "|TInterface\\RaidFrame\\ReadyCheck-Waiting:12:12:0:0|t",  label = "MIN", color = "|cFFFFAA00" },
+  [3] = { icon = "|TInterface\\RaidFrame\\ReadyCheck-Ready:12:12:0:0|t",    label = "INF", color = "|cFF00FF88" },
+  [4] = { icon = "",                                                          label = "VRB", color = "|cFF9999FF" },
+}
+
+-- Verbosity display names used by Status() and the UI
+local _verbosityNames  = { [0]="OFF", [1]="ERR", [2]="MIN", [3]="INF", [4]="VRB" }
+local _verbosityColors = { [0]="|cFF666666", [1]="|cFFFF4444", [2]="|cFFFFAA00", [3]="|cFF00FF88", [4]="|cFF9999FF" }
 
 -- Default settings
 local defaultCategoryLevel = Debug.Verbosity.NORMAL
-local categoryLevels = {}
+local categoryLevels       = {}
 -- Per-message dedupe for VERBOSE spam (e.g., post-layout tickers).
 local _verboseDedupeLast = {}
 
--- Initialize category levels from config or defaults
+-- ============================================================
+-- Helpers
+-- ============================================================
+local function _fmtVal(v)
+  if type(v) == "boolean" then
+    return v and ("|cFF00FF88true" .. RESET) or ("|cFFFF4444false" .. RESET)
+  elseif type(v) == "number" then
+    return "|cFFFFD700" .. tostring(v) .. RESET
+  elseif v == nil then
+    return "|cFFFFAA00nil" .. RESET
+  end
+  return tostring(v)
+end
+
+-- Highlight bare numeric IDs (>100) that are not already colour-coded.
+local function _highlightIds(msg)
+  return (msg:gsub("([^|])(%d%d%d+)", function(pre, num)
+    if tonumber(num) and tonumber(num) > 100 then
+      return pre .. "|cFFFFD700" .. num .. RESET
+    end
+    return pre .. num
+  end))
+end
+
+-- ============================================================
+-- Initialization & global enable/disable
+-- ============================================================
 function Debug.Initialize()
   if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
-    -- Load category levels from config if they exist
     local debugConfig = WOWTR.db.profile.core.debugConfig or {}
-    for categoryKey, categoryValue in pairs(Debug.Categories) do
-      -- Store using the category VALUE (lowercase string like "quests") to match what's passed to ShouldPrint
-      -- Config also uses lowercase keys, so this matches both
-      categoryLevels[categoryValue] = debugConfig[categoryValue] or defaultCategoryLevel
+    for _, v in pairs(Debug.Categories) do
+      categoryLevels[v] = debugConfig[v] or defaultCategoryLevel
     end
   else
-    -- Set defaults
-    for categoryKey, categoryValue in pairs(Debug.Categories) do
-      categoryLevels[categoryValue] = defaultCategoryLevel
+    for _, v in pairs(Debug.Categories) do
+      categoryLevels[v] = defaultCategoryLevel
     end
   end
 end
 
--- Check if debug is enabled globally
 function Debug.IsEnabled()
   return WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debug or false
 end
 
--- Check if a category should output at given verbosity
+-- Enable or disable debug globally, then sync the UI if visible.
+function Debug.SetEnabled(state)
+  if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
+    WOWTR.db.profile.core.debug = state and true or false
+  end
+  Debug.Initialize()
+  if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.UpdateSettings then
+    WOWTR.DebugToolsUI.UpdateSettings()
+  end
+end
+
 function Debug.ShouldPrint(category, verbosity)
   if not Debug.IsEnabled() then return false end
-  -- Category is passed as the VALUE (e.g., "quests"), so look it up directly
   local categoryLevel = categoryLevels[category] or defaultCategoryLevel
   return verbosity <= categoryLevel
 end
 
--- Color codes for different message types
-local Colors = {
-  PREFIX = "|cFF00FF00",      -- Green for "WOWTR Debug:"
-  SUCCESS = "|cFF00FF00",     -- Green for success messages
-  ERROR = "|cFFFF0000",       -- Red for errors
-  WARNING = "|cFFFFFF00",     -- Yellow for warnings
-  INFO = "|cFF00BFFF",        -- Blue for info
-  VALUE = "|cFFFFD700",       -- Gold for important values (IDs, numbers)
-  BOOLEAN_TRUE = "|cFF00FF00", -- Green for true
-  BOOLEAN_FALSE = "|cFFFF0000", -- Red for false
-  RESET = "|r",
+-- ============================================================
+-- Smart Presets
+-- ============================================================
+Debug.Presets = {
+  off = { enabled = false },
+  minimal = {
+    enabled = true,
+    categories = { quests=2, gossip=2, tooltips=2, books=2, movies=2, bubbles=2, chat=2, config=2, general=2 },
+  },
+  ["quest-investigation"] = {
+    enabled = true,
+    categories = { quests=4, gossip=4, tooltips=2, books=1, movies=1, bubbles=1, chat=2, config=2, general=2 },
+  },
+  ["ui-dump"] = {
+    enabled = true,
+    categories = { quests=2, gossip=2, tooltips=4, books=4, movies=2, bubbles=4, chat=2, config=2, general=4 },
+  },
+  ["full-trace"] = {
+    enabled = true,
+    categories = { quests=4, gossip=4, tooltips=4, books=4, movies=4, bubbles=4, chat=4, config=4, general=4 },
+  },
 }
 
--- Category colors
-local CategoryColors = {
-  quests = "|cFF00BFFF",     -- Blue
-  gossip = "|cFFFF69B4",     -- Pink
-  tooltips = "|cFF9370DB",   -- Purple
-  books = "|cFFFFA500",      -- Orange
-  movies = "|cFF32CD32",      -- Lime
-  bubbles = "|cFF87CEEB",    -- Sky Blue
-  chat = "|cFFFFD700",       -- Gold
-  config = "|cFFDDA0DD",     -- Plum
-  general = "|cFFFFFFFF",    -- White
-}
-
--- Detect message type and apply appropriate color
-local function GetMessageColor(message)
-  -- Check for success indicators
-  if string.find(message, "%[OK%]") or string.find(message, "FOUND") or string.find(message, "completed") or string.find(message, "successfully") then
-    return Colors.SUCCESS
+-- Apply a named preset, persist to the saved profile, and reinitialise.
+function Debug.SetPreset(name)
+  local preset = Debug.Presets[name]
+  if not preset then
+    local msg = PREFIX .. " |cFFFF4444Unknown preset:|r " .. tostring(name)
+              .. " |cFF888888(valid: off  minimal  quest-investigation  ui-dump  full-trace)|r"
+    if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage(msg) end
+    return false
   end
-  -- Check for error indicators
-  if string.find(message, "%[X%]") or string.find(message, "ERROR") or string.find(message, "failed") or string.find(message, "No translation") or string.find(message, "not found") then
-    return Colors.ERROR
+  if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
+    local core = WOWTR.db.profile.core
+    if preset.enabled ~= nil then core.debug = preset.enabled end
+    if preset.categories then
+      core.debugConfig = core.debugConfig or {}
+      for k, v in pairs(preset.categories) do core.debugConfig[k] = v end
+    end
   end
-  -- Check for warnings/skips
-  if string.find(message, "SKIP") or string.find(message, "skipping") or string.find(message, "WARNING") then
-    return Colors.WARNING
+  Debug.Initialize()
+  if WOWTR and WOWTR.DebugToolsUI and WOWTR.DebugToolsUI.UpdateSettings then
+    WOWTR.DebugToolsUI.UpdateSettings()
   end
-  -- Default to info color
-  return Colors.INFO
+  local badge = Debug.IsEnabled() and ("|cFF00FF88[ON]" .. RESET) or ("|cFF666666[OFF]" .. RESET)
+  if DEFAULT_CHAT_FRAME then
+    DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. " Preset |cFFFFD700" .. name .. RESET .. " applied " .. badge)
+  end
+  return true
 end
 
--- Format values with colors
-local function FormatValue(value)
-  if type(value) == "boolean" then
-    if value then
-      return Colors.BOOLEAN_TRUE .. "true" .. Colors.RESET
-    else
-      return Colors.BOOLEAN_FALSE .. "false" .. Colors.RESET
+-- ============================================================
+-- Status helpers
+-- ============================================================
+
+-- Compact one-liner suitable for chat (used by the slash router).
+function Debug.GetStatusLine()
+  local enabled = Debug.IsEnabled()
+  local onoff = enabled and ("|cFF00FF88ON" .. RESET) or ("|cFF666666OFF" .. RESET)
+  if not enabled then return PREFIX .. " Debug: " .. onoff end
+  local parts = {}
+  for _, cat in ipairs({ "quests","gossip","tooltips","books","movies","bubbles","chat","config","general" }) do
+    local lvl   = categoryLevels[cat] or 0
+    local badge = _catBadge[cat]
+    if badge and lvl > 0 then
+      local lc = _verbosityColors[lvl] or "|cFF888888"
+      parts[#parts+1] = badge.color .. badge.tag .. RESET .. ":" .. lc .. _verbosityNames[lvl] .. RESET
     end
-  elseif type(value) == "number" then
-    return Colors.VALUE .. tostring(value) .. Colors.RESET
-  elseif value == nil then
-    return Colors.WARNING .. "nil" .. Colors.RESET
-  else
-    return tostring(value)
   end
+  local catLine = #parts > 0 and (" | " .. table.concat(parts, "  ")) or (" | |cFF666666(all OFF)" .. RESET)
+  return PREFIX .. " Debug: " .. onoff .. catLine
 end
 
--- Highlight quest IDs and important numbers in the message
-local function HighlightImportantValues(message)
-  -- Highlight quest IDs (numbers after "quest" or "Quest ID:")
-  message = string.gsub(message, "(quest%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  message = string.gsub(message, "(Quest%s+ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  message = string.gsub(message, "(QTR_quest_ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  -- Highlight standalone large numbers (likely IDs) - but avoid double-coloring
-  -- Only highlight numbers that aren't already part of a colored section
-  message = string.gsub(message, "([^|])(%d%d%d+)", function(prefix, num)
-    -- Skip if this number is already colored or part of a pattern we've already handled
-    if string.find(prefix, Colors.VALUE) or string.find(prefix, Colors.RESET) then
-      return prefix .. num
+-- Full status report printed to chat.
+function Debug.Status()
+  local enabled = Debug.IsEnabled()
+  local CF = DEFAULT_CHAT_FRAME
+  if not CF then return end
+  CF:AddMessage(PREFIX .. " |cFFFFD700=== WoWAR Debug Status ===" .. RESET)
+  local onoff = enabled and ("|cFF00FF88● ENABLED" .. RESET) or ("|cFF666666○ DISABLED" .. RESET)
+  CF:AddMessage("  Master:  " .. onoff)
+  if enabled then
+    CF:AddMessage("  |cFF888888Categories:|r")
+    for _, cat in ipairs({ "quests","gossip","tooltips","books","movies","bubbles","chat","config","general" }) do
+      local lvl   = categoryLevels[cat] or 0
+      local badge = _catBadge[cat]
+      if badge then
+        local lc  = _verbosityColors[lvl] or "|cFF888888"
+        local bar = ""
+        for i = 1, 4 do
+          bar = bar .. (i <= lvl and ("|cFF00FF88█" .. RESET) or ("|cFF333333░" .. RESET))
+        end
+        CF:AddMessage("    " .. badge.color .. "[" .. badge.tag .. "]" .. RESET
+                      .. "  " .. lc .. (_verbosityNames[lvl] or "?") .. RESET .. "  " .. bar)
+      end
     end
-    if tonumber(num) and tonumber(num) > 100 then -- Likely an ID
-      return prefix .. Colors.VALUE .. num .. Colors.RESET
-    end
-    return prefix .. num
-  end)
-  return message
+  end
+  CF:AddMessage("  |cFF888888Presets: off  minimal  quest-investigation  ui-dump  full-trace|r")
+  CF:AddMessage("  |cFF888888/wowardebug <on|off|toggle|status|preset <name>>|r")
 end
 
+-- ============================================================
 -- Main debug print function
--- Usage: Debug.Print(Debug.Categories.QUESTS, Debug.Verbosity.NORMAL, "message", arg1, arg2, ...)
+-- Format: [WoWAR] [CAT] <severity-icon> message
+-- ============================================================
 function Debug.Print(category, verbosity, ...)
   if not Debug.ShouldPrint(category, verbosity) then return end
-  
-  local prefix = Colors.PREFIX .. "WOWTR Debug:" .. Colors.RESET
-  local categoryName = category or "general"
-  local categoryColor = CategoryColors[categoryName] or Colors.INFO
-  
-  -- Format the message with category prefix
-  local args = {...}
-  -- Convert all arguments to strings with color formatting
-  local stringArgs = {}
+
+  local catName = category or "general"
+  local badge   = _catBadge[catName]
+  local catTag  = badge
+    and (badge.color .. "[" .. badge.tag .. "]" .. RESET)
+    or  ("|cFFFFFFFF[" .. string.upper(catName) .. "]" .. RESET)
+  local sev = _sevBadge[verbosity] or _sevBadge[3]
+
+  -- Build message string from varargs
+  local args = { ... }
+  local parts = {}
   for i = 1, #args do
-    local arg = args[i]
-    if arg == nil then
-      stringArgs[i] = Colors.WARNING .. "nil" .. Colors.RESET
-    elseif type(arg) == "boolean" then
-      stringArgs[i] = FormatValue(arg)
-    elseif type(arg) == "number" then
-      stringArgs[i] = FormatValue(arg)
-    elseif type(arg) == "string" then
-      stringArgs[i] = arg
+    local a = args[i]
+    if a == nil or type(a) == "boolean" or type(a) == "number" then
+      parts[i] = _fmtVal(a)
     else
-      stringArgs[i] = tostring(arg)
+      parts[i] = tostring(a)
     end
   end
-  local message = table.concat(stringArgs, " ")
+  local message = table.concat(parts, " ")
 
-  -- Guard against rapid VERBOSE spam: suppress identical messages repeated in a short window.
-  -- This keeps VERBOSE useful for tracing while avoiding floods caused by tickers/hook churn.
+  -- Guard rapid VERBOSE spam: keep one copy per ~0.35 s per (category+message) key.
   if verbosity == Debug.Verbosity.VERBOSE then
     local now = (GetTime and GetTime()) or 0
-    local key = tostring(categoryName) .. "\n" .. message
+    local key = catName .. "\n" .. message
     local last = _verboseDedupeLast[key]
-    -- Post-layout refresh tickers can run at ~0.08s; keep one copy per ~0.35s.
-    if last and (now - last) < 0.35 then
-      return
-    end
+    if last and (now - last) < 0.35 then return end
     _verboseDedupeLast[key] = now
   end
-  
-  -- Add category tag if not already present at the start
-  -- Check if message starts with [CATEGORY] pattern, not just any [
-  if not string.match(message, "^%[[A-Z]+%]") then
-    message = categoryColor .. "[" .. string.upper(categoryName) .. "]" .. Colors.RESET .. " " .. message
-  else
-    -- Replace existing category tag with colored version
-    message = string.gsub(message, "^%[([A-Z]+)%]", categoryColor .. "[%1]" .. Colors.RESET)
+
+  -- Highlight bare numeric IDs only when message has no existing colour codes.
+  if not message:find("|c") then
+    message = _highlightIds(message)
   end
-  
-  -- Check if message already has color codes (like red [X] messages)
-  local hasColorCodes = string.find(message, "|c")
-  
-  -- Highlight important values in the message (before applying message color)
-  if not hasColorCodes then
-    message = HighlightImportantValues(message)
-  end
-  
-  -- Detect message type and apply color
-  local messageColor = GetMessageColor(message)
-  
-  -- Apply message color to the main message (but preserve existing color codes)
-  -- Only apply if message doesn't already have color codes
-  if not hasColorCodes then
-    message = messageColor .. message .. Colors.RESET
-  end
-  
-  print(prefix, message)
+
+  -- Compose final line: PREFIX  [CAT]  <icon>  message
+  local icon = (sev.icon ~= "") and (sev.icon .. " ") or (sev.color .. "[" .. sev.label .. "]" .. RESET .. " ")
+  print(PREFIX .. " " .. catTag .. " " .. icon .. message)
 end
 
--- Convenience functions for each verbosity level
-function Debug.Error(category, ...)
-  Debug.Print(category, Debug.Verbosity.ERRORS, ...)
-end
-
-function Debug.Minimal(category, ...)
-  Debug.Print(category, Debug.Verbosity.MINIMAL, ...)
-end
-
-function Debug.Normal(category, ...)
-  Debug.Print(category, Debug.Verbosity.NORMAL, ...)
-end
-
-function Debug.Verbose(category, ...)
-  Debug.Print(category, Debug.Verbosity.VERBOSE, ...)
-end
+-- Convenience wrappers
+function Debug.Error(category, ...)   Debug.Print(category, Debug.Verbosity.ERRORS, ...) end
+function Debug.Minimal(category, ...) Debug.Print(category, Debug.Verbosity.MINIMAL, ...) end
+function Debug.Normal(category, ...)  Debug.Print(category, Debug.Verbosity.NORMAL, ...) end
+function Debug.Verbose(category, ...) Debug.Print(category, Debug.Verbosity.VERBOSE, ...) end
 
 -- Function entry/exit tracking
 local functionStack = {}
 
 function Debug.Enter(functionName, category, ...)
   if not Debug.ShouldPrint(category or Debug.Categories.GENERAL, Debug.Verbosity.VERBOSE) then return end
-  table.insert(functionStack, {name = functionName, time = GetTime()})
+  table.insert(functionStack, { name = functionName, time = GetTime() })
   Debug.Verbose(category or Debug.Categories.GENERAL, ">>>", functionName, "START", ...)
 end
 
@@ -1227,15 +1275,15 @@ function Debug.Exit(functionName, category, ...)
   end
 end
 
--- Group related prints together (suppresses intermediate prints if same quest/object)
-local lastGroupKey = nil
+-- Group related prints together (suppresses identical key repeats).
+local lastGroupKey    = nil
 local groupSuppressCount = 0
 
 function Debug.GroupStart(key, category, verbosity, ...)
   if not Debug.ShouldPrint(category or Debug.Categories.GENERAL, verbosity or Debug.Verbosity.NORMAL) then return end
   if lastGroupKey == key then
     groupSuppressCount = groupSuppressCount + 1
-    return false -- Suppress this print
+    return false
   else
     lastGroupKey = key
     groupSuppressCount = 0

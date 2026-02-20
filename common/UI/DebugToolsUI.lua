@@ -1,71 +1,94 @@
 -- Debug Tools UI (floating helper panel with tabs)
--- Provides debug toggles and dump/clear commands
--- Open with /wowardebug
+-- Open with /wowardebug (no args)  or  /wowardebug toggle
+-- Tab 1: Debug Settings  —  master toggle, per-category verbosity (< N >), presets
+-- Tab 2: Dump Tools      —  UI dump, log-clear, /reload
 
 WOWTR = WOWTR or {}
 WOWTR.DebugToolsUI = WOWTR.DebugToolsUI or {}
-
 local UI = WOWTR.DebugToolsUI
 
--- Debug categories definition
-local categories = {
-  { key = "quests", label = "Quests" },
-  { key = "gossip", label = "Gossip" },
-  { key = "tooltips", label = "Tooltips" },
-  { key = "books", label = "Books" },
-  { key = "movies", label = "Movies" },
-  { key = "bubbles", label = "Bubbles" },
-  { key = "chat", label = "Chat" },
-  { key = "config", label = "Config" },
-  { key = "general", label = "General" },
+local RESET   = "|r"
+local C_GREEN = "|cFF00FF88"
+local C_RED   = "|cFFFF4444"
+local C_GOLD  = "|cFFFFD700"
+local C_GREY  = "|cFF666666"
+local C_BLUE  = "|cFF00BFFF"
+
+-- Verbosity meta-data (mirrors Debug.lua _verbosityNames / _verbosityColors)
+local VerbMeta = {
+  { level = 0, name = "OFF", color = { 0.40, 0.40, 0.40 } },
+  { level = 1, name = "ERR", color = { 1.00, 0.27, 0.27 } },
+  { level = 2, name = "MIN", color = { 1.00, 0.67, 0.00 } },
+  { level = 3, name = "INF", color = { 0.00, 1.00, 0.53 } },
+  { level = 4, name = "VRB", color = { 0.60, 0.60, 1.00 } },
 }
 
+-- Category display order, 3-letter tags, and colours (match Debug.lua _catBadge)
+local Categories = {
+  { key = "quests",   tag = "QST", label = "Quests",   r=0.30, g=0.72, b=1.00 },
+  { key = "gossip",   tag = "GSP", label = "Gossip",   r=1.00, g=0.62, b=0.78 },
+  { key = "tooltips", tag = "TIP", label = "Tooltips", r=0.73, g=0.50, b=1.00 },
+  { key = "books",    tag = "BKS", label = "Books",    r=1.00, g=0.70, b=0.28 },
+  { key = "movies",   tag = "MOV", label = "Movies",   r=0.35, g=0.90, b=0.35 },
+  { key = "bubbles",  tag = "BBL", label = "Bubbles",  r=0.53, g=0.81, b=0.92 },
+  { key = "chat",     tag = "CHT", label = "Chat",     r=1.00, g=0.84, b=0.00 },
+  { key = "config",   tag = "CFG", label = "Config",   r=0.87, g=0.63, b=0.87 },
+  { key = "general",  tag = "GEN", label = "General",  r=1.00, g=1.00, b=1.00 },
+}
+
+local Presets = {
+  { key = "off",                  label = "Off"    },
+  { key = "minimal",              label = "Min"    },
+  { key = "quest-investigation",  label = "Quest"  },
+  { key = "ui-dump",              label = "UI Dump"},
+  { key = "full-trace",           label = "Full"   },
+}
+
+-- -------------------------------------------------------
+-- Apply WOWTR_Font2 to a FontString so Unicode block glyphs
+-- (█ ░) and Arabic-capable characters render correctly.
+-- WOWTR_Font2 is set by AR.lua before UI.CreateFrame() is ever called.
+local function _setF2(fs, size, flags)
+  local path = rawget(_G, "WOWTR_Font2")
+  if path and fs and fs.SetFont then
+    fs:SetFont(path, size or 12, flags or "")
+  end
+end
+
+-- -------------------------------------------------------
 local function _msg(text)
   if DEFAULT_CHAT_FRAME and DEFAULT_CHAT_FRAME.AddMessage then
     DEFAULT_CHAT_FRAME:AddMessage(text)
   end
 end
 
--- Tab button creation helper
-local function CreateTabButton(parent, tabIndex, text, onClick)
-  local tab = CreateFrame("Button", nil, parent)
-  tab:SetSize(90, 28)
-  tab:SetNormalFontObject("GameFontNormalSmall")
-  tab:SetHighlightFontObject("GameFontHighlightSmall")
-  tab:SetDisabledFontObject("GameFontDisableSmall")
-  tab:SetText(text)
-  
-  -- Tab background
-  local bg = tab:CreateTexture(nil, "BACKGROUND")
-  bg:SetAllPoints()
-  bg:SetColorTexture(0.2, 0.2, 0.3, 0.8)
-  tab.bg = bg
-  
-  -- Tab highlight
-  local highlight = tab:CreateTexture(nil, "HIGHLIGHT")
-  highlight:SetAllPoints()
-  highlight:SetColorTexture(0.3, 0.3, 0.5, 0.5)
-  
-  -- Tab selected indicator
-  local selected = tab:CreateTexture(nil, "OVERLAY")
-  selected:SetPoint("BOTTOM", tab, "BOTTOM", 0, 0)
-  selected:SetSize(90, 3)
-  selected:SetColorTexture(0.4, 0.8, 0.4, 1)
-  selected:Hide()
-  tab.selected = selected
-  
-  tab:SetScript("OnClick", function()
-    onClick(tabIndex)
-  end)
-  
-  return tab
+local function _getDb()
+  return WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core
 end
 
+local function _getCategoryLevel(key)
+  local core = _getDb()
+  if core and core.debugConfig then return core.debugConfig[key] or 3 end
+  return 3
+end
+
+local function _setCategoryLevel(key, val)
+  local core = _getDb()
+  if core then
+    core.debugConfig = core.debugConfig or {}
+    core.debugConfig[key] = val
+  end
+  if WOWTR and WOWTR.Debug and WOWTR.Debug.Initialize then WOWTR.Debug.Initialize() end
+end
+
+-- -------------------------------------------------------
+-- Frame construction
+-- -------------------------------------------------------
 function UI.CreateFrame()
   if UI.frame then return UI.frame end
 
   local f = CreateFrame("Frame", "WOWTR_DebugToolsUIFrame", UIParent, "BackdropTemplate")
-  f:SetSize(400, 420)
+  f:SetSize(440, 504)
   f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
   f:Hide()
   f:SetFrameStrata("DIALOG")
@@ -73,303 +96,439 @@ function UI.CreateFrame()
   f:EnableMouse(true)
   f:RegisterForDrag("LeftButton")
   f:SetScript("OnDragStart", function(self) self:StartMoving() end)
-  f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+  f:SetScript("OnDragStop",  function(self) self:StopMovingOrSizing() end)
 
+  -- Background + border
+  f:SetBackdrop({
+    bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
+    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+    tile = true, tileSize = 32, edgeSize = 32,
+    insets = { left=11, right=12, top=12, bottom=11 },
+  })
   local bg = f:CreateTexture(nil, "BACKGROUND")
   bg:SetAllPoints()
-  bg:SetColorTexture(0.118, 0.114, 0.169, 0.95)
+  bg:SetColorTexture(0.08, 0.08, 0.13, 0.97)
 
-  f:SetBackdrop({
-    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-    edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-    tile = true,
-    tileSize = 32,
-    edgeSize = 32,
-    insets = { left = 11, right = 12, top = 12, bottom = 11 },
-  })
-
+  -- Title
   local title = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-  title:SetPoint("TOP", f, "TOP", 0, -18)
-  title:SetText("WoWAR Debug Tools")
-  title:SetJustifyH("CENTER")
+  title:SetPoint("TOP", f, "TOP", 0, -16)
+  title:SetText(C_GOLD .. "WoWAR" .. RESET .. " Debug Tools")
+  _setF2(title, 16)
 
+  -- Close button
   local close = CreateFrame("Button", nil, f, "UIPanelCloseButton")
-  close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -6, -6)
+  close:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
   close:SetScript("OnClick", function() f:Hide() end)
 
-  -- Tab container
-  local tabContainer = CreateFrame("Frame", nil, f)
-  tabContainer:SetPoint("TOPLEFT", f, "TOPLEFT", 15, -45)
-  tabContainer:SetPoint("TOPRIGHT", f, "TOPRIGHT", -15, -45)
-  tabContainer:SetHeight(28)
+  -- ── Status banner (below title) ──────────────────────────
+  local statusBanner = f:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  statusBanner:SetPoint("TOP", title, "BOTTOM", 0, -6)
+  statusBanner:SetWidth(400)
+  statusBanner:SetJustifyH("CENTER")
+  _setF2(statusBanner, 12)
+  f.statusBanner = statusBanner
+
+  -- ── Tab bar ──────────────────────────────────────────────
+  -- Positioned at -82 (not -56) to clear the 2-line status banner when debug is ON.
+  -- Layout: title ~-16, title height ~16px → title bottom ~-32; banner start ~-38;
+  -- banner 2 lines at 12px font ≈ 28px → banner bottom ~-66; tab bar at -82 = 16px gap.
+  local tabBar = CreateFrame("Frame", nil, f)
+  tabBar:SetPoint("TOPLEFT",  f, "TOPLEFT",  14, -82)
+  tabBar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -14, -82)
+  tabBar:SetHeight(28)
 
   -- Content panels
   local settingsPanel = CreateFrame("Frame", nil, f)
-  settingsPanel:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -5)
-  settingsPanel:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 15)
+  settingsPanel:SetPoint("TOPLEFT",     tabBar, "BOTTOMLEFT",   0, -4)
+  settingsPanel:SetPoint("BOTTOMRIGHT", f,      "BOTTOMRIGHT", -14, 14)
   f.settingsPanel = settingsPanel
 
   local toolsPanel = CreateFrame("Frame", nil, f)
-  toolsPanel:SetPoint("TOPLEFT", tabContainer, "BOTTOMLEFT", 0, -5)
-  toolsPanel:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -15, 15)
+  toolsPanel:SetPoint("TOPLEFT",     tabBar, "BOTTOMLEFT",   0, -4)
+  toolsPanel:SetPoint("BOTTOMRIGHT", f,      "BOTTOMRIGHT", -14, 14)
   toolsPanel:Hide()
   f.toolsPanel = toolsPanel
 
-  -- Tab switching function
-  local function SelectTab(tabIndex)
-    f.currentTab = tabIndex
-    for i, tab in ipairs(f.tabs) do
-      if i == tabIndex then
-        tab.selected:Show()
-        tab.bg:SetColorTexture(0.3, 0.3, 0.4, 1)
-      else
-        tab.selected:Hide()
-        tab.bg:SetColorTexture(0.2, 0.2, 0.3, 0.8)
-      end
-    end
-    
-    if tabIndex == 1 then
-      settingsPanel:Show()
-      toolsPanel:Hide()
-    else
-      settingsPanel:Hide()
-      toolsPanel:Show()
-    end
+  -- Tab helper
+  local function MakeTab(parent, idx, text, onSelect)
+    local tab = CreateFrame("Button", nil, parent)
+    tab:SetSize(100, 28)
+    tab:SetNormalFontObject("GameFontNormalSmall")
+    tab:SetHighlightFontObject("GameFontHighlightSmall")
+    tab:SetText(text)
+    local bg2 = tab:CreateTexture(nil, "BACKGROUND")
+    bg2:SetAllPoints()
+    bg2:SetColorTexture(0.15, 0.15, 0.25, 0.9)
+    tab._bg = bg2
+    local hl = tab:CreateTexture(nil, "HIGHLIGHT")
+    hl:SetAllPoints()
+    hl:SetColorTexture(0.30, 0.30, 0.50, 0.5)
+    local sel = tab:CreateTexture(nil, "OVERLAY")
+    sel:SetPoint("BOTTOM", tab, "BOTTOM", 0, 0)
+    sel:SetSize(100, 3)
+    sel:SetColorTexture(0.30, 0.85, 0.30, 1)
+    sel:Hide()
+    tab._sel = sel
+    tab:SetScript("OnClick", function() onSelect(idx) end)
+    return tab
   end
 
-  -- Create tabs
   f.tabs = {}
-  local tab1 = CreateTabButton(tabContainer, 1, "Debug Settings", SelectTab)
-  tab1:SetPoint("LEFT", tabContainer, "LEFT", 0, 0)
-  f.tabs[1] = tab1
+  local function SelectTab(idx)
+    f._currentTab = idx
+    for i, tab in ipairs(f.tabs) do
+      if i == idx then
+        tab._sel:Show()
+        tab._bg:SetColorTexture(0.25, 0.25, 0.40, 1)
+      else
+        tab._sel:Hide()
+        tab._bg:SetColorTexture(0.15, 0.15, 0.25, 0.9)
+      end
+    end
+    settingsPanel:SetShown(idx == 1)
+    toolsPanel:SetShown(idx == 2)
+  end
+  f._selectTab = SelectTab
 
-  local tab2 = CreateTabButton(tabContainer, 2, "Dump Tools", SelectTab)
-  tab2:SetPoint("LEFT", tab1, "RIGHT", 5, 0)
-  f.tabs[2] = tab2
+  local t1 = MakeTab(tabBar, 1, "Debug Settings", SelectTab)
+  t1:SetPoint("LEFT", tabBar, "LEFT", 0, 0)
+  f.tabs[1] = t1
 
-  -- ============================================
+  local t2 = MakeTab(tabBar, 2, "Dump Tools", SelectTab)
+  t2:SetPoint("LEFT", t1, "RIGHT", 4, 0)
+  f.tabs[2] = t2
+
+  -- ============================================================
   -- TAB 1: Debug Settings
-  -- ============================================
-  
-  -- Debug Mode Toggle (Master Switch)
-  local debugToggleLabel = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-  debugToggleLabel:SetPoint("TOPLEFT", settingsPanel, "TOPLEFT", 10, -10)
-  debugToggleLabel:SetText("Debug Mode (Master):")
+  -- ============================================================
+  local sp = settingsPanel
 
-  local debugToggle = CreateFrame("CheckButton", nil, settingsPanel, "UICheckButtonTemplate")
-  debugToggle:SetPoint("LEFT", debugToggleLabel, "RIGHT", 10, 0)
-  debugToggle:SetScript("OnClick", function(self)
+  -- ── Master toggle row ──────────────────────────────────
+  local masterLabel = sp:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  masterLabel:SetPoint("TOPLEFT", sp, "TOPLEFT", 10, -10)
+  masterLabel:SetText("Debug Mode:")
+  _setF2(masterLabel, 13)
+
+  local masterToggle = CreateFrame("CheckButton", nil, sp, "UICheckButtonTemplate")
+  masterToggle:SetPoint("LEFT", masterLabel, "RIGHT", 8, 0)
+  masterToggle:SetScript("OnClick", function(self)
     local checked = self:GetChecked()
-    if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
-      WOWTR.db.profile.core.debug = checked
+    if WOWTR and WOWTR.Debug then
+      WOWTR.Debug.SetEnabled(checked)
     end
-    if WOWTR and WOWTR.Debug and WOWTR.Debug.Initialize then
-      WOWTR.Debug.Initialize()
-    end
-    if checked then
-      _msg("|cFF00FF00WoWAR Debug Mode:|r Enabled")
-    else
-      _msg("|cFF00FF00WoWAR Debug Mode:|r Disabled")
-    end
+    _msg(checked and (C_GREEN .. "[WoWAR]" .. RESET .. " Debug: enabled")
+                  or (C_GREY  .. "[WoWAR]" .. RESET .. " Debug: disabled"))
     UI.UpdateSettings()
   end)
-  f.debugToggle = debugToggle
+  f.masterToggle = masterToggle
 
-  -- Category label
-  local catLabel = settingsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  catLabel:SetPoint("TOPLEFT", debugToggleLabel, "BOTTOMLEFT", 0, -20)
-  catLabel:SetText("Category Verbosity (requires Debug Mode ON):")
-  catLabel:SetTextColor(0.8, 0.8, 0.8)
+  -- ── Preset buttons row ─────────────────────────────────
+  local presetLabel = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  presetLabel:SetPoint("TOPLEFT", masterLabel, "BOTTOMLEFT", 0, -16)
+  presetLabel:SetText(C_GOLD .. "Preset:" .. RESET)
+  presetLabel:SetTextColor(1, 0.84, 0, 1)
+  _setF2(presetLabel, 12)
 
-  -- Scroll frame for categories
-  local scrollFrame = CreateFrame("ScrollFrame", nil, settingsPanel, "UIPanelScrollFrameTemplate")
-  scrollFrame:SetPoint("TOPLEFT", catLabel, "BOTTOMLEFT", 0, -10)
-  scrollFrame:SetPoint("BOTTOMRIGHT", settingsPanel, "BOTTOMRIGHT", -25, 5)
+  local lastPresetBtn = presetLabel
+  f.presetBtns = {}
+  for i, p in ipairs(Presets) do
+    local btn = CreateFrame("Button", nil, sp, "UIPanelButtonTemplate")
+    btn:SetSize(68, 20)
+    if i == 1 then
+      btn:SetPoint("LEFT", presetLabel, "RIGHT", 8, 0)
+    else
+      btn:SetPoint("LEFT", f.presetBtns[i-1], "RIGHT", 3, 0)
+    end
+    btn:SetText(p.label)
+    local pk = p.key
+    btn:SetScript("OnClick", function()
+      if WOWTR and WOWTR.Debug and WOWTR.Debug.SetPreset then
+        WOWTR.Debug.SetPreset(pk)
+        UI.UpdateSettings()
+      end
+    end)
+    f.presetBtns[i] = btn
+  end
 
-  local scrollBar = scrollFrame.ScrollBar or _G[scrollFrame:GetName().."ScrollBar"]
+  -- ── Category section header ────────────────────────────
+  local catHeader = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  catHeader:SetPoint("TOPLEFT", presetLabel, "BOTTOMLEFT", 0, -14)
+  catHeader:SetText("Category verbosity:   " .. C_GREY .. "0=OFF  1=ERR  2=MIN  3=INF  4=VRB" .. RESET)
+  _setF2(catHeader, 11)
+
+  -- Column headers
+  local colTag  = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  colTag:SetPoint("TOPLEFT", catHeader, "BOTTOMLEFT", 2, -6)
+  colTag:SetText("|cFFBBBBBBCategory|r")
+  colTag:SetWidth(96)
+  _setF2(colTag, 11)
+
+  local colLvl  = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  colLvl:SetPoint("LEFT", colTag, "RIGHT", 4, 0)
+  colLvl:SetText("|cFFBBBBBBLevel|r")
+  colLvl:SetWidth(100)
+  _setF2(colLvl, 11)
+
+  local colBar  = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+  colBar:SetPoint("LEFT", colLvl, "RIGHT", 4, 0)
+  colBar:SetText("|cFFBBBBBBBar|r")
+  _setF2(colBar, 11)
+
+  -- ── Per-category rows inside a scroll frame ─────────────
+  local scrollFrame = CreateFrame("ScrollFrame", nil, sp, "UIPanelScrollFrameTemplate")
+  scrollFrame:SetPoint("TOPLEFT",  colTag, "BOTTOMLEFT", -2, -6)
+  scrollFrame:SetPoint("BOTTOMRIGHT", sp, "BOTTOMRIGHT", -22, 5)
+
+  local scrollBar = scrollFrame.ScrollBar or _G[scrollFrame:GetName() and scrollFrame:GetName().."ScrollBar"]
   if scrollBar then
     scrollBar:ClearAllPoints()
-    scrollBar:SetPoint("TOPLEFT", scrollFrame, "TOPRIGHT", 2, -16)
-    scrollBar:SetPoint("BOTTOMLEFT", scrollFrame, "BOTTOMRIGHT", 2, 16)
+    scrollBar:SetPoint("TOPLEFT",    scrollFrame, "TOPRIGHT",    2, -16)
+    scrollBar:SetPoint("BOTTOMLEFT", scrollFrame, "BOTTOMRIGHT", 2,  16)
   end
 
   local scrollContent = CreateFrame("Frame", nil, scrollFrame)
-  scrollContent:SetWidth(scrollFrame:GetWidth() - 30)
+  scrollContent:SetWidth(scrollFrame:GetWidth() - 28)
   scrollContent:SetHeight(1)
   scrollFrame:SetScrollChild(scrollContent)
+  f.scrollContent = scrollContent
 
-  -- Create category toggles
-  f.categoryToggles = {}
-  local yOffset = 0
-  for i, cat in ipairs(categories) do
-    local checkbox = CreateFrame("CheckButton", "WOWTR_DebugUI_Cat_"..cat.key, scrollContent, "UICheckButtonTemplate")
-    checkbox:SetPoint("TOPLEFT", scrollContent, "TOPLEFT", 5, -yOffset)
-    checkbox.category = cat.key
+  f.catRows = {}
+  local rowH = 28
+  for i, cat in ipairs(Categories) do
+    local row = CreateFrame("Frame", nil, scrollContent)
+    row:SetPoint("TOPLEFT",  scrollContent, "TOPLEFT", 0, -(i-1)*rowH)
+    row:SetHeight(rowH)
+    row:SetPoint("RIGHT", scrollContent, "RIGHT", 0, 0)
 
-    local label = scrollContent:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    label:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
-    label:SetText(cat.label)
-    checkbox.label = label
+    -- Zebra-stripe background
+    local stripe = row:CreateTexture(nil, "BACKGROUND")
+    stripe:SetAllPoints()
+    if i % 2 == 0 then
+      stripe:SetColorTexture(0.12, 0.12, 0.20, 0.5)
+    else
+      stripe:SetColorTexture(0.08, 0.08, 0.15, 0.5)
+    end
 
-    checkbox:SetScript("OnClick", function(self)
-      local checked = self:GetChecked()
-      if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debugConfig then
-        -- Toggle between None (0) and Verbose (4)
-        WOWTR.db.profile.core.debugConfig[cat.key] = checked and 4 or 0
-      end
-      if WOWTR and WOWTR.Debug and WOWTR.Debug.Initialize then
-        WOWTR.Debug.Initialize()
-      end
-      if checked then
-        _msg("|cFF00FF00WOWTR Debug:|r [" .. cat.label .. "] Enabled")
-      else
-        _msg("|cFF00FF00WOWTR Debug:|r [" .. cat.label .. "] Disabled")
+    -- [TAG] label
+    local tagLabel = row:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    tagLabel:SetPoint("LEFT", row, "LEFT", 4, 0)
+    tagLabel:SetWidth(90)
+    tagLabel:SetText(string.format(
+      "|cFF%02X%02X%02X[%s]|r %s", cat.r*255, cat.g*255, cat.b*255, cat.tag, cat.label))
+    _setF2(tagLabel, 12)
+    row.tagLabel = tagLabel
+
+    -- < button
+    local btnDec = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    btnDec:SetSize(22, 20)
+    btnDec:SetPoint("LEFT", tagLabel, "RIGHT", 6, 0)
+    btnDec:SetText("<")
+    local catKey = cat.key
+    btnDec:SetScript("OnClick", function()
+      local cur = _getCategoryLevel(catKey)
+      if cur > 0 then
+        _setCategoryLevel(catKey, cur - 1)
+        UI.UpdateSettings()
       end
     end)
+    row.btnDec = btnDec
 
-    f.categoryToggles[cat.key] = checkbox
-    yOffset = yOffset + 28
+    -- Level display
+    local lvlLabel = row:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    lvlLabel:SetPoint("LEFT", btnDec, "RIGHT", 4, 0)
+    lvlLabel:SetWidth(36)
+    lvlLabel:SetJustifyH("CENTER")
+    _setF2(lvlLabel, 16)
+    row.lvlLabel = lvlLabel
+
+    -- > button
+    local btnInc = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+    btnInc:SetSize(22, 20)
+    btnInc:SetPoint("LEFT", lvlLabel, "RIGHT", 4, 0)
+    btnInc:SetText(">")
+    btnInc:SetScript("OnClick", function()
+      local cur = _getCategoryLevel(catKey)
+      if cur < 4 then
+        _setCategoryLevel(catKey, cur + 1)
+        UI.UpdateSettings()
+      end
+    end)
+    row.btnInc = btnInc
+
+    -- Bar + name display (uses █ ░ block chars that need WOWTR_Font2)
+    local barLabel = row:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+    barLabel:SetPoint("LEFT", btnInc, "RIGHT", 8, 0)
+    barLabel:SetWidth(130)
+    _setF2(barLabel, 13)
+    row.barLabel = barLabel
+
+    f.catRows[cat.key] = row
   end
-  scrollContent:SetHeight(yOffset + 10)
+  scrollContent:SetHeight(#Categories * rowH + 4)
 
-  -- ============================================
+  -- ============================================================
   -- TAB 2: Dump Tools
-  -- ============================================
+  -- ============================================================
+  local tp = toolsPanel
 
-  local hint = toolsPanel:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
-  hint:SetPoint("TOPLEFT", toolsPanel, "TOPLEFT", 10, -10)
-  hint:SetText("Dump visible UI strings + (optional) art/layout. Export after /reload.")
+  local hint = tp:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  hint:SetPoint("TOPLEFT", tp, "TOPLEFT", 10, -10)
+  hint:SetWidth(390)
+  hint:SetJustifyH("LEFT")
+  hint:SetText("Dump visible UI strings/art.\nExport with Tools/ExportAgentDebugLog.ps1 after /reload.")
+  _setF2(hint, 11)
 
-  -- Options checkboxes
-  local opts = { includeAll = false, includeNoise = false, includeHidden = false, includeArt = false }
+  local opts = { includeAll=false, includeNoise=false, includeHidden=false, includeArt=false }
   f.opts = opts
 
   local function mkCheck(text, x, y, field)
-    local cb = CreateFrame("CheckButton", nil, toolsPanel, "UICheckButtonTemplate")
-    cb:SetPoint("TOPLEFT", toolsPanel, "TOPLEFT", x, y)
+    local cb = CreateFrame("CheckButton", nil, tp, "UICheckButtonTemplate")
+    cb:SetPoint("TOPLEFT", tp, "TOPLEFT", x, y)
     cb.text:SetText(text)
     cb:SetChecked(false)
-    cb:SetScript("OnClick", function(self)
-      opts[field] = self:GetChecked() and true or false
-    end)
+    cb:SetScript("OnClick", function(self) opts[field] = self:GetChecked() and true or false end)
     return cb
   end
+  -- Shifted down 20px from the original positions to accommodate the 2-line hint above.
+  f.cbAll    = mkCheck("Include translated (all)",    10,  -55, "includeAll")
+  f.cbNoise  = mkCheck("Include noise (numbers)",     10,  -80, "includeNoise")
+  f.cbHidden = mkCheck("Include hidden",              10, -105, "includeHidden")
+  f.cbArt    = mkCheck("Include art (textures)",      10, -130, "includeArt")
 
-  f.cbAll = mkCheck("Include translated (all)", 10, -35, "includeAll")
-  f.cbNoise = mkCheck("Include noise (numbers)", 10, -60, "includeNoise")
-  f.cbHidden = mkCheck("Include hidden", 10, -85, "includeHidden")
-  f.cbArt = mkCheck("Include art (textures/layout)", 10, -110, "includeArt")
-
-  -- Button helper
   local function mkBtn(label, x, y, w, onClick)
-    local b = CreateFrame("Button", nil, toolsPanel, "UIPanelButtonTemplate")
+    local b = CreateFrame("Button", nil, tp, "UIPanelButtonTemplate")
     b:SetSize(w or 120, 22)
-    b:SetPoint("TOPLEFT", toolsPanel, "TOPLEFT", x, y)
+    b:SetPoint("TOPLEFT", tp, "TOPLEFT", x, y)
     b:SetText(label)
     b:SetScript("OnClick", onClick)
     return b
   end
 
-  -- Dump button
-  mkBtn("Dump Visible UI", 200, -50, 140, function()
+  mkBtn("Dump Visible UI", 210, -70, 145, function()
     if not (WOWTR and WOWTR.Debug and WOWTR.Debug.DumpVisibleUI) then
-      _msg("|cFFFF0000[WoWAR]|r DumpVisibleUI not available")
-      return
+      _msg("|cFFFF0000[WoWAR]|r DumpVisibleUI not available"); return
     end
     WOWTR.Debug.DumpVisibleUI({
-      includeAll = f.opts.includeAll,
-      skipNoise = not f.opts.includeNoise,
-      includeHidden = f.opts.includeHidden,
-      includeArt = f.opts.includeArt,
-      dedupe = true,
-      maxRoots = 30,
-      maxNodes = 2000,
-      maxDepth = 12,
-      maxArtEntries = 6000,
+      includeAll=f.opts.includeAll, skipNoise=not f.opts.includeNoise,
+      includeHidden=f.opts.includeHidden, includeArt=f.opts.includeArt,
+      dedupe=true, maxRoots=30, maxNodes=2000, maxDepth=12, maxArtEntries=6000,
     })
   end)
 
-  mkBtn("Reset dedupe", 200, -80, 140, function()
+  mkBtn("Reset dedupe", 210, -100, 145, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ResetDumpCache then
       WOWTR.Debug.ResetDumpCache()
+      _msg("|cFF00FF88[WoWAR]|r Dump dedupe cache reset.")
     end
   end)
 
   -- Clear logs section
-  local clearLabel = toolsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-  clearLabel:SetPoint("TOPLEFT", toolsPanel, "TOPLEFT", 10, -145)
-  clearLabel:SetText("Clear agent logs:")
+  local clearLabel = tp:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+  clearLabel:SetPoint("TOPLEFT", tp, "TOPLEFT", 10, -165)
+  clearLabel:SetText(C_GOLD .. "Clear agent logs:" .. RESET)
+  clearLabel:SetTextColor(1, 0.84, 0, 1)
+  _setF2(clearLabel, 13)
 
-  mkBtn("Clear ALL", 10, -165, 100, function()
-    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
-      WOWTR.Debug.ClearAgentLogs("all")
-    end
+  mkBtn("Clear ALL",   10, -188, 100, function()
+    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then WOWTR.Debug.ClearAgentLogs("all") end
   end)
-  mkBtn("Clear dump", 120, -165, 100, function()
-    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
-      WOWTR.Debug.ClearAgentLogs("dump")
-    end
+  mkBtn("Clear dump",  118, -188, 100, function()
+    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then WOWTR.Debug.ClearAgentLogs("dump") end
   end)
-  mkBtn("Clear debug", 230, -165, 100, function()
-    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
-      WOWTR.Debug.ClearAgentLogs("debug")
-    end
+  mkBtn("Clear debug", 226, -188, 100, function()
+    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then WOWTR.Debug.ClearAgentLogs("debug") end
   end)
+  mkBtn("Clear cache",  10, -216, 100, function()
+    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then WOWTR.Debug.ClearAgentLogs("cache") end
+  end)
+  mkBtn("/reload",     118, -216, 100, function() if ReloadUI then ReloadUI() end end)
 
-  mkBtn("Clear cache", 10, -195, 100, function()
-    if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then
-      WOWTR.Debug.ClearAgentLogs("cache")
-    end
-  end)
-  mkBtn("/reload", 120, -195, 100, function()
-    if ReloadUI then ReloadUI() end
-  end)
+  -- Help text at bottom of dump tools.
+  -- NOTE: avoid |t and |h (lowercase) directly after pipe — WoW treats |t as
+  -- end-texture-tag and |h as end-hyperlink, swallowing those characters.
+  -- Using " | " (pipe with spaces on both sides) prevents that.
+  local helpLabel = tp:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+  helpLabel:SetPoint("TOPLEFT", tp, "TOPLEFT", 10, -250)
+  helpLabel:SetWidth(390)
+  helpLabel:SetJustifyH("LEFT")
+  helpLabel:SetText("|cFF888888/wowardebug on | off | toggle | status | preset <name> | help|r")
+  _setF2(helpLabel, 11)
 
-  -- Select first tab by default
-  f.currentTab = 1
+  -- Activate first tab
   SelectTab(1)
 
   UI.frame = f
   return f
 end
 
--- Update settings panel with current values
+-- -------------------------------------------------------
+-- Update all controls to reflect current saved-variables state
+-- -------------------------------------------------------
 function UI.UpdateSettings()
   if not UI.frame then return end
-
   local f = UI.frame
-  local debugEnabled = false
-  if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
-    debugEnabled = WOWTR.db.profile.core.debug or false
+
+  local core        = _getDb()
+  local debugOn     = core and core.debug or false
+
+  -- Status banner
+  local bannerText
+  if WOWTR and WOWTR.Debug and WOWTR.Debug.GetStatusLine then
+    bannerText = WOWTR.Debug.GetStatusLine()
+  else
+    bannerText = debugOn and (C_GREEN .. "Debug: ON" .. RESET) or (C_GREY .. "Debug: OFF" .. RESET)
+  end
+  if f.statusBanner then
+    f.statusBanner:SetText(bannerText)
+    _setF2(f.statusBanner, 12)
   end
 
-  -- Update main toggle
-  if f.debugToggle then
-    f.debugToggle:SetChecked(debugEnabled)
-  end
+  -- Master toggle
+  if f.masterToggle then f.masterToggle:SetChecked(debugOn) end
 
-  -- Update category checkboxes
-  if f.categoryToggles then
-    for key, checkbox in pairs(f.categoryToggles) do
-      local value = 0
-      if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debugConfig then
-        value = WOWTR.db.profile.core.debugConfig[key] or 0
-      end
-      -- Checkbox is checked if verbosity is > 0
-      checkbox:SetChecked(value > 0)
+  -- Per-category rows
+  if f.catRows then
+    for _, cat in ipairs(Categories) do
+      local row = f.catRows[cat.key]
+      if row then
+        local lvl = core and core.debugConfig and core.debugConfig[cat.key] or 3
+        local vm  = VerbMeta[lvl + 1] or VerbMeta[1]
 
-      -- Disable checkboxes if debug mode is off
-      if debugEnabled then
-        checkbox:Enable()
-        if checkbox.label then checkbox.label:SetTextColor(1, 1, 1) end
-      else
-        checkbox:Disable()
-        if checkbox.label then checkbox.label:SetTextColor(0.5, 0.5, 0.5) end
+        -- Level label: coloured number
+        local hex = string.format("%02X%02X%02X", vm.color[1]*255, vm.color[2]*255, vm.color[3]*255)
+        row.lvlLabel:SetText(string.format("|cFF%s%d|r", hex, lvl))
+        _setF2(row.lvlLabel, 16)
+
+        -- Bar: 4 filled/empty blocks + verbosity name (requires WOWTR_Font2 for █ ░)
+        local bar = ""
+        for i = 1, 4 do
+          if i <= lvl then
+            bar = bar .. string.format("|cFF%s█|r", hex)
+          else
+            bar = bar .. "|cFF333333░|r"
+          end
+        end
+        row.barLabel:SetText(bar .. "  " .. string.format("|cFF%s%s|r", hex, vm.name))
+        _setF2(row.barLabel, 13)
+
+        -- Disable < > when master is off
+        if debugOn then
+          row.btnDec:Enable()
+          row.btnInc:Enable()
+          row.tagLabel:SetAlpha(1.0)
+        else
+          row.btnDec:Disable()
+          row.btnInc:Disable()
+          row.tagLabel:SetAlpha(0.4)
+        end
       end
     end
   end
 end
 
+-- -------------------------------------------------------
+-- Public API
+-- -------------------------------------------------------
 function UI.Show()
   local f = UI.CreateFrame()
   UI.UpdateSettings()

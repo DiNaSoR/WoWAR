@@ -118,8 +118,8 @@ WOWTR_Config_Interface = {
    minimap = "اﻟﺨﺮﻳﻄﺔ ﺍﻟﻤﺼﻐﺮﺓ",
 
    -- ControlCenter (Plumber-style settings panel)
-   ControlCenter_Modules = "اﻟﻮﺣﺪات",
-   ControlCenter_Release_Notes = "ﻣﺬﻛﺮات اﻹﺻﺪار",
+   ControlCenter_Modules = "اﻹﻋﺪادات",
+   ControlCenter_Release_Notes = "ﻣﺎ اﻟﺠﺪﻳﺪ",
    ControlCenter_Sort_By = "ﺗﺮﺗﻴﺐ ﺣﺴﺐ",
    ControlCenter_Sort_Alphabet = "ﺃﺑﺠﺪﻳﺎ",
    ControlCenter_Sort_Date = "ﺗﺎرﻳﺦ اﻹﺿﺎﻓﺔ",
@@ -136,6 +136,27 @@ WOWTR_Config_Interface = {
 
    ControlCenter_About_Title = "ﺣﻮل",
    ControlCenter_About_Desc = "إﻋﺪادات وﻣﻌﻠﻮﻣﺎت RAWoW",
+
+   -- Debug Tools UI labels (used by DebugToolsUI.lua)
+   Debug_Title            = "أدوات اﻟﺘﺘﺒﻊ - RAWoW",
+   Debug_MasterToggle     = "وﺿﻊ اﻟﺘﺘﺒﻊ:",
+   Debug_CategoryVerb     = "ﻣﺴﺘﻮى اﻟﺘﻔﺼﻴﻞ:",
+   Debug_PresetLabel      = "اﻹﻋﺪاد اﻟﻤﺴﺒﻖ:",
+   Debug_Preset_off       = "إﻳﻘﺎف",
+   Debug_Preset_minimal   = "أدﻧﻰ",
+   Debug_Preset_quest     = "اﻟﻤﻬﺎم",
+   Debug_Preset_uidump    = "واﺟﻬﺔ",
+   Debug_Preset_full      = "ﻛﺎﻣﻞ",
+   Debug_StatusOn         = "اﻟﺘﺘﺒﻊ: ﻣﻔﻌّﻞ",
+   Debug_StatusOff        = "اﻟﺘﺘﺒﻊ: ﻣﻌﻄّﻞ",
+   Debug_DumpTab          = "أدوات اﻹﺧﺮاج",
+   Debug_SettingsTab      = "إﻋﺪادات اﻟﺘﺘﺒﻊ",
+   Debug_ClearAll         = "ﻣﺴﺢ اﻟﻜﻞ",
+   Debug_ClearDump        = "ﻣﺴﺢ اﻹﺧﺮاج",
+   Debug_ClearDebug       = "ﻣﺴﺢ اﻟﺘﺘﺒﻊ",
+   Debug_ClearCache       = "ﻣﺴﺢ اﻟﺬاﻛﺮة",
+   Debug_Reload           = "/إﻋﺎدة ﺗﺸﻐﻴﻞ",
+   Debug_DumpVisible      = "إﺧﺮاج واﺟﻬﺔ ﻣﺮﺋﻴﺔ",
 
    -- ControlCenter - UI target names / misc
    ControlCenter_UI_GameMenu = "ﻗﺎﺋﻤﺔ اﻟﻠﻌﺒﺔ",
