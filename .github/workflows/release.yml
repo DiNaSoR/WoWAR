@@ -62,11 +62,32 @@ jobs:
         require_tool zip
         require_tool sed
         require_tool find
+        require_tool grep
+        require_tool awk
         require_tool gh
 
         if [[ -z "${GITHUB_TOKEN:-}" ]]; then
           die "GITHUB_TOKEN is not set."
         fi
+
+        # Path A policy: ship debug modules, but enforce release-safe defaults (OFF).
+        validate_debug_defaults() {
+          local config_file="common/Config/Core.lua"
+          local schema_file="common/Core/DebugSchema.lua"
+
+          [[ -f "$config_file" ]] || die "Missing $config_file (required for debug default validation)."
+          [[ -f "$schema_file" ]] || die "Missing $schema_file (required for debug preset validation)."
+
+          if ! grep -Eq '^[[:space:]]*debug[[:space:]]*=[[:space:]]*false' "$config_file"; then
+            die "Path A guard failed: profile.core.debug must default to false in $config_file."
+          fi
+
+          if ! grep -Eq 'off[[:space:]]*=[[:space:]]*\{[[:space:]]*enabled[[:space:]]*=[[:space:]]*false' "$schema_file"; then
+            die "Path A guard failed: preset off must set enabled=false in $schema_file."
+          fi
+        }
+
+        validate_debug_defaults
 
         # Resolve the effective tag reference.
         # On push:tag this is the pushed tag; on workflow_dispatch an optional
@@ -319,6 +340,8 @@ jobs:
           NEW_BODY+="${TRANS_NOTE}"
         fi
 
+        NEW_BODY+=$'\n\n## 🧪 Debug Policy\n- Path A: debug modules are included in release packages.\n- Runtime debug defaults are enforced as OFF by CI guards.\n- Users can opt in manually with `/wowardebug` when needed.\n'
+
         NEW_BODY+=$'\n\n## 🔍 Changes\n'
 
         if [[ -n "$COMMITS" ]]; then
@@ -350,6 +373,7 @@ jobs:
           echo "- Date (UTC): ${DATE}"
           echo "- Addons: ${INCLUDED_ADDONS}"
           [[ -n "$TOC_INTERFACE_VERSIONS" ]] && echo "- WoW Interface: ${TOC_INTERFACE_VERSIONS}"
+          echo "- Debug policy: Path A (included, default OFF)"
           [[ "$IS_PRERELEASE" == "true" ]] && echo "- Type: Pre-release"
         } >> "$GITHUB_STEP_SUMMARY"
 
