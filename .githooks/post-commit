@@ -23,7 +23,13 @@ fi
 
 if mkdir "$LOCKDIR" 2>/dev/null; then
   trap 'rmdir "$LOCKDIR" 2>/dev/null || true' EXIT INT TERM
-  "C:/Windows/py.exe" -c "import sys; sys.path.insert(0, 'scripts/memory'); from mnemo_vector import vector_sync; print('[MnemoVector]', vector_sync())" 2>&1 | tail -1 || true
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -c "import sys; sys.path.insert(0, 'scripts/memory'); from mnemo_vector import vector_sync; print('[MnemoVector]', vector_sync())" 2>&1 | tail -1 || true
+  elif command -v python >/dev/null 2>&1; then
+    python -c "import sys; sys.path.insert(0, 'scripts/memory'); from mnemo_vector import vector_sync; print('[MnemoVector]', vector_sync())" 2>&1 | tail -1 || true
+  elif command -v py >/dev/null 2>&1; then
+    py -3 -c "import sys; sys.path.insert(0, 'scripts/memory'); from mnemo_vector import vector_sync; print('[MnemoVector]', vector_sync())" 2>&1 | tail -1 || true
+  fi
 fi
 
 exit 0

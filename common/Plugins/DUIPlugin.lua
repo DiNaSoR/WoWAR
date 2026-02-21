@@ -5,6 +5,13 @@
 DUIPlugin = {}
 --print("DUIPlugin loaded")
 
+local function DUI_Debug(...)
+   if WOWTR and WOWTR.Debug and WOWTR.Debug.Verbose then
+      local categories = WOWTR.Debug.Categories or {}
+      WOWTR.Debug.Verbose(categories.QUESTS or "quests", ...)
+   end
+end
+
 -------------------------------------------------------------------------------------------------------------------
 -- Process font strings for gossip dialog UI
 function DUIPlugin.ProcessGossipFontStrings(fontString, countFontString)
@@ -280,14 +287,14 @@ end
 -- Handle DUI quest frame
 function DUIPlugin.QTR_DUIQuestFrame(event)
    local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
-   print("DUIPlugin.QTR_DUIQuestFrame called with event: " .. (event or "nil"))
+   DUI_Debug("DUIPlugin.QTR_DUIQuestFrame called with event:", event or "nil")
    QTR_ToggleButton7:Show()
    QTR_ToggleButton6:Hide()
    
-   print("QTR_quest_ID: " .. (QTR_quest_ID or "nil"))
+   DUI_Debug("QTR_quest_ID:", QTR_quest_ID or "nil")
    
    if (QTR_PS["transtitle"] == "1") then
-      print("Setting title font and text")
+      DUI_Debug("Setting title font and text")
       DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1, 18)
       if (WOWTR_Localization.lang == 'AR') then
          DUIQuestFrame.FrontFrame.Header.Title:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].title, false, QuestProgressTitleText, WOWTR_Font1))
@@ -308,7 +315,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
       return tbl
    end
 
-   print("Processing quest text data")
+   DUI_Debug("Processing quest text data")
    local countFontString = 0
    local offset = 0
    local objectivesNow = false
@@ -329,19 +336,19 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
    com = string.gsub(com, '$B', '\n')
    com = string.gsub(com, '{B}', '\n')
    
-   print("Quest text processing completed")
+   DUI_Debug("Quest text processing completed")
    local details = SplitParagraph(det)
    local progress = SplitParagraph(pro)
    local completion = SplitParagraph(com)
-   print("Details paragraphs: " .. #details)
-   print("Progress paragraphs: " .. #progress)
-   print("Completion paragraphs: " .. #completion)
+   DUI_Debug("Details paragraphs:", #details)
+   DUI_Debug("Progress paragraphs:", #progress)
+   DUI_Debug("Completion paragraphs:", #completion)
    
    DialogueUI_LN = { }
    DialogueUI_EN = { }
 
    local function Process(fontString)
-      print("Processing font string: " .. (fontString:GetText() or "nil"))
+      DUI_Debug("Processing font string:", fontString:GetText() or "nil")
       countFontString = countFontString + 1
       fontString:SetSpacing(4.2)      -- Normal line spacing
       table.insert(DialogueUI_EN, fontString:GetText())    -- English version
@@ -349,22 +356,22 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
       fontString:SetFont(WOWTR_Font2, _size1)
       
       if (fontString:GetText() == "Objectives") then        -- "Objectives" header
-         print("Found Objectives header")
+         DUI_Debug("Found Objectives header")
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth() - 70)
          fontString:SetFont(WOWTR_Font1, _size1)
          fontString:SetJustifyH("RIGHT")
          fontString:SetText(QTR_ReverseIfAR(QTR_Messages.objectives))
          objectivesNow = true
       elseif ((fontString:GetText() == "Rewards") or (fontString:GetText() == "Reward")) then       -- "Rewards" header
-         print("Found Rewards header")
+         DUI_Debug("Found Rewards header")
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth() - 70)
-         print("Rewards width: " .. fontString:GetWidth())
+         DUI_Debug("Rewards width:", fontString:GetWidth())
          fontString:SetFont(WOWTR_Font1, _size1)
          fontString:SetJustifyH("RIGHT")
          fontString:SetText(QTR_ReverseIfAR(QTR_Messages.rewards))
          rewardsNow = true
       elseif (fontString:GetText() == "Requirements") then       -- "Requirements" header
-         print("Found Requirements header")
+         DUI_Debug("Found Requirements header")
          fontString:SetWidth(DUIQuestFrame.ContentFrame:GetWidth() - 70)
          fontString:SetFont(WOWTR_Font1, _size1)
          fontString:SetJustifyH("RIGHT")
@@ -376,7 +383,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
          CompletionX = completion[countFontString]
          
          if (event == "QUEST_DETAIL" and DetailsX) then
-            print("Processing QUEST_DETAIL text")
+            DUI_Debug("Processing QUEST_DETAIL text")
             if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(DetailsX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
@@ -385,7 +392,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
                fontString:SetJustifyH("LEFT")
             end
          elseif (event == "QUEST_PROGRESS" and ProgressX) then
-            print("Processing QUEST_PROGRESS text")
+            DUI_Debug("Processing QUEST_PROGRESS text")
             if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(ProgressX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
@@ -394,7 +401,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
                fontString:SetJustifyH("LEFT")
             end
          elseif (event == "QUEST_COMPLETE" and CompletionX) then
-            print("Processing QUEST_COMPLETE text")
+            DUI_Debug("Processing QUEST_COMPLETE text")
             if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(CompletionX, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
@@ -403,7 +410,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
                fontString:SetJustifyH("LEFT")
             end
          elseif (objectivesNow) then
-            print("Processing Objectives text")
+            DUI_Debug("Processing Objectives text")
             if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].objectives, false, fontString, WOWTR_Font2, -15))
                fontString:SetJustifyH("RIGHT")
@@ -414,7 +421,7 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
                objectivesNow = false        -- Objectives is in one long row?
             end
          elseif (rewardsNow) then
-            print("Processing Rewards text")
+            DUI_Debug("Processing Rewards text")
             if (WOWTR_Localization.lang == 'AR') then
                fontString:SetText(QTR_ExpandUnitInfo(QTR_quest_LG[QTR_quest_ID].itemreceive, false, fontString, WOWTR_Font2))
                fontString:SetJustifyH("RIGHT")
@@ -439,23 +446,23 @@ function DUIPlugin.QTR_DUIQuestFrame(event)
       table.insert(DialogueUI_LN, fontString:GetText())    -- Translated version
    end
    
-   print("Processing active font strings")
+   DUI_Debug("Processing active font strings")
    DUIQuestFrame.fontStringPool:ProcessActiveObjects(Process)
    QTR_curr_dialog = "1"           -- Translation is currently displayed
-   print("Font string processing complete")
+   DUI_Debug("Font string processing complete")
 
    local function ProcessBG(element)
       element:SetWidth(DUIQuestFrame.ContentFrame:GetWidth() -70)
    end
-   print("Processing background elements")
+   DUI_Debug("Processing background elements")
    DUIQuestFrame.textBackgroundPool:ProcessActiveObjects(ProcessBG)
    
    if (TT_PS["ui1"] == "1") then
-      print("Calling QTR_DUIbuttons")
+      DUI_Debug("Calling QTR_DUIbuttons")
       DUIPlugin.QTR_DUIbuttons()
    end
    
-   print("QTR_DUIQuestFrame function completed")
+   DUI_Debug("QTR_DUIQuestFrame function completed")
 end
 
 -- Return the plugin

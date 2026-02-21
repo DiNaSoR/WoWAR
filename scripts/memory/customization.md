@@ -9,8 +9,8 @@ You are an AI coding agent. Your task is to **customize the Mnemo memory system*
 - **Do not overwrite** the new Mnemo structure unless explicitly required. Prefer merge + preserve.
 - Keep the always-read layer token-safe:
   - `.cursor/memory/hot-rules.md` stays ~20 lines (hard invariants only).
-  - `.cursor/memory/memo.md` is â€œcurrent truthâ€, not history (move history into journals).
-- Mnemo authority order (highest â†’ lowest):
+  - `.cursor/memory/memo.md` is "current truth", not history (move history into journals).
+- Mnemo authority order (highest -> lowest):
   - Lessons > active-context > memo > journal.
 
 ## Deliverable (what you must produce)
@@ -23,7 +23,7 @@ You are an AI coding agent. Your task is to **customize the Mnemo memory system*
 
 ### 1) Inventory this repo
 
-- Identify the project type, main entrypoints, key modules, build/test commands, and â€œhotâ€ folders.
+- Identify the project type, main entrypoints, key modules, build/test commands, and "hot" folders.
 
 ### 2) Update `.cursor/memory/memo.md` (project truth)
 
@@ -37,12 +37,12 @@ Keep it short; no journaling here.
 
 ### 3) Update `.cursor/memory/index.md` (orientation)
 
-- Add a â€œHotspotsâ€ section listing the most bug-prone or most-edited files/dirs.
-- Add a short â€œIf you only remember one thingâ€ section (max 3 bullets).
+- Add a "Hotspots" section listing the most bug-prone or most-edited files/dirs.
+- Add a short "If you only remember one thing" section (max 3 bullets).
 
 ### 4) Update `.cursor/memory/regression-checklist.md`
 
-Make it match this repoâ€™s reality:
+Make it match this repo's reality:
 - Build/test commands
 - Runtime/manual checks
 - Areas that commonly regress
@@ -56,7 +56,7 @@ Make it match this repoâ€™s reality:
 
 If legacy has a single `lessons.md`:
 - Convert it into individual files:
-  - `.cursor/memory/lessons/L-001-*.md`, `L-002-*.md`, â€¦
+  - `.cursor/memory/lessons/L-001-*.md`, `L-002-*.md`, ...
 - Each lesson must have valid YAML frontmatter required by the linter.
 - If you introduce new tags, add them to `.cursor/memory/tag-vocabulary.md`.
 

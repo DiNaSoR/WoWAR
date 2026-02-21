@@ -426,20 +426,32 @@ local function EnsureFrame()
   end)
 
   local btnOk = mkBtn("OK - I read", "BOTTOMRIGHT", f, "BOTTOMRIGHT", -40, 30, 180, function()
-    QTR_PS = QTR_PS or {}
-    QTR_PS["welcome"] = "1"
     f:Hide()
   end)
 
   local showAgain = CreateFrame("CheckButton", nil, f, "UICheckButtonTemplate")
   showAgain:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-  showAgain.text:SetText("Show again next login")
+  local showAgainLabel = showAgain.text or showAgain.Text
+  if showAgainLabel and showAgainLabel.SetText then
+    showAgainLabel:SetText("Show again next login")
+  end
   showAgain:SetChecked(false)
-  showAgain:SetScript("OnClick", function(self)
+  showAgain:SetScript("OnClick", function()
+    -- Preference is persisted when user confirms with "OK - I read".
+  end)
+
+  local function PersistWelcomePreference()
     QTR_PS = QTR_PS or {}
-    if self:GetChecked() then
+    if showAgain:GetChecked() then
       QTR_PS["welcome"] = nil
+    else
+      QTR_PS["welcome"] = "1"
     end
+  end
+
+  btnOk:SetScript("OnClick", function()
+    PersistWelcomePreference()
+    f:Hide()
   end)
   ApplyFonts(showAgain)
 
@@ -491,9 +503,10 @@ function Welcome.Show()
     -- Do NOT run QTR_ExpandUnitInfo on buttons.
     f.BtnOk:SetText(isRTL and Label("welcomeButton", okText) or okText)
   end
-  if f.CBShowAgain and f.CBShowAgain.text and f.CBShowAgain.text.SetText then
+  local cbLabel = f.CBShowAgain and (f.CBShowAgain.text or f.CBShowAgain.Text)
+  if cbLabel and cbLabel.SetText then
     -- Do NOT run QTR_ExpandUnitInfo on checkbox labels.
-    f.CBShowAgain.text:SetText(isRTL and Label("welcomeShowAgain", showAgainText) or showAgainText)
+    cbLabel:SetText(isRTL and Label("welcomeShowAgain", showAgainText) or showAgainText)
   end
 
   -- Arabic: use QTR_ExpandUnitInfo so embedded English stays LTR and bidi is stable.
@@ -515,7 +528,9 @@ function Welcome.Show()
   end
 
   QTR_PS = QTR_PS or {}
-  f.CBShowAgain:SetChecked(false)
+  if f.CBShowAgain and f.CBShowAgain.SetChecked then
+    f.CBShowAgain:SetChecked(QTR_PS["welcome"] ~= "1")
+  end
 
   f:Show()
   if f.Reflow then f:Reflow() end

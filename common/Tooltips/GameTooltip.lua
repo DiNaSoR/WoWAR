@@ -25,6 +25,20 @@ local function ContainsArabicText(txt)
   return false
 end
 
+local function IsArabicLocale()
+  local loc = rawget(_G, "WOWTR_Localization")
+  return loc and loc.lang == "AR"
+end
+
+local function LocString(key, fallback)
+  local loc = rawget(_G, "WOWTR_Localization")
+  local v = loc and loc[key]
+  if type(v) == "string" and v ~= "" then
+    return v
+  end
+  return fallback
+end
+
 -- Placeholder handler; legacy global remains authoritative until full migration.
 function GT.OnShow()
   if (ST_PM and ST_PM["active"] == "1") then
@@ -190,7 +204,7 @@ function GT.OnShow()
     if (shownMoneyFrames) then
       for i = 1, shownMoneyFrames, 1 do
         local moneyFrameName = GameTooltip:GetName() .. "MoneyFrame" .. i
-        _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WOWTR_Localization.sellPrice))
+        _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(LocString("sellPrice", ": Sell price")))
         _font1, _size1, _1 = _G[moneyFrameName .. "PrefixText"]:GetFont()
         _G[moneyFrameName .. "PrefixText"]:SetFont(WOWTR_Font2, _size1)
         if (ST_PM["sellprice"] == "1") then
@@ -275,7 +289,7 @@ function GT.OnShow()
             if (ST_pomoc5 and (ST_pomoc5 > 22)) then
               ST_miasto = string.sub(ST_leftText, 21, ST_pomoc5 - 1)
             else
-              ST_miasto = WOWTR_Localization.your_home
+              ST_miasto = LocString("your_home", "your home")
             end
             ST_pomoc6, _ = string.find(ST_leftText, ' Min Cooldown)')
             if (ST_pomoc6) then
@@ -298,7 +312,7 @@ function GT.OnShow()
               local endBy = string.find(ST_leftText, ">")
               local nameBy = string.sub(ST_leftText, ST_pomoc7 + 9, endBy - 1)
               ST_tlumaczenie = ST_TooltipsHS[ST_hash]
-              if (WOWTR_Localization.lang == 'AR') then
+              if IsArabicLocale() then
                 ST_tlumaczenie = string.gsub(ST_tlumaczenie, "NAMEBY", string.reverse(nameBy))
                 ST_tlumaczenie = string.gsub(ST_tlumaczenie, "{$M}", string.reverse(nameBy))
               else
@@ -727,7 +741,7 @@ function GT.BuffOrDebuff()
       ST_MyGameTooltip:ClearAllPoints()
       ST_MyGameTooltip:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", 0, 0)
       ST_MyGameTooltip:ClearLines()
-      if (WOWTR_Localization.lang == 'AR') then
+      if IsArabicLocale() then
         ST_MyGameTooltip:AddLine(QTR_ExpandUnitInfo(ST_tlumaczenie, false, ST_MyGameTooltip, WOWTR_Font2), leftColR, leftColG, leftColB, true)
       else
         ST_MyGameTooltip:AddLine(QTR_ReverseIfAR(ST_tlumaczenie), leftColR, leftColG, leftColB, true)
@@ -792,7 +806,7 @@ function GT.CurrentEquipped(obj)
       if (objShown) then
         for i = 1, objShown, 1 do
           local moneyFrameName = obj:GetName() .. "MoneyFrame" .. i
-          _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(WOWTR_Localization.sellPrice))
+          _G[moneyFrameName .. "PrefixText"]:SetText(QTR_ReverseIfAR(LocString("sellPrice", ": Sell price")))
           _font1, _size1, _1 = _G[moneyFrameName .. "PrefixText"]:GetFont()
           _G[moneyFrameName .. "PrefixText"]:SetFont(WOWTR_Font2, _size1)
           if (ST_PM["sellprice"] == "1") then
@@ -807,9 +821,9 @@ function GT.CurrentEquipped(obj)
       if (ST_leftText) then
         if (string.find(ST_leftText, NONBREAKINGSPACE) == nil) then
           if (ST_leftText == "Currently Equipped") then
-            ST_info = WOWTR_Localization.currentlyEquipped
+            ST_info = LocString("currentlyEquipped", "Currently Equipped")
           elseif (ST_leftText == "Equipped With") then
-            ST_info = WOWTR_Localization.additionalEquipped
+            ST_info = LocString("additionalEquipped", "Equipped With")
           else
             ST_info = ST_leftText
           end

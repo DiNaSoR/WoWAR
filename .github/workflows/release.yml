@@ -268,15 +268,19 @@ jobs:
         # Format WoW Interface version list for release notes.
         if [[ -n "$TOC_INTERFACE_VERSIONS" ]]; then
           # Build a human-readable patch list from comma-separated interface numbers.
-          PATCH_LIST=$(printf '%s' "$TOC_INTERFACE_VERSIONS" | tr ',' '\n' | xargs -I{} sh -c '
-            n="{}"; n="${n//[[:space:]]/}"
+          PATCH_LIST=""
+          while IFS= read -r raw_iface; do
+            n="${raw_iface//[[:space:]]/}"
+            [[ -z "$n" ]] && continue
             if [[ ${#n} -ge 5 ]]; then
-              maj="${n:0:${#n}-4}"; minor="${n: -4:2}"; patch="${n: -2}"
-              echo "  - ${maj}.${minor#0}.${patch#0} (${n})"
+              maj="${n:0:${#n}-4}"
+              minor="${n: -4:2}"
+              patch="${n: -2}"
+              PATCH_LIST+="  - ${maj}.${minor#0}.${patch#0} (${n})"$'\n'
             else
-              echo "  - ${n}"
+              PATCH_LIST+="  - ${n}"$'\n'
             fi
-          ')
+          done < <(printf '%s' "$TOC_INTERFACE_VERSIONS" | tr ',' '\n')
           TOC_INTERFACE_NOTE=$'\n## 🎮 Supported WoW Patches\n'"${PATCH_LIST}"
         fi
 
@@ -394,16 +398,20 @@ jobs:
         echo "Checking for existing release $REF_NAME..."
         if gh release view "$REF_NAME" --repo "$GITHUB_REPOSITORY" &>/dev/null; then
           echo "Release $REF_NAME already exists — updating notes..."
-          gh release edit "$REF_NAME" \
-            --title "$release_title" \
-            --notes-file "$notes_file" \
-            $([[ "$IS_PRERELEASE" == "true" ]] && echo "--prerelease" || echo "--no-discussion")
+          edit_args=(--title "$release_title" --notes-file "$notes_file")
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            edit_args+=(--prerelease)
+          fi
+          gh release edit "$REF_NAME" "${edit_args[@]}"
         else
           echo "Creating new release $REF_NAME..."
-          gh release create "$REF_NAME" \
-            --title "$release_title" \
-            --notes-file "$notes_file" \
-            $([[ "$IS_PRERELEASE" == "true" ]] && echo "--prerelease" || echo "--latest")
+          create_args=(--title "$release_title" --notes-file "$notes_file")
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            create_args+=(--prerelease)
+          else
+            create_args+=(--latest)
+          fi
+          gh release create "$REF_NAME" "${create_args[@]}"
         fi
 
         echo "- Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${REF_NAME}" >> "$GITHUB_STEP_SUMMARY"

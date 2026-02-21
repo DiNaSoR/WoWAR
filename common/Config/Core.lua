@@ -73,6 +73,8 @@ end
 function C.SyncGlobalsFromDB()
   if not WOWTR.db then return end
   local p = WOWTR.db.profile
+  if type(p) ~= "table" then return end
+  local quests = (type(p.quests) == "table") and p.quests or {}
 
   NormalizeBubblesProfile(p)
 
@@ -80,14 +82,14 @@ function C.SyncGlobalsFromDB()
     WOWTR.LegacyBridge.SyncLegacyFromProfile(p)
   end
 
-  if LSM and p.quests.FontLSM then
-    local fontPath = LSM:Fetch("font", p.quests.FontLSM)
+  if LSM and quests.FontLSM then
+    local fontPath = LSM:Fetch("font", quests.FontLSM)
     if fontPath then
       WOWTR_Font1 = fontPath
       WOWTR_Font2 = fontPath
     end
-  elseif p.quests.FontFile and WOWTR_Fonts and #WOWTR_Fonts > 1 then
-    WOWTR_Font2 = WOWTR_Localization.mainFolder .. "\\Fonts\\" .. p.quests.FontFile
+  elseif quests.FontFile and WOWTR_Fonts and #WOWTR_Fonts > 1 and WOWTR_Localization and WOWTR_Localization.mainFolder then
+    WOWTR_Font2 = WOWTR_Localization.mainFolder .. "\\Fonts\\" .. quests.FontFile
   end
 end
 
