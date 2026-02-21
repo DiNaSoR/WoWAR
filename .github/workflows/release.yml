@@ -366,8 +366,6 @@ jobs:
           NEW_BODY+=$'\n---\n\n🔗 Compare: https://github.com/'"$GITHUB_REPOSITORY"'/compare/'"$PREVIOUS_TAG"'...'"$REF_NAME"$'\n'
         fi
 
-        NEW_BODY+=$'\n📅 Released on: '"$DATE"$'\n\nWoWLang Team\n'
-
         notes_file="$WORK_DIR/release_notes.md"
         printf '%s\n' "$NEW_BODY" > "$notes_file"
 
