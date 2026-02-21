@@ -64,7 +64,7 @@ function Tutorials.OnTutorialShow()
               local id = StringHash(txt)
               if (_G["Tut_Data7"] and _G["Tut_Data7"][id]) then
                 local _, size = content.Text:GetFont()
-                if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+                if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
                   content.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, content.Text, WOWTR_Font2, -5) .. NONBREAKINGSPACE)
                   content.Text:SetFont(WOWTR_Font2, size)
                 else
@@ -92,7 +92,7 @@ function Tutorials.OnTutorialShow()
               local id = StringHash(txt)
               if (_G["Tut_Data7"] and _G["Tut_Data7"][id]) then
                 local _, size = content.Text:GetFont()
-                if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+                if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
                   content.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, content.Text, WOWTR_Font2, -30) .. NONBREAKINGSPACE)
                   content.Text:SetJustifyH("LEFT")
                   content.Text:SetFont(WOWTR_Font2, size)
@@ -126,7 +126,7 @@ function Tutorials.CheckFrames()
       local id = StringHash(txt)
       if (_G["Tut_Data7"] and _G["Tut_Data7"][id]) then
         local _, size = obj.ContainerFrame.Text:GetFont()
-        if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
           obj.ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, obj.ContainerFrame.Text, WOWTR_Font2, -15) .. NONBREAKINGSPACE)
         else
           obj.ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
@@ -146,7 +146,7 @@ function Tutorials.CheckFrames()
       local id = StringHash(txt)
       if (_G["Tut_Data7"] and _G["Tut_Data7"][id]) then
         local _, size = obj.ContainerFrame.Text:GetFont()
-        if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
           obj.ContainerFrame.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, obj.ContainerFrame.Text, WOWTR_Font2) .. NONBREAKINGSPACE)
         else
           obj.ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
@@ -315,7 +315,7 @@ function Tutorials.OnChoiceShow()
   if (S.firstUse == 0) then
     S.firstUse = 1
     if PlayerChoiceFrame and PlayerChoiceFrame.Hide then PlayerChoiceFrame:Hide() end
-    UIErrorsFrame:AddMessage(QTR_ReverseIfAR(WoWTR_Localization.reopenBoard))
+    UIErrorsFrame:AddMessage(QTR_ReverseIfAR(WOWTR_Localization.reopenBoard))
     local regions = { UIErrorsFrame:GetRegions() }
     for _, region in pairs(regions) do
       if (region and region.GetObjectType and region:GetObjectType() == "FontString") then
@@ -369,7 +369,7 @@ function Tutorials.CampaignOverview()
     if (_G["Tut_Data7"] and _G["Tut_Data7"][HashCode]) then
       frame:SetText(QTR_ReverseIfAR(_G["Tut_Data7"][HashCode]))
       if (string.len(_G["Tut_Data7"][HashCode]) < 30) then
-        if (WoWTR_Localization and WoWTR_Localization.lang == 'TR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang == 'TR') then
           frame:SetFont(WOWTR_Font2, 12)
         else
           frame:SetFont(WOWTR_Font2, 13)

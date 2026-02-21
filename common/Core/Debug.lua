@@ -1,5 +1,6 @@
 -- Debug.lua
--- Centralized debug system with categories, verbosity levels, and filtering
+-- Facade module that preserves WOWTR.Debug public API while delegating
+-- schema/state/print/dump/agent-log responsibilities to focused modules.
 
 local addonName, ns = ...
 ns = ns or {}
@@ -9,268 +10,65 @@ local Core = ns.Core
 Core.Debug = Core.Debug or {}
 local Debug = Core.Debug
 
--- Debug categories
-Debug.Categories = {
-  QUESTS = "quests",
-  GOSSIP = "gossip",
-  TOOLTIPS = "tooltips",
-  BOOKS = "books",
-  MOVIES = "movies",
-  BUBBLES = "bubbles",
-  CHAT = "chat",
-  CONFIG = "config",
-  GENERAL = "general",
-}
+local Schema = Core.DebugSchema or {}
+local State = Core.DebugState or {}
+local Print = Core.DebugPrint or {}
+local Agent = Core.DebugAgentLog or {}
+local Dump = Core.DebugDump or {}
 
--- Verbosity levels
-Debug.Verbosity = {
-  NONE = 0,      -- No debug output
-  ERRORS = 1,    -- Only errors
-  MINIMAL = 2,   -- Key events only
-  NORMAL = 3,    -- Standard debugging
-  VERBOSE = 4,   -- Everything including detailed state
-}
+-- Expose canonical schema so UI/router/modules can use one source of truth.
+Debug.Schema = Schema
+Debug.Categories = Schema.Categories or {}
+Debug.CategoryOrder = Schema.CategoryOrder or {}
+Debug.CategoryMeta = Schema.CategoryMeta or {}
+Debug.Verbosity = Schema.Verbosity or {}
+Debug.VerbosityMeta = Schema.VerbosityMeta or {}
+Debug.Presets = Schema.Presets or {}
+Debug.PresetOrder = Schema.PresetOrder or {}
 
--- Default settings
-local defaultCategoryLevel = Debug.Verbosity.NORMAL
-local categoryLevels = {}
-
--- Initialize category levels from config or defaults
-function Debug.Initialize()
-  if WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core then
-    -- Load category levels from config if they exist
-    local debugConfig = WOWTR.db.profile.core.debugConfig or {}
-    for categoryKey, categoryValue in pairs(Debug.Categories) do
-      -- Store using the category VALUE (lowercase string like "quests") to match what's passed to ShouldPrint
-      -- Config also uses lowercase keys, so this matches both
-      categoryLevels[categoryValue] = debugConfig[categoryValue] or defaultCategoryLevel
-    end
-  else
-    -- Set defaults
-    for categoryKey, categoryValue in pairs(Debug.Categories) do
-      categoryLevels[categoryValue] = defaultCategoryLevel
-    end
-  end
+-- State API
+Debug.Initialize = function(...) if State.Initialize then return State.Initialize(...) end end
+Debug.IsEnabled = function(...) if State.IsEnabled then return State.IsEnabled(...) end return false end
+Debug.SetEnabled = function(...) if State.SetEnabled then return State.SetEnabled(...) end end
+Debug.ShouldPrint = function(...) if State.ShouldPrint then return State.ShouldPrint(...) end return false end
+Debug.GetCategoryLevel = function(...) if State.GetCategoryLevel then return State.GetCategoryLevel(...) end return 0 end
+Debug.SetCategoryLevel = function(...) if State.SetCategoryLevel then return State.SetCategoryLevel(...) end return false end
+Debug.SetPreset = function(...) if State.SetPreset then return State.SetPreset(...) end return false end
+Debug.GetPresetNames = function(...)
+  if State.GetPresetNames then return State.GetPresetNames(...) end
+  if Schema.GetPresetNames then return Schema.GetPresetNames(...) end
+  return {}
 end
+Debug.GetStatusLine = function(...) if State.GetStatusLine then return State.GetStatusLine(...) end return "|cFF00FF00[WoWAR]|r Debug: |cFF666666OFF|r" end
+Debug.Status = function(...) if State.Status then return State.Status(...) end end
 
--- Check if debug is enabled globally
-function Debug.IsEnabled()
-  return WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core and WOWTR.db.profile.core.debug or false
-end
+-- Print API
+Debug.Print = function(...) if Print.Print then return Print.Print(...) end end
+Debug.Error = function(...) if Print.Error then return Print.Error(...) end end
+Debug.Minimal = function(...) if Print.Minimal then return Print.Minimal(...) end end
+Debug.Normal = function(...) if Print.Normal then return Print.Normal(...) end end
+Debug.Verbose = function(...) if Print.Verbose then return Print.Verbose(...) end end
+Debug.Enter = function(...) if Print.Enter then return Print.Enter(...) end end
+Debug.Exit = function(...) if Print.Exit then return Print.Exit(...) end end
+Debug.GroupStart = function(...) if Print.GroupStart then return Print.GroupStart(...) end return false end
+Debug.GroupEnd = function(...) if Print.GroupEnd then return Print.GroupEnd(...) end end
 
--- Check if a category should output at given verbosity
-function Debug.ShouldPrint(category, verbosity)
-  if not Debug.IsEnabled() then return false end
-  -- Category is passed as the VALUE (e.g., "quests"), so look it up directly
-  local categoryLevel = categoryLevels[category] or defaultCategoryLevel
-  return verbosity <= categoryLevel
-end
+-- Agent log API
+Debug.AgentLog = function(...) if Agent.AgentLog then return Agent.AgentLog(...) end end
+Debug.AgentDumpLog = function(...) if Agent.AgentDumpLog then return Agent.AgentDumpLog(...) end end
+Debug.ClearAgentLogs = function(...) if Agent.ClearAgentLogs then return Agent.ClearAgentLogs(...) end end
 
--- Color codes for different message types
-local Colors = {
-  PREFIX = "|cFF00FF00",      -- Green for "WoWTR Debug:"
-  SUCCESS = "|cFF00FF00",     -- Green for success messages
-  ERROR = "|cFFFF0000",       -- Red for errors
-  WARNING = "|cFFFFFF00",     -- Yellow for warnings
-  INFO = "|cFF00BFFF",        -- Blue for info
-  VALUE = "|cFFFFD700",       -- Gold for important values (IDs, numbers)
-  BOOLEAN_TRUE = "|cFF00FF00", -- Green for true
-  BOOLEAN_FALSE = "|cFFFF0000", -- Red for false
-  RESET = "|r",
-}
+-- Dump API
+Debug.DumpVisibleUI = function(...) if Dump.DumpVisibleUI then return Dump.DumpVisibleUI(...) end return 0 end
+Debug.DumpFrameStrings = function(...) if Dump.DumpFrameStrings then return Dump.DumpFrameStrings(...) end return 0 end
+Debug.DumpFrameArt = function(...) if Dump.DumpFrameArt then return Dump.DumpFrameArt(...) end return 0 end
+Debug.ResetDumpCache = function(...) if Dump.ResetDumpCache then return Dump.ResetDumpCache(...) end end
 
--- Category colors
-local CategoryColors = {
-  quests = "|cFF00BFFF",     -- Blue
-  gossip = "|cFFFF69B4",     -- Pink
-  tooltips = "|cFF9370DB",   -- Purple
-  books = "|cFFFFA500",      -- Orange
-  movies = "|cFF32CD32",      -- Lime
-  bubbles = "|cFF87CEEB",    -- Sky Blue
-  chat = "|cFFFFD700",       -- Gold
-  config = "|cFFDDA0DD",     -- Plum
-  general = "|cFFFFFFFF",    -- White
-}
-
--- Detect message type and apply appropriate color
-local function GetMessageColor(message)
-  -- Check for success indicators
-  if string.find(message, "%[OK%]") or string.find(message, "FOUND") or string.find(message, "completed") or string.find(message, "successfully") then
-    return Colors.SUCCESS
-  end
-  -- Check for error indicators
-  if string.find(message, "%[X%]") or string.find(message, "ERROR") or string.find(message, "failed") or string.find(message, "No translation") or string.find(message, "not found") then
-    return Colors.ERROR
-  end
-  -- Check for warnings/skips
-  if string.find(message, "SKIP") or string.find(message, "skipping") or string.find(message, "WARNING") then
-    return Colors.WARNING
-  end
-  -- Default to info color
-  return Colors.INFO
-end
-
--- Format values with colors
-local function FormatValue(value)
-  if type(value) == "boolean" then
-    if value then
-      return Colors.BOOLEAN_TRUE .. "true" .. Colors.RESET
-    else
-      return Colors.BOOLEAN_FALSE .. "false" .. Colors.RESET
-    end
-  elseif type(value) == "number" then
-    return Colors.VALUE .. tostring(value) .. Colors.RESET
-  elseif value == nil then
-    return Colors.WARNING .. "nil" .. Colors.RESET
-  else
-    return tostring(value)
-  end
-end
-
--- Highlight quest IDs and important numbers in the message
-local function HighlightImportantValues(message)
-  -- Highlight quest IDs (numbers after "quest" or "Quest ID:")
-  message = string.gsub(message, "(quest%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  message = string.gsub(message, "(Quest%s+ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  message = string.gsub(message, "(QTR_quest_ID:%s+)(%d+)", "%1" .. Colors.VALUE .. "%2" .. Colors.RESET)
-  -- Highlight standalone large numbers (likely IDs) - but avoid double-coloring
-  -- Only highlight numbers that aren't already part of a colored section
-  message = string.gsub(message, "([^|])(%d%d%d+)", function(prefix, num)
-    -- Skip if this number is already colored or part of a pattern we've already handled
-    if string.find(prefix, Colors.VALUE) or string.find(prefix, Colors.RESET) then
-      return prefix .. num
-    end
-    if tonumber(num) and tonumber(num) > 100 then -- Likely an ID
-      return prefix .. Colors.VALUE .. num .. Colors.RESET
-    end
-    return prefix .. num
-  end)
-  return message
-end
-
--- Main debug print function
--- Usage: Debug.Print(Debug.Categories.QUESTS, Debug.Verbosity.NORMAL, "message", arg1, arg2, ...)
-function Debug.Print(category, verbosity, ...)
-  if not Debug.ShouldPrint(category, verbosity) then return end
-  
-  local prefix = Colors.PREFIX .. "WoWTR Debug:" .. Colors.RESET
-  local categoryName = category or "general"
-  local categoryColor = CategoryColors[categoryName] or Colors.INFO
-  
-  -- Format the message with category prefix
-  local args = {...}
-  -- Convert all arguments to strings with color formatting
-  local stringArgs = {}
-  for i = 1, #args do
-    local arg = args[i]
-    if arg == nil then
-      stringArgs[i] = Colors.WARNING .. "nil" .. Colors.RESET
-    elseif type(arg) == "boolean" then
-      stringArgs[i] = FormatValue(arg)
-    elseif type(arg) == "number" then
-      stringArgs[i] = FormatValue(arg)
-    elseif type(arg) == "string" then
-      stringArgs[i] = arg
-    else
-      stringArgs[i] = tostring(arg)
-    end
-  end
-  local message = table.concat(stringArgs, " ")
-  
-  -- Add category tag if not already present at the start
-  -- Check if message starts with [CATEGORY] pattern, not just any [
-  if not string.match(message, "^%[[A-Z]+%]") then
-    message = categoryColor .. "[" .. string.upper(categoryName) .. "]" .. Colors.RESET .. " " .. message
-  else
-    -- Replace existing category tag with colored version
-    message = string.gsub(message, "^%[([A-Z]+)%]", categoryColor .. "[%1]" .. Colors.RESET)
-  end
-  
-  -- Check if message already has color codes (like red [X] messages)
-  local hasColorCodes = string.find(message, "|c")
-  
-  -- Highlight important values in the message (before applying message color)
-  if not hasColorCodes then
-    message = HighlightImportantValues(message)
-  end
-  
-  -- Detect message type and apply color
-  local messageColor = GetMessageColor(message)
-  
-  -- Apply message color to the main message (but preserve existing color codes)
-  -- Only apply if message doesn't already have color codes
-  if not hasColorCodes then
-    message = messageColor .. message .. Colors.RESET
-  end
-  
-  print(prefix, message)
-end
-
--- Convenience functions for each verbosity level
-function Debug.Error(category, ...)
-  Debug.Print(category, Debug.Verbosity.ERRORS, ...)
-end
-
-function Debug.Minimal(category, ...)
-  Debug.Print(category, Debug.Verbosity.MINIMAL, ...)
-end
-
-function Debug.Normal(category, ...)
-  Debug.Print(category, Debug.Verbosity.NORMAL, ...)
-end
-
-function Debug.Verbose(category, ...)
-  Debug.Print(category, Debug.Verbosity.VERBOSE, ...)
-end
-
--- Function entry/exit tracking
-local functionStack = {}
-
-function Debug.Enter(functionName, category, ...)
-  if not Debug.ShouldPrint(category or Debug.Categories.GENERAL, Debug.Verbosity.VERBOSE) then return end
-  table.insert(functionStack, {name = functionName, time = GetTime()})
-  Debug.Verbose(category or Debug.Categories.GENERAL, ">>>", functionName, "START", ...)
-end
-
-function Debug.Exit(functionName, category, ...)
-  if not Debug.ShouldPrint(category or Debug.Categories.GENERAL, Debug.Verbosity.VERBOSE) then return end
-  local entry = table.remove(functionStack)
-  if entry and entry.name == functionName then
-    local duration = GetTime() - entry.time
-    Debug.Verbose(category or Debug.Categories.GENERAL, "<<<", functionName, "END", ..., "| Duration:", string.format("%.3f", duration), "s")
-  else
-    Debug.Verbose(category or Debug.Categories.GENERAL, "<<<", functionName, "END", ...)
-  end
-end
-
--- Group related prints together (suppresses intermediate prints if same quest/object)
-local lastGroupKey = nil
-local groupSuppressCount = 0
-
-function Debug.GroupStart(key, category, verbosity, ...)
-  if not Debug.ShouldPrint(category or Debug.Categories.GENERAL, verbosity or Debug.Verbosity.NORMAL) then return end
-  if lastGroupKey == key then
-    groupSuppressCount = groupSuppressCount + 1
-    return false -- Suppress this print
-  else
-    lastGroupKey = key
-    groupSuppressCount = 0
-    Debug.Print(category or Debug.Categories.GENERAL, verbosity or Debug.Verbosity.NORMAL, ...)
-    return true
-  end
-end
-
-function Debug.GroupEnd()
-  lastGroupKey = nil
-  groupSuppressCount = 0
-end
-
--- Global wrapper for backward compatibility
+-- Global wrapper for backward compatibility.
 WOWTR = WOWTR or {}
 WOWTR.Debug = Debug
 
--- Initialize on load
-Debug.Initialize()
+-- Initialize state snapshot for early callers; Config/Core.lua re-initializes after AceDB is ready.
+if Debug.Initialize then Debug.Initialize() end
 
 return Debug
-

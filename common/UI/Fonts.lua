@@ -9,7 +9,7 @@ local F = WOWTR.Fonts
 local WOWTR_AceNormalFO, WOWTR_AceHighlightFO
 
 function F.IsArabic()
-  return (WoWTR_Localization and WoWTR_Localization.lang == "AR" and WOWTR_Font2) and true or false
+  return (WOWTR_Localization and WOWTR_Localization.lang == "AR" and WOWTR_Font2) and true or false
 end
 
 function F.EnsureFontObjects()

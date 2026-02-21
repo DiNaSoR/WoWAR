@@ -1,8 +1,8 @@
-﻿## Interface: 110205, 110207, 120000
+## Interface: 110205, 110207, 120000, 120001
 ## Title: WoWAR |cff8080ffv12.00|r
 ## Version: 12.00
 ## Notes: World of Warcraft in Arabic.
-## Authors: Platine, Dragonarab[DiNaSoR]
+## Authors: Dragonarab[DiNaSoR], Platine
 ## E-mail: Dragonarab@gmail.com
 ## WWW: https://www.wowar.co
 ## DefaultState: Enabled
@@ -24,16 +24,20 @@ common\Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 
 Translations\QuestData_AR.lua
 Translations\Gossip_AR.lua
-Translations\TlumaczOnline_AR.lua
 Translations\Bubbles_AR.lua
 Translations\Subtitles_AR.lua
 Translations\TutorialsData7_AR.lua
 Translations\Books_AR.lua
 Translations\Tooltips_AR.lua
 
-WoW_Localization_AR.lua
-Changelog_AR.lua
+common/Locale/AR.lua
+common/Locale/changelog.lua
 common/Core/State.lua
+common/Core/DebugSchema.lua
+common/Core/DebugState.lua
+common/Core/DebugPrint.lua
+common/Core/DebugAgentLog.lua
+common/Core/DebugDump.lua
 common/Core/Debug.lua
 common/Core/LegacyBridge.lua
 common/Core/Main.lua
@@ -59,10 +63,11 @@ common/UI/Translate.lua
 common/UI/AdventureGuide.lua
 common/UI/GroupFinder.lua
 common/UI/Frames.lua
+common/UI/Welcome.lua
 common/Config/Main.lua
 common/Config/Minimap.lua
 
-WoW_Arabic_Reshaper.lua
+common/Text/Reshaper.lua
 common/RTL.lua
 common/Quests/State.lua
 common/Quests/Utils.lua
@@ -83,9 +88,9 @@ common/Tutorials/State.lua
 common/Tutorials/Utils.lua
 common/Tutorials/Main.lua
 common/Books/Main.lua
-common/UI/Changelog.lua
 common/UI/DebugUI.lua
-WoW_Chat.lua
+common/UI/DebugToolsUI.lua
+common/Chat/Chat.lua
 
 common/Plugins/ClassicQuestLogPlugin.lua
 common/Plugins/ImmersionPlugin.lua

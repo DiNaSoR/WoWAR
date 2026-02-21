@@ -22,7 +22,7 @@ local function SafeReverseIfAR(text)
 end
 
 local function GetOptionTitle()
-  return SafeReverseIfAR((WoWTR_Localization and WoWTR_Localization.optionTitle) or "WoWLang")
+  return SafeReverseIfAR((WOWTR_Localization and WOWTR_Localization.optionTitle) or "WoWLang")
 end
 
 -- Blizzard Settings integration (Retail Settings API)

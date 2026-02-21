@@ -229,18 +229,59 @@ function ControlCenter:GetPrimaryCategoryName(categoryKey)
   return L("ControlCenter_Category_" .. tostring(categoryKey), tostring(categoryKey))
 end
 
+local function NormalizeSearchString(text)
+  local s = string.lower(tostring(text or ""))
+  s = string.gsub(s, "%s+", " ")
+  s = string.gsub(s, "^%s+", "")
+  s = string.gsub(s, "%s+$", "")
+  return s
+end
+
+local function AddSearchVariant(parts, seen, text)
+  local s = NormalizeSearchString(text)
+  if s ~= "" and not seen[s] then
+    seen[s] = true
+    parts[#parts + 1] = s
+  end
+end
+
+local function AddArabicSearchVariants(parts, seen, text)
+  if type(text) ~= "string" or text == "" then return end
+
+  -- Arabic locale text can exist as base Arabic, pre-shaped forms, or already reversed output.
+  -- Add common transformed variants so user-typed Arabic in the search box matches reliably.
+  local reverseIfAR = _G.QTR_ReverseIfAR
+  if type(reverseIfAR) == "function" then
+    local ok, out = pcall(reverseIfAR, text)
+    if ok and type(out) == "string" then
+      AddSearchVariant(parts, seen, out)
+    end
+  end
+
+  local reverseRS = _G.AS_UTF8reverseRS
+  if type(reverseRS) == "function" then
+    local ok, out = pcall(reverseRS, text, true)
+    if ok and type(out) == "string" then
+      AddSearchVariant(parts, seen, out)
+    end
+  end
+end
+
 local function BuildSearchTextForModule(self, data)
   local parts = {}
-  parts[#parts + 1] = string.lower(data.name or "")
-  if data.description then
-    parts[#parts + 1] = string.lower(data.description)
+  local seen = {}
+
+  local function addText(text)
+    AddSearchVariant(parts, seen, text)
+    AddArabicSearchVariants(parts, seen, text)
   end
+
+  addText(data.name or "")
+  if data.description then addText(data.description) end
   if data.subOptions then
     for _, sub in ipairs(data.subOptions) do
-      parts[#parts + 1] = string.lower(sub.name or "")
-      if sub.description then
-        parts[#parts + 1] = string.lower(sub.description)
-      end
+      addText(sub.name or "")
+      if sub.description then addText(sub.description) end
     end
   end
   return table.concat(parts, " ")
@@ -295,8 +336,10 @@ function ControlCenter:GetSearchResult(keyword)
   end
 
   self:UpdateCurrentSortMethod()
-
-  keyword = string.lower(keyword)
+  local keywordCandidates = {}
+  local keywordSeen = {}
+  AddSearchVariant(keywordCandidates, keywordSeen, keyword)
+  AddArabicSearchVariants(keywordCandidates, keywordSeen, keyword)
 
   local categoryXModule = {}
 
@@ -306,7 +349,17 @@ function ControlCenter:GetSearchResult(keyword)
         data.combinedSearchText = BuildSearchTextForModule(self, data)
       end
 
-      if data.combinedSearchText and string.find(data.combinedSearchText, keyword, 1, true) then
+      local matched = false
+      if data.combinedSearchText and #keywordCandidates > 0 then
+        for _, candidate in ipairs(keywordCandidates) do
+          if string.find(data.combinedSearchText, candidate, 1, true) then
+            matched = true
+            break
+          end
+        end
+      end
+
+      if matched then
         local cateKey = (data.categoryKeys and data.categoryKeys[1]) or "General"
         categoryXModule[cateKey] = categoryXModule[cateKey] or {}
         table.insert(categoryXModule[cateKey], data)
@@ -907,6 +960,7 @@ function ControlCenter:InitializeModules()
         local id = VersionToID(e.version) or tonumber(e.version)
         if id then
           local list = {}
+          local entryColor = tostring(e.color or "")
 
           local dateText = tostring(e.date or "")
           local ts = ParseChangelogDateToTimestamp(dateText) or time()
@@ -915,12 +969,13 @@ function ControlCenter:InitializeModules()
             versionText = tostring(e.version or ""),
             timestamp = ts,
             dateText = dateText,
+            color = entryColor,
           }
 
           if e.title and e.title ~= "" then
-            list[#list + 1] = { type = "h1", text = tostring(e.title) }
+            list[#list + 1] = { type = "h1", text = tostring(e.title), color = entryColor }
           elseif e.type and e.type ~= "" then
-            list[#list + 1] = { type = "h1", text = tostring(e.type) }
+            list[#list + 1] = { type = "h1", text = tostring(e.type), color = entryColor }
           end
 
           local desc = tostring(e.description or "")
@@ -930,9 +985,9 @@ function ControlCenter:InitializeModules()
             else
               local bulletText = line:match("^%s*[-*]%s+(.+)$")
               if bulletText then
-                list[#list + 1] = { type = "p", bullet = true, text = bulletText }
+                list[#list + 1] = { type = "p", bullet = true, text = bulletText, color = entryColor }
               else
-                list[#list + 1] = { type = "p", text = line }
+                list[#list + 1] = { type = "p", text = line, color = entryColor }
               end
             end
           end

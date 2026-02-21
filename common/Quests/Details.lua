@@ -11,6 +11,10 @@ Quests.Details = Quests.Details or {}
 local _lastPrepareQuestID = 0
 local _lastPrepareAt = 0
 local _postLayoutTicker
+local _postLayoutLastQuestID = 0
+local _postLayoutLastAt = 0
+local _lastForceQuestID = 0
+local _lastForceAt = 0
 
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Kept local to this file because `common/Text.lua` is loaded later in the TOC.
@@ -47,22 +51,29 @@ local function CancelPostLayoutTicker()
   end
 end
 
-function Quests.Details.SchedulePostLayoutRefresh()
+function Quests.Details.SchedulePostLayoutRefresh(opts)
+  opts = opts or {}
+  local delay = (type(opts.delay) == "number" and opts.delay) or 0.02
+  local bypassGuard = opts.force == true
   CancelPostLayoutTicker()
   if not (QuestMapFrame and QuestMapFrame:IsVisible()) then return end
   -- Intentionally always schedule while QuestMapFrame is visible.
-  -- Blizzard can overwrite quest strings after our initial translation pass; this ticker
-  -- re-applies the chosen view (translated) a few times right after layout changes.
-  local runs = 0
-  _postLayoutTicker = C_Timer.NewTicker(0.08, function()
-    runs = runs + 1
+  -- Blizzard can overwrite quest strings right after showing the details panel.
+  -- We do a single delayed re-apply pass (instead of a multi-run ticker) to avoid spam and churn.
+  _postLayoutTicker = C_Timer.NewTimer(delay, function()
+    _postLayoutTicker = nil
+    if not (QuestMapFrame and QuestMapFrame:IsVisible()) then return end
+    local now = GetTime and GetTime() or 0
+    local qid = (Quests.GetQuestID and Quests.GetQuestID()) or QTR_quest_ID or 0
+    -- Guard: avoid firing __post__ multiple times for the same quest in a short window
+    if (not bypassGuard) and qid > 0 and _postLayoutLastQuestID == qid and (now - (_postLayoutLastAt or 0)) < 0.6 then
+      return
+    end
+    _postLayoutLastQuestID = qid
+    _postLayoutLastAt = now
     if QTR_curr_trans == "1" then
       -- Pass "__post__" event to prevent duplicate processing
       QTR_Translate_On(1, "__post__")
-    end
-    local shouldStop = (runs >= 4) or not (QuestMapFrame and QuestMapFrame:IsVisible()) or (QTR_curr_trans ~= "1")
-    if shouldStop then
-      CancelPostLayoutTicker()
     end
   end)
 end
@@ -77,6 +88,8 @@ function Quests.Details.TranslateOn(typ,event)
    -- Blizzard frequently re-applies quest UI strings after QuestMapFrame_ShowQuestDetails,
    -- which can overwrite our translated Arabic text. The post-layout ticker exists to
    -- re-apply the translation after those late UI updates.
+   
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
    
    if WOWTR and WOWTR.Debug then
      WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn called with typ:", typ, "event:", event or "nil")
@@ -127,7 +140,7 @@ function Quests.Details.TranslateOn(typ,event)
 
    if (typ==1) then
       local numer_ID = QTR_quest_ID
-      str_ID = tostring(numer_ID)
+      local str_ID = tostring(numer_ID)
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Checking quest data for ID:", str_ID)
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QTR_QuestData[str_ID] exists:", QTR_QuestData and QTR_QuestData[str_ID] ~= nil)
@@ -222,10 +235,6 @@ function Quests.Details.TranslateOn(typ,event)
 
          if (QTR_PS["transtitle"] == "1") then
             local currentHeaderTitle = (QuestInfoTitleHeader and QuestInfoTitleHeader.GetText and QuestInfoTitleHeader:GetText()) or ""
-            QuestInfoTitleHeader:SetWidth(textW)
-            QuestProgressTitleText:SetWidth(textW)
-            enforceWidth(QuestInfoTitleHeader, textW)
-            enforceWidth(QuestProgressTitleText, textW)
             -- Cache the ORIGINAL quest title font so we can render any "icon glyph" that doesn't exist in Arabic fonts.
             -- (Some decorations use private glyphs that only render correctly with the original FontString font.)
             Quests.Details._TitleIconFontCache = Quests.Details._TitleIconFontCache or {}
@@ -344,6 +353,28 @@ function Quests.Details.TranslateOn(typ,event)
                Quests.Details._TitleDecorLinks[QTR_quest_ID] = nil
             end
 
+            -- Reserve space for the glyph icon in RTL mode by reducing title width.
+            -- This prevents the glyph from overlapping the title text (apply width once).
+            local glyphReservedW = 0
+            if rtl and leadingGlyph ~= "" then
+               glyphReservedW = 14 -- space for glyph (minimal, X offset handles positioning)
+            end
+            local titleTargetW = textW - glyphReservedW
+            QuestInfoTitleHeader:SetWidth(titleTargetW)
+            QuestProgressTitleText:SetWidth(titleTargetW)
+            enforceWidth(QuestInfoTitleHeader, titleTargetW)
+            enforceWidth(QuestProgressTitleText, titleTargetW)
+
+            -- In QuestMapFrame, toggling ON can be followed by late Blizzard updates that undo our title width/glyph layout.
+            -- Mirror the initial open behavior: schedule ONE post-layout re-apply after __toggle__ only when we actually have a glyph.
+            do
+               local inQuestMapNow = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+               if inQuestMapNow and rtl and event == "__toggle__" and leadingGlyph ~= "" then
+                  Quests.Details._PostAfterToggle = Quests.Details._PostAfterToggle or {}
+                  Quests.Details._PostAfterToggle[QTR_quest_ID] = true
+               end
+            end
+
             -- Inline tags are safe to keep inside the Arabic title (they render regardless of font).
             if leadingTags ~= "" and type(titleLG) == "string" and titleLG ~= "" and (not titleLG:find("|T", 1, true)) and (not titleLG:find("|A", 1, true)) then
                if rtl then
@@ -397,7 +428,9 @@ function Quests.Details.TranslateOn(typ,event)
                local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
                -- To avoid a visible "snap" (Blizzard/ElvUI can adjust anchors/fonts after our first pass),
                -- defer showing the overlay icon until the post-layout reapply pass in QuestMapFrame.
-               local allowIconShow = not (rtl and inQuestMap and event ~= "__post__")
+               -- Exception: on explicit user toggles, show the glyph immediately to avoid a 2-stage flicker.
+               -- We still run a single __post__ re-apply (when needed) to stabilize the layout.
+               local allowIconShow = not (rtl and inQuestMap and event ~= "__post__" and event ~= "__toggle__")
 
                Quests.Details._IconPosLock = Quests.Details._IconPosLock or {}
                local lockIdTitle = tostring(QTR_quest_ID or 0) .. ":title:" .. (inQuestMap and "map" or "other")
@@ -446,28 +479,12 @@ function Quests.Details.TranslateOn(typ,event)
                         if not (rtl and inQuestMap and Quests.Details._IconPosLock[lockIdTitle]) then
                            iconFS:ClearAllPoints()
                            if rtl then
-                              -- Place the icon inside the right margin created by enforceWidth() (see lessons L-013).
-                              -- Use the measured icon width (fallback for |A/|T) so we don't push it outside the frame
-                              -- when the reserved margin (dx) is smaller than our previous fixed-width guess.
-                              local dx = (Quests.Details._AppliedDelta and Quests.Details._AppliedDelta[QuestInfoTitleHeader]) or 0
-                              if dx < 0 then dx = 0 end
-                              local gap, pad, extra = 2, 0, 15
-                              local w = 0
-                              if type(leadingGlyph) == "string" and (leadingGlyph:find("^|A") or leadingGlyph:find("^|T")) then
-                                 w = 22
-                              elseif iconFS.GetStringWidth then
-                                 w = iconFS:GetStringWidth() or 0
-                              end
-                              if w < 8 then w = 8 end
-                              local desired = dx - pad
-                              local minOffset = w + gap
-                              local maxOffset = dx + extra
-                              local xOffset = desired
-                              if xOffset < minOffset then xOffset = minOffset end
-                              if xOffset > maxOffset then xOffset = maxOffset end
-                              iconFS:SetWidth(0) -- let it size naturally; we only control positioning.
-                              iconFS:SetJustifyH("RIGHT")
-                              iconFS:SetPoint("RIGHT", QuestInfoTitleHeader, "RIGHT", xOffset, 0)
+                              -- Place the glyph in the reserved space to the LEFT of the title text.
+                              -- Since we reduced the title width by glyphReservedW, the glyph goes in that gap.
+                              -- Position at RIGHT edge of title + X offset, so it sits visually before the Arabic text.
+                              iconFS:SetWidth(0) -- let it size naturally
+                              iconFS:SetJustifyH("LEFT")
+                              iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "RIGHT", 4, 0)
                            else
                               iconFS:SetWidth(0)
                               iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "LEFT", 0, 0)
@@ -488,25 +505,10 @@ function Quests.Details.TranslateOn(typ,event)
                         if not (rtl and inQuestMap and Quests.Details._IconPosLock[lockIdProg]) then
                            iconFS2:ClearAllPoints()
                            if rtl then
-                              local dx2 = (Quests.Details._AppliedDelta and Quests.Details._AppliedDelta[QuestProgressTitleText]) or 0
-                              if dx2 < 0 then dx2 = 0 end
-                              local gap2, pad2, extra2 = 2, 0, 15
-                              local w2 = 0
-                              if type(leadingGlyph) == "string" and (leadingGlyph:find("^|A") or leadingGlyph:find("^|T")) then
-                                 w2 = 22
-                              elseif iconFS2.GetStringWidth then
-                                 w2 = iconFS2:GetStringWidth() or 0
-                              end
-                              if w2 < 8 then w2 = 8 end
-                              local desired2 = dx2 - pad2
-                              local minOffset2 = w2 + gap2
-                              local maxOffset2 = dx2 + extra2
-                              local xOffset2 = desired2
-                              if xOffset2 < minOffset2 then xOffset2 = minOffset2 end
-                              if xOffset2 > maxOffset2 then xOffset2 = maxOffset2 end
+                              -- Same positioning logic for progress title
                               iconFS2:SetWidth(0)
-                              iconFS2:SetJustifyH("RIGHT")
-                              iconFS2:SetPoint("RIGHT", QuestProgressTitleText, "RIGHT", xOffset2, 0)
+                              iconFS2:SetJustifyH("LEFT")
+                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", 20, 0)
                            else
                               iconFS2:SetWidth(0)
                               iconFS2:SetPoint("LEFT", QuestProgressTitleText, "LEFT", 0, 0)
@@ -566,21 +568,27 @@ function Quests.Details.TranslateOn(typ,event)
 
             if (WorldMapFrame:IsVisible()) then
                if rtl then
-                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5, "RIGHT"))
+                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("RIGHT") end
                else
                   QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("LEFT") end
                end
             else
                if rtl then
-                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5, "RIGHT"))
+                  QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("RIGHT") end
                else
                   QuestInfoTitleHeader:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestInfoTitleHeader, WOWTR_Font1, -5))
+                  if QuestInfoTitleHeader.SetJustifyH then QuestInfoTitleHeader:SetJustifyH("LEFT") end
                end
             end
             if rtl then
-               QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5, "RIGHT"))
+               QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5))
+               if QuestProgressTitleText.SetJustifyH then QuestProgressTitleText:SetJustifyH("RIGHT") end
             else
                QuestProgressTitleText:SetText(QTR_ExpandUnitInfo(titleLG, false, QuestProgressTitleText, WOWTR_Font1, -5))
+               if QuestProgressTitleText.SetJustifyH then QuestProgressTitleText:SetJustifyH("LEFT") end
             end
          end
 
@@ -617,29 +625,16 @@ function Quests.Details.TranslateOn(typ,event)
          end
          
          -- Check which panels are visible
-         if QuestFrame then
-            if WOWTR and WOWTR.Debug then
-              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
-              if QuestFrame.DetailPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
-              end
-              if QuestFrame.ProgressPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
-              end
-              if QuestFrame.RewardPanel then
-                WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
-              end
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
-              if QuestFrame.DetailPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
-              end
-              if QuestFrame.ProgressPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
-              end
-              if QuestFrame.RewardPanel then
-                WOWTR.DebugPrint("TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
-              end
+         if QuestFrame and WOWTR and WOWTR.Debug then
+            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame visible:", QuestFrame:IsVisible())
+            if QuestFrame.DetailPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.DetailPanel visible:", QuestFrame.DetailPanel:IsVisible())
+            end
+            if QuestFrame.ProgressPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.ProgressPanel visible:", QuestFrame.ProgressPanel:IsVisible())
+            end
+            if QuestFrame.RewardPanel then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestFrame.RewardPanel visible:", QuestFrame.RewardPanel:IsVisible())
             end
          end
          
@@ -648,23 +643,16 @@ function Quests.Details.TranslateOn(typ,event)
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText visible:", QuestInfoDescriptionText:IsVisible())
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText parent visible:", QuestInfoDescriptionText:GetParent() and QuestInfoDescriptionText:GetParent():IsVisible())
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText visible:", QuestInfoDescriptionText:IsVisible())
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText parent visible:", QuestInfoDescriptionText:GetParent() and QuestInfoDescriptionText:GetParent():IsVisible())
             end
             local currentText = QuestInfoDescriptionText:GetText()
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText current text length:", currentText and string.len(currentText) or 0)
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText current text length:", currentText and string.len(currentText) or 0)
             end
             
             -- If text field is hidden, try to show it and its parent
             if not QuestInfoDescriptionText:IsVisible() then
                if WOWTR and WOWTR.Debug then
                  WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText is hidden, attempting to show...")
-               else
-                 WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText is hidden, attempting to show...")
                end
                if QuestInfoDescriptionText.Show then QuestInfoDescriptionText:Show() end
                local parent = QuestInfoDescriptionText:GetParent()
@@ -672,8 +660,6 @@ function Quests.Details.TranslateOn(typ,event)
                   parent:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed parent of QuestInfoDescriptionText")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed parent of QuestInfoDescriptionText")
                   end
                end
                -- Try showing DetailPanel if it exists
@@ -681,8 +667,6 @@ function Quests.Details.TranslateOn(typ,event)
                   QuestFrame.DetailPanel:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed QuestFrame.DetailPanel")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed QuestFrame.DetailPanel")
                   end
                end
             end
@@ -691,23 +675,16 @@ function Quests.Details.TranslateOn(typ,event)
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText visible:", QuestInfoObjectivesText:IsVisible())
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText parent visible:", QuestInfoObjectivesText:GetParent() and QuestInfoObjectivesText:GetParent():IsVisible())
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText visible:", QuestInfoObjectivesText:IsVisible())
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText parent visible:", QuestInfoObjectivesText:GetParent() and QuestInfoObjectivesText:GetParent():IsVisible())
             end
             local currentText = QuestInfoObjectivesText:GetText()
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText current text length:", currentText and string.len(currentText) or 0)
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText current text length:", currentText and string.len(currentText) or 0)
             end
             
             -- If text field is hidden, try to show it
             if not QuestInfoObjectivesText:IsVisible() then
                if WOWTR and WOWTR.Debug then
                  WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText is hidden, attempting to show...")
-               else
-                 WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText is hidden, attempting to show...")
                end
                if QuestInfoObjectivesText.Show then QuestInfoObjectivesText:Show() end
                local parent = QuestInfoObjectivesText:GetParent()
@@ -715,8 +692,6 @@ function Quests.Details.TranslateOn(typ,event)
                   parent:Show()
                   if WOWTR and WOWTR.Debug then
                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Showed parent of QuestInfoObjectivesText")
-                  else
-                    WOWTR.DebugPrint("TranslateOn: Showed parent of QuestInfoObjectivesText")
                   end
                end
             end
@@ -727,8 +702,6 @@ function Quests.Details.TranslateOn(typ,event)
          if QuestInfoDescriptionText and not QuestInfoDescriptionText:IsVisible() then
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoDescriptionText is hidden, showing it...")
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoDescriptionText is hidden, showing it...")
             end
             if QuestInfoDescriptionText.Show then QuestInfoDescriptionText:Show() end
             local parent = QuestInfoDescriptionText:GetParent()
@@ -741,8 +714,6 @@ function Quests.Details.TranslateOn(typ,event)
          if QuestInfoObjectivesText and not QuestInfoObjectivesText:IsVisible() then
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: QuestInfoObjectivesText is hidden, showing it...")
-            else
-              WOWTR.DebugPrint("TranslateOn: QuestInfoObjectivesText is hidden, showing it...")
             end
             if QuestInfoObjectivesText.Show then QuestInfoObjectivesText:Show() end
             local parent = QuestInfoObjectivesText:GetParent()
@@ -754,8 +725,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestInfoDescriptionText:SetJustifyH("RIGHT") else QuestInfoDescriptionText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Description text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Description text set")
             end
          end
          if QuestInfoObjectivesText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].objectives then
@@ -763,8 +732,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestInfoObjectivesText:SetJustifyH("RIGHT") else QuestInfoObjectivesText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Objectives text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Objectives text set")
             end
          end
          if QuestProgressText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].progress then
@@ -772,8 +739,6 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl then QuestProgressText:SetJustifyH("RIGHT") else QuestProgressText:SetJustifyH("LEFT") end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Progress text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Progress text set")
             end
          end
          if QuestInfoRewardText and QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].completion then
@@ -784,14 +749,10 @@ function Quests.Details.TranslateOn(typ,event)
             end
             if WOWTR and WOWTR.Debug then
               WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Reward text set")
-            else
-              WOWTR.DebugPrint("TranslateOn: Reward text set")
             end
          end
          if WOWTR and WOWTR.Debug then
            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: All quest text set successfully")
-         else
-           WOWTR.DebugPrint("TranslateOn: All quest text set successfully")
          end
          
          -- Set fonts immediately (these shouldn't conflict)
@@ -812,13 +773,43 @@ function Quests.Details.TranslateOn(typ,event)
          end
       end
    end
+   -- Post-layout re-apply: QuestMapFrame can overwrite strings after our first pass.
+   -- Default: schedule after initial show/refresh events.
+   -- Toggle: schedule only when the title has a glyph overlay that needs a stable second pass.
    if event ~= "__post__" then
-      Quests.Details.SchedulePostLayoutRefresh()
+      local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+      if inQuestMap then
+         if event == "__toggle__" then
+            local post = Quests.Details._PostAfterToggle
+            if post and post[QTR_quest_ID] then
+               post[QTR_quest_ID] = nil
+               -- Force a quick post-pass after toggle to stabilize glyph/width even if a __post__ just ran.
+               Quests.Details.SchedulePostLayoutRefresh({ force = true, delay = 0.02 })
+            end
+         else
+            Quests.Details.SchedulePostLayoutRefresh()
+         end
+      elseif QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible() and StartDelayedFunction then
+         -- QuestFrame can also apply a late rewards refresh; re-apply constants once after layout settles.
+         StartDelayedFunction(function()
+            if QTR_curr_trans ~= "1" then return end
+            if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then return end
+            if not (QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible()) then return end
+            if QTR_display_constants then QTR_display_constants(1) end
+         end, 0.03)
+         StartDelayedFunction(function()
+            if QTR_curr_trans ~= "1" then return end
+            if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then return end
+            if not (QuestFrame and QuestFrame.IsVisible and QuestFrame:IsVisible()) then return end
+            if QTR_display_constants then QTR_display_constants(1) end
+         end, 0.10)
+      end
    end
 end
 
 -- Display original English text
 function Quests.Details.TranslateOff(typ,event)
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
    Quests.Details.CancelPostLayoutRefresh()
    QTR_display_constants(0)
    -- When used as a "fallback to English" (no translation available / feature disabled),
@@ -833,6 +824,19 @@ function Quests.Details.TranslateOff(typ,event)
    if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
    if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
    if QTR_QuestReward_InfoXP then QTR_QuestReward_InfoXP:Hide() end
+   if QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
+      local receive = QuestInfoRewardsFrame.ItemReceiveText
+      if receive.ClearAllPoints and receive.SetPoint and QuestInfoRewardsFrame.Header then
+         receive:ClearAllPoints()
+         receive:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+      end
+      if receive.SetWidth then receive:SetWidth(0) end
+      if receive.SetJustifyH then receive:SetJustifyH("LEFT") end
+   end
+   if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint and QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
+      QuestInfoMoneyFrame:ClearAllPoints()
+      QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+   end
 
    -- Restore QuestMapFrame rewards labels to original English/LTR.
    -- QuestMapFrame uses pooled MapQuestInfoRewardsFrame instances which keep our previous Arabic text unless we revert it.
@@ -856,7 +860,7 @@ function Quests.Details.TranslateOff(typ,event)
    local function restoreMapRewards()
      if not (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) then return end
      local df = (QuestMapFrame.QuestsFrame and QuestMapFrame.QuestsFrame.DetailsFrame) or QuestMapFrame.DetailsFrame
-     local mapRewards = (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame) or _G.MapQuestInfoRewardsFrame
+     local mapRewards = (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame) or rawget(_G, "MapQuestInfoRewardsFrame")
      if not mapRewards then return end
 
      local inv = {}
@@ -991,7 +995,7 @@ function Quests.Details.TranslateOff(typ,event)
    end
    if (typ==1) then
       local numer_ID = QTR_quest_ID
-      str_ID = tostring(numer_ID)
+      local str_ID = tostring(numer_ID)
 
       -- Always restore LTR layout + original header labels, even if the quest has no translation data.
       -- This prevents mixed UI states like Arabic "الوصف" and RTL alignment on English-only quests.
@@ -1106,12 +1110,25 @@ function Quests.Details.TranslateOff(typ,event)
          QuestInfoXPFrame.ReceiveText:SetText(EXPERIENCE_COLON)
          QuestInfoXPFrame.ReceiveText:SetFont(Original_Font2, 13)
          QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+         if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
+            QuestInfoXPFrame.ValueText:ClearAllPoints()
+            QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
+         end
          QuestInfoRewardsFrame.ItemChooseText:SetText(QTR_quest_EN[QTR_quest_ID].itemchoose)
          QuestInfoRewardsFrame.ItemReceiveText:SetText(QTR_quest_EN[QTR_quest_ID].itemreceive)
          QuestInfoRewardsFrame.ItemChooseText:SetFont(Original_Font2, 13)
          QuestInfoRewardsFrame.ItemReceiveText:SetFont(Original_Font2, 13)
          QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT")
          QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
+         if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
+         if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+            QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+            QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+         end
+         if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+            QuestInfoMoneyFrame:ClearAllPoints()
+            QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+         end
          if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
          if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
          if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
@@ -1149,7 +1166,8 @@ function Quests.Details.TranslateOff(typ,event)
       end
    else
       if (QTR_curr_trans == "0") then
-         if ((ImmersionFrame ~= nil ) and (ImmersionFrame.TalkBox:IsVisible() )) then
+         local immersionFrame = GetImmersionFrame()
+         if (immersionFrame and immersionFrame.TalkBox and immersionFrame.TalkBox:IsVisible()) then
             if (not WOWTR_wait(0.2,QTR_Immersion_OFF_Static)) then end
          end
       end
@@ -1166,14 +1184,31 @@ function QTR_PrepareReload() return Quests.Details.QuestPrepare() end
 -- Prepare quest data and switch translated view on
 function Quests.Details.QuestPrepare(event)
   local startTime = GetTime()
-  if WOWTR and WOWTR.Debug then
-    WOWTR.Debug.Enter("QuestPrepare", WOWTR.Debug.Categories.QUESTS, "Event:", event or "nil", "| Time:", startTime)
-  end
+  local QTR_QuestData = rawget(_G, "QTR_QuestData")
   QTR_PrepareTime = time()
   if QTR_IconAI then QTR_IconAI:Hide() end
   if GoQ_IconAI then GoQ_IconAI:Hide() end
 
   local q_ID = Quests.GetQuestID and Quests.GetQuestID() or 0
+
+  -- QuestMapFrame can fire multiple forced prepares while its details panel finishes showing.
+  -- We already schedule a single __post__ re-apply pass from TranslateOn, so suppress rapid duplicate forced calls.
+  do
+    local now = GetTime()
+    local isForced = (event == "__force__")
+    local inQuestMap = (QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible()) or false
+    if isForced and inQuestMap and q_ID > 0 and _lastForceQuestID == q_ID and (now - (_lastForceAt or 0)) < 0.35 then
+      return
+    end
+    if isForced and q_ID > 0 then
+      _lastForceQuestID = q_ID
+      _lastForceAt = now
+    end
+  end
+
+  if WOWTR and WOWTR.Debug then
+    WOWTR.Debug.Enter("QuestPrepare", WOWTR.Debug.Categories.QUESTS, "Event:", event or "nil", "| Time:", startTime)
+  end
   if WOWTR and WOWTR.Debug then
     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Quest ID:", q_ID, "| Active frames:", 
       (QuestFrame and QuestFrame:IsVisible() and "QuestFrame") or 
@@ -1185,11 +1220,12 @@ function Quests.Details.QuestPrepare(event)
   -- But allow reprocessing if the text isn't actually translated (Blizzard might have overwritten it)
   if q_ID > 0 then
     local now = GetTime()
-    if _lastProcessedQuestID == q_ID and (now - _lastProcessedQuestTime) < 0.5 then
+    if _G._lastProcessedQuestID == q_ID and (now - _G._lastProcessedQuestTime) < 0.5 then
       -- Check if text is actually translated - if not, allow reprocessing
       -- But only allow ONE reprocessing attempt to avoid infinite loops
       local isActuallyTranslated = false
       local shouldReprocess = false
+      local reprocessKey = "_reprocess_" .. q_ID
       
       if QuestInfoDescriptionText and QuestInfoDescriptionText:IsVisible() then
         local currentText = QuestInfoDescriptionText:GetText() or ""
@@ -1207,7 +1243,6 @@ function Quests.Details.QuestPrepare(event)
           -- If current text matches English length but we have translation, check if we've already tried reprocessing
           elseif currentLen == englishLen and currentText == englishText then
             -- Check if we've already attempted reprocessing for this quest
-            local reprocessKey = "_reprocess_" .. q_ID
             if not _G[reprocessKey] then
               -- First time seeing English text after processing - allow one reprocessing attempt
               _G[reprocessKey] = true
@@ -1219,28 +1254,63 @@ function Quests.Details.QuestPrepare(event)
           end
         end
       end
+
+      -- Some late UI refreshes overwrite only reward labels (description stays translated).
+      -- Detect this case so we still allow one re-apply pass.
+      do
+        local rewardFS = QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText
+        local expectedReward = QTR_quest_LG[q_ID] and QTR_quest_LG[q_ID].itemreceive or ""
+        local rewardVisible = rewardFS and rewardFS.IsVisible and rewardFS:IsVisible()
+        if rewardVisible and type(expectedReward) == "string" and expectedReward ~= "" and ContainsArabic(expectedReward) then
+          local currentReward = rewardFS:GetText() or ""
+          if currentReward ~= "" and not ContainsArabic(currentReward) then
+            if not _G[reprocessKey] then
+              _G[reprocessKey] = true
+              shouldReprocess = true
+              isActuallyTranslated = false
+            else
+              -- Already attempted; avoid infinite loop churn.
+              isActuallyTranslated = false
+            end
+          end
+        end
+      end
       
       if isActuallyTranslated then
         if WOWTR and WOWTR.Debug then
-          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed | Text is translated | Time since last:", string.format("%.2f", now - _lastProcessedQuestTime), "s")
+          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed | Text is translated | Time since last:", string.format("%.2f", now - _G._lastProcessedQuestTime), "s")
         end
         return
       elseif shouldReprocess then
+        -- QuestMapFrame can overwrite strings immediately after show.
+        -- Instead of re-running full QuestPrepare (spam/churn), schedule a single post-layout re-apply pass.
+        if QuestMapFrame and QuestMapFrame.IsVisible and QuestMapFrame:IsVisible() then
+          if WOWTR and WOWTR.Debug then
+            WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REAPPLY | Quest", q_ID, "text was overwritten; scheduling single __post__ re-apply")
+          end
+          if Quests and Quests.Details and Quests.Details.SchedulePostLayoutRefresh then
+            Quests.Details.SchedulePostLayoutRefresh()
+          elseif QTR_Translate_On then
+            QTR_Translate_On(1, "__post__")
+          end
+          return
+        end
+
         if WOWTR and WOWTR.Debug then
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "REPROCESS | Quest", q_ID, "was processed but text appears untranslated | Allowing ONE reprocessing attempt")
         end
         -- Reset the timestamp so we can process it again, but mark that we've tried reprocessing
-        _lastProcessedQuestTime = 0
+        _G._lastProcessedQuestTime = 0
       else
         if WOWTR and WOWTR.Debug then
-          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed recently | Time since last:", string.format("%.2f", now - _lastProcessedQuestTime), "s")
+          WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Quest", q_ID, "already processed recently | Time since last:", string.format("%.2f", now - _G._lastProcessedQuestTime), "s")
         end
         return
       end
     end
     -- Mark that we're processing this quest now
-    _lastProcessedQuestID = q_ID
-    _lastProcessedQuestTime = now
+    _G._lastProcessedQuestID = q_ID
+    _G._lastProcessedQuestTime = now
     -- Clear reprocess flag when starting fresh processing
     local reprocessKey = "_reprocess_" .. q_ID
     _G[reprocessKey] = nil
@@ -1293,7 +1363,9 @@ function Quests.Details.QuestPrepare(event)
   do
     local now = GetTime()
     local isForced = (event == "__force__")
-    if (not isForced) and (_lastPrepareQuestID == q_ID and (now - (_lastPrepareAt or 0)) < 0.05) then
+    -- Throttle rapid duplicate calls. Forced calls can spam via QuestMapDetailsScrollFrame OnShow.
+    local throttleWindow = isForced and 0.25 or 0.05
+    if (_lastPrepareQuestID == q_ID and (now - (_lastPrepareAt or 0)) < throttleWindow) then
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "SKIP | Throttled duplicate call | Quest:", q_ID, "| Time since last:", string.format("%.3f", now - (_lastPrepareAt or 0)), "s")
       end
@@ -1628,7 +1700,7 @@ function Quests.Details.QuestPrepare(event)
     if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Disable() end
     
     -- Capture quest text data even when active is off (needed for display)
-    WOWTR.DebugPrint("QuestPrepare: Capturing quest text...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Capturing quest text...") end
     if (not QTR_quest_EN[QTR_quest_ID].title) then
       local apiTitle = (GetTitleText and GetTitleText()) or ""
       local headerTitle = (QuestInfoTitleHeader and QuestInfoTitleHeader.GetText and QuestInfoTitleHeader:GetText()) or ""
@@ -1640,25 +1712,27 @@ function Quests.Details.QuestPrepare(event)
       end
       if chosen == "" then chosen = headerTitle end
       QTR_quest_EN[QTR_quest_ID].title = chosen
-      WOWTR.DebugPrint("QuestPrepare: Captured title:", QTR_quest_EN[QTR_quest_ID].title and string.len(QTR_quest_EN[QTR_quest_ID].title) or 0, "chars")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured title:", QTR_quest_EN[QTR_quest_ID].title and string.len(QTR_quest_EN[QTR_quest_ID].title) or 0, "chars") end
     end
     
     if (event == "QUEST_DETAIL") then
       if (not QTR_quest_EN[QTR_quest_ID].details) then
         QTR_quest_EN[QTR_quest_ID].details = GetQuestText() or ""
         QTR_quest_EN[QTR_quest_ID].objectives = GetObjectiveText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured details:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
-        WOWTR.DebugPrint("QuestPrepare: Captured objectives:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        if WOWTR and WOWTR.Debug then
+          WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured details:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
+          WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured objectives:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        end
       end
     elseif QuestInfoDescriptionText and QuestInfoDescriptionText.GetText then
       -- For map quest panel or other events, read from visible frames
       if (not QTR_quest_EN[QTR_quest_ID].details) then
         QTR_quest_EN[QTR_quest_ID].details = QuestInfoDescriptionText:GetText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured details from frame:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars")
+        if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured details from frame:", QTR_quest_EN[QTR_quest_ID].details and string.len(QTR_quest_EN[QTR_quest_ID].details) or 0, "chars") end
       end
       if (not QTR_quest_EN[QTR_quest_ID].objectives and QuestInfoObjectivesText and QuestInfoObjectivesText.GetText) then
         QTR_quest_EN[QTR_quest_ID].objectives = QuestInfoObjectivesText:GetText() or ""
-        WOWTR.DebugPrint("QuestPrepare: Captured objectives from frame:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars")
+        if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Captured objectives from frame:", QTR_quest_EN[QTR_quest_ID].objectives and string.len(QTR_quest_EN[QTR_quest_ID].objectives) or 0, "chars") end
       end
     end
     
@@ -1667,16 +1741,16 @@ function Quests.Details.QuestPrepare(event)
     QTR_quest_EN[QTR_quest_ID].itemreceive = QTR_quest_EN[QTR_quest_ID].itemreceive or QTR_MessOrig.itemreceiv0
     
     -- Save quest data even when active is off (so we have it if user re-enables)
-    WOWTR.DebugPrint("QuestPrepare: Saving quest data...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Saving quest data...") end
     QTR_SaveQuest(event)
     
     -- Ensure quest is displayed in English (not translated)
-    WOWTR.DebugPrint("QuestPrepare: Calling QTR_Translate_Off...")
+    if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Calling QTR_Translate_Off...") end
     if QTR_Translate_Off then
       QTR_Translate_Off(1, "__keep_state__")
-      WOWTR.DebugPrint("QuestPrepare: QTR_Translate_Off completed")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: QTR_Translate_Off completed") end
     else
-      WOWTR.DebugPrint("QuestPrepare: ERROR - QTR_Translate_Off is nil!")
+      if WOWTR and WOWTR.Debug then WOWTR.Debug.Error(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: QTR_Translate_Off is nil!") end
     end
     
     -- Handle Immersion frame if visible
@@ -1704,6 +1778,7 @@ end
 -- Remove delegator stubs that would override real implementations
 
 function Quests.Details.DisplayConstants(lg)
+   local QTR_QuestData = rawget(_G, "QTR_QuestData")
    local str_ID = QTR_quest_ID and tostring(QTR_quest_ID) or nil
    local questDataExists = str_ID and QTR_QuestData and QTR_QuestData[str_ID]
    local questLGData = questDataExists and QTR_quest_LG and QTR_quest_LG[QTR_quest_ID]
@@ -1825,123 +1900,63 @@ function Quests.Details.DisplayConstants(lg)
             local itemReceiveText = (lgData and lgData.itemreceive) or QTR_Messages.itemreceiv0
 
             if isArabic then
+               local itemChooseAR = AS_UTF8reverse(itemChooseText)
+               local itemReceiveAR = AS_UTF8reverse(itemReceiveText)
+               local experienceAR = AS_UTF8reverse(QTR_Messages.experience)
+
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 14)
                QuestInfoRewardsFrame.ItemChooseText:SetWidth(260)
                QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("RIGHT")
-               QuestInfoRewardsFrame.ItemChooseText:SetText(AS_UTF8reverse(itemChooseText))
+               QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseAR)
 
-               QuestInfoRewardsFrame.ItemReceiveText:SetText(" ")
-               QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(" ")
-               QuestInfoXPFrame.ReceiveText:SetText(" ")
-
-               if (not QTR_QuestDetail_ItemReceiveText) then
-                  QTR_QuestDetail_ItemReceiveText = QuestDetailScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestDetail_ItemReceiveText:SetFontObject(GameFontBlack)
-                  QTR_QuestDetail_ItemReceiveText:SetJustifyH("RIGHT")
-                  QTR_QuestDetail_ItemReceiveText:SetJustifyV("TOP")
-                  QTR_QuestDetail_ItemReceiveText:ClearAllPoints()
-                  QTR_QuestDetail_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestDetail_ItemReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveAR)
+               QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("RIGHT")
+               QuestInfoRewardsFrame.ItemReceiveText:SetWidth(260)
+               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
                end
-               QTR_QuestDetail_ItemReceiveText:SetText(AS_UTF8reverse(itemReceiveText))
-               QTR_QuestDetail_ItemReceiveText:Show()
-
-               if (not QTR_QuestReward_ItemReceiveText) then 
-                  QTR_QuestReward_ItemReceiveText = QuestRewardScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestReward_ItemReceiveText:SetFontObject(GameFontBlack)
-                  QTR_QuestReward_ItemReceiveText:SetJustifyH("RIGHT")
-                  QTR_QuestReward_ItemReceiveText:SetJustifyV("TOP")
-                  QTR_QuestReward_ItemReceiveText:ClearAllPoints()
-                  QTR_QuestReward_ItemReceiveText:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.ItemReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestReward_ItemReceiveText:SetFont(WOWTR_Font2, 14)
+               if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+                  -- Keep money inside rewards pane in RTL even when receive label uses a wide right-justified column.
+                  QuestInfoMoneyFrame:ClearAllPoints()
+                  local moneyX = 15
+                  if QuestInfoMoneyFrame.GetWidth and QuestInfoRewardsFrame.GetWidth and QuestInfoRewardsFrame.ItemReceiveText.GetWidth then
+                     local moneyW = tonumber(QuestInfoMoneyFrame:GetWidth()) or 0
+                     if moneyW < 1 then moneyW = 80 end
+                     local rewardsW = tonumber(QuestInfoRewardsFrame:GetWidth()) or 285
+                     local labelW = tonumber(QuestInfoRewardsFrame.ItemReceiveText:GetWidth()) or 0
+                     if labelW < 1 then labelW = 260 end
+                     local targetRight = rewardsW - 80
+                     local predictedRight = labelW + moneyX + moneyW
+                     local overflow = predictedRight - targetRight
+                     if overflow > 0 then
+                        moneyX = moneyX - overflow
+                     end
+                  end
+                  QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", moneyX, 0)
                end
-               QTR_QuestReward_ItemReceiveText:SetText(AS_UTF8reverse(itemReceiveText))
-               QTR_QuestReward_ItemReceiveText:Show()
 
-               if (not QTR_QuestDetail_InfoXP) then 
-                  QTR_QuestDetail_InfoXP = QuestDetailScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestDetail_InfoXP:SetFontObject(GameFontBlack)
-                  QTR_QuestDetail_InfoXP:SetJustifyH("RIGHT")
-                  QTR_QuestDetail_InfoXP:SetJustifyV("TOP")
-                  QTR_QuestDetail_InfoXP:ClearAllPoints()
-                  QTR_QuestDetail_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestDetail_InfoXP:SetFont(WOWTR_Font2, 14)
+               if QuestInfoRewardsFrame.XPFrame and QuestInfoRewardsFrame.XPFrame.ReceiveText then
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(experienceAR)
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
+                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetJustifyH("RIGHT")
                end
-               QTR_QuestDetail_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience))
-               QTR_QuestDetail_InfoXP:Show()
+               QuestInfoXPFrame.ReceiveText:SetText(experienceAR)
+               QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
+               QuestInfoXPFrame.ReceiveText:SetJustifyH("RIGHT")
 
-               if (not QTR_QuestReward_InfoXP) then 
-                  QTR_QuestReward_InfoXP = QuestRewardScrollChildFrame:CreateFontString(nil, "ARTWORK")
-                  QTR_QuestReward_InfoXP:SetFontObject(GameFontBlack)
-                  QTR_QuestReward_InfoXP:SetJustifyH("RIGHT")
-                  QTR_QuestReward_InfoXP:SetJustifyV("TOP")
-                  QTR_QuestReward_InfoXP:ClearAllPoints()
-                  QTR_QuestReward_InfoXP:SetPoint("TOPRIGHT", QuestInfoRewardsFrame.XPFrame.ReceiveText, "TOPLEFT", 260, 2)
-                  QTR_QuestReward_InfoXP:SetFont(WOWTR_Font2, 14)
-               end
-               QTR_QuestReward_InfoXP:SetText(AS_UTF8reverse(QTR_Messages.experience))
-               QTR_QuestReward_InfoXP:Show()
-
-               if (QuestInfoMoneyFrame:IsVisible()) then
+               -- Keep Blizzard default XP value anchor; custom TOPRIGHT anchor can collapse reward spacing.
+               if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
                   QuestInfoXPFrame.ValueText:ClearAllPoints()
-                  QuestInfoXPFrame.ValueText:SetPoint("TOPRIGHT", QuestInfoMoneyFrame, "BOTTOMRIGHT", -10, 0)
+                  QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
                end
 
-               local max_len = AS_UTF8len(QTR_QuestDetail_ItemReceiveText:GetText())
-               local money_len = QuestInfoMoneyFrame:GetWidth()
-               local spaces05 = "     "
-               local spaces10 = "          "
-               local spaces15 = "               "
-               local spaces20 = "                    "
-               if (max_len < 10) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces20)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces20)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces20)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces15)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces15)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces15)
-                  elseif (money_len < 110) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 130) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 20) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces15)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces15)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces15)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 110) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 30) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces10)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces10)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces10)
-                  elseif (money_len < 90) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               elseif (max_len < 40) then
-                  if (money_len < 70) then
-                     QuestInfoRewardsFrame.ItemReceiveText:SetText(spaces05)
-                     QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(spaces05)
-                     QuestInfoXPFrame.ReceiveText:SetText(spaces05)
-                  end
-               end
+               -- Keep legacy overlay labels hidden to avoid duplicate/overlapping text stacks.
+               if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
+               if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
+               if QTR_QuestDetail_InfoXP then QTR_QuestDetail_InfoXP:Hide() end
+               if QTR_QuestReward_InfoXP then QTR_QuestReward_InfoXP:Hide() end
             else
                QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseText)
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 13)
@@ -1950,10 +1965,19 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveText)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
+               if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
+               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
+                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
+                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
+               end
 
                QuestInfoXPFrame.ReceiveText:SetText(QTR_Messages.experience)
                QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+               if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
+                  QuestInfoMoneyFrame:ClearAllPoints()
+                  QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
+               end
 
                if QTR_QuestDetail_ItemReceiveText then QTR_QuestDetail_ItemReceiveText:Hide() end
                if QTR_QuestReward_ItemReceiveText then QTR_QuestReward_ItemReceiveText:Hide() end
@@ -1969,7 +1993,7 @@ function Quests.Details.DisplayConstants(lg)
                 or (QuestMapFrame and QuestMapFrame.DetailsFrame)
               local mapRewards =
                 (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame)
-                or _G.MapQuestInfoRewardsFrame
+                or rawget(_G, "MapQuestInfoRewardsFrame")
               if mapRewards and mapRewards.GetRegions then
                 local function norm(s)
                   if not s then return "" end

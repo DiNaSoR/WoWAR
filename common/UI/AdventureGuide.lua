@@ -20,12 +20,16 @@ function M.SuggestTabClick()
 
   -- EJ suggest title
   T.ApplyUI({
-    function() return _G.EncounterJournalInstanceSelect and _G.EncounterJournalInstanceSelect.Title end,
+    function()
+      local inst = rawget(_G, "EncounterJournalInstanceSelect")
+      return inst and inst.Title
+    end,
   }, { sav = true, prefix = "Dungeon&Raid:Suggest:SuggestTittle", font = font })
 
   -- Suggestions 1..3 use dynamic prefix based on the suggestion title
   for i = 1, 3 do
-    local suggest = _G.EncounterJournalSuggestFrame and _G.EncounterJournalSuggestFrame["Suggestion" .. i]
+    local suggestFrame = rawget(_G, "EncounterJournalSuggestFrame")
+    local suggest = suggestFrame and suggestFrame["Suggestion" .. i]
     local desc = suggest and suggest.centerDisplay and suggest.centerDisplay.description and suggest.centerDisplay.description.text
     local titleFS = suggest and suggest.centerDisplay and suggest.centerDisplay.title and suggest.centerDisplay.title.text
     local title = (titleFS and titleFS.GetText and titleFS:GetText()) or "?"
@@ -37,52 +41,66 @@ function M.SuggestTabClick()
   -- Remaining UI elements in Suggest tab (same prefix + font selection)
   T.ApplyUI({
     function()
-      return _G.EncounterJournalMonthlyActivitiesFrame
-        and _G.EncounterJournalMonthlyActivitiesFrame.BarComplete
-        and _G.EncounterJournalMonthlyActivitiesFrame.BarComplete.AllRewardsCollectedText
+      local maf = rawget(_G, "EncounterJournalMonthlyActivitiesFrame")
+      return maf and maf.BarComplete and maf.BarComplete.AllRewardsCollectedText
     end,
-    function() return _G.EncounterJournalTitleText end,
+    function() return rawget(_G, "EncounterJournalTitleText") end,
     function()
-      return _G.EncounterJournalMonthlyActivitiesFrame
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer.Month
+      local maf = rawget(_G, "EncounterJournalMonthlyActivitiesFrame")
+      return maf and maf.HeaderContainer and maf.HeaderContainer.Month
     end,
     function()
-      return _G.EncounterJournalMonthlyActivitiesFrame
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer.Title
+      local maf = rawget(_G, "EncounterJournalMonthlyActivitiesFrame")
+      return maf and maf.HeaderContainer and maf.HeaderContainer.Title
     end,
     function()
-      return _G.EncounterJournalMonthlyActivitiesFrame
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer
-        and _G.EncounterJournalMonthlyActivitiesFrame.HeaderContainer.TimeLeft
+      local maf = rawget(_G, "EncounterJournalMonthlyActivitiesFrame")
+      return maf and maf.HeaderContainer and maf.HeaderContainer.TimeLeft
     end,
     function()
-      local s1 = _G.EncounterJournalSuggestFrame and _G.EncounterJournalSuggestFrame.Suggestion1
+      local sf = rawget(_G, "EncounterJournalSuggestFrame")
+      local s1 = sf and sf.Suggestion1
       return s1 and s1.button and s1.button.Text
     end,
     function()
-      local s2 = _G.EncounterJournalSuggestFrame and _G.EncounterJournalSuggestFrame.Suggestion2
+      local sf = rawget(_G, "EncounterJournalSuggestFrame")
+      local s2 = sf and sf.Suggestion2
       return s2 and s2.centerDisplay and s2.centerDisplay.button and s2.centerDisplay.button.Text
     end,
     function()
-      local s3 = _G.EncounterJournalSuggestFrame and _G.EncounterJournalSuggestFrame.Suggestion3
+      local sf = rawget(_G, "EncounterJournalSuggestFrame")
+      local s3 = sf and sf.Suggestion3
       return s3 and s3.centerDisplay and s3.centerDisplay.button and s3.centerDisplay.button.Text
     end,
     function()
-      local s1 = _G.EncounterJournalSuggestFrame and _G.EncounterJournalSuggestFrame.Suggestion1
+      local sf = rawget(_G, "EncounterJournalSuggestFrame")
+      local s1 = sf and sf.Suggestion1
       return s1 and s1.reward and s1.reward.text
     end,
     function()
-      return _G.EncounterJournalMonthlyActivitiesFrame
-        and _G.EncounterJournalMonthlyActivitiesFrame.BarComplete
-        and _G.EncounterJournalMonthlyActivitiesFrame.BarComplete.PendingRewardsText
+      local maf = rawget(_G, "EncounterJournalMonthlyActivitiesFrame")
+      return maf and maf.BarComplete and maf.BarComplete.PendingRewardsText
     end,
-    function() return _G.EncounterJournalMonthlyActivitiesTab and _G.EncounterJournalMonthlyActivitiesTab.Text end,
-    function() return _G.EncounterJournalSuggestTab and _G.EncounterJournalSuggestTab.Text end,
-    function() return _G.EncounterJournalDungeonTab and _G.EncounterJournalDungeonTab.Text end,
-    function() return _G.EncounterJournalRaidTab and _G.EncounterJournalRaidTab.Text end,
-    function() return _G.EncounterJournalLootJournalTab and _G.EncounterJournalLootJournalTab.Text end,
+    function()
+      local t = rawget(_G, "EncounterJournalMonthlyActivitiesTab")
+      return t and t.Text
+    end,
+    function()
+      local t = rawget(_G, "EncounterJournalSuggestTab")
+      return t and t.Text
+    end,
+    function()
+      local t = rawget(_G, "EncounterJournalDungeonTab")
+      return t and t.Text
+    end,
+    function()
+      local t = rawget(_G, "EncounterJournalRaidTab")
+      return t and t.Text
+    end,
+    function()
+      local t = rawget(_G, "EncounterJournalLootJournalTab")
+      return t and t.Text
+    end,
   }, { sav = true, prefix = "ui", font = font })
 end
 
@@ -90,16 +108,17 @@ function M.ShowLoreDescription()
   if not (T and T.Enabled("ui5")) then return end
 
   local rtl = ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL()
-  local zoneTitle = _G.EncounterJournalEncounterFrameInstanceFrame
-    and _G.EncounterJournalEncounterFrameInstanceFrame.title
-    and _G.EncounterJournalEncounterFrameInstanceFrame.title.GetText
-    and _G.EncounterJournalEncounterFrameInstanceFrame.title:GetText()
+  local inst = rawget(_G, "EncounterJournalEncounterFrameInstanceFrame")
+  local zoneTitle = inst
+    and inst.title
+    and inst.title.GetText
+    and inst.title:GetText()
     or "?"
-  local lore = _G.EncounterJournalEncounterFrameInstanceFrame
-    and _G.EncounterJournalEncounterFrameInstanceFrame.LoreScrollingFont
-    and _G.EncounterJournalEncounterFrameInstanceFrame.LoreScrollingFont.ScrollBox
-    and _G.EncounterJournalEncounterFrameInstanceFrame.LoreScrollingFont.ScrollBox.FontStringContainer
-    and _G.EncounterJournalEncounterFrameInstanceFrame.LoreScrollingFont.ScrollBox.FontStringContainer.FontString
+  local lore = inst
+    and inst.LoreScrollingFont
+    and inst.LoreScrollingFont.ScrollBox
+    and inst.LoreScrollingFont.ScrollBox.FontStringContainer
+    and inst.LoreScrollingFont.ScrollBox.FontStringContainer.FontString
 
   if rtl then
     ST_CheckAndReplaceTranslationText(lore, true, "Dungeon&Raid:Zone:" .. zoneTitle, false, false, -5, "RIGHT")
@@ -107,13 +126,13 @@ function M.ShowLoreDescription()
     ST_CheckAndReplaceTranslationText(lore, true, "Dungeon&Raid:Zone:" .. zoneTitle)
   end
 
-  local showMap = _G.EncounterJournalEncounterFrameInstanceFrameMapButtonText
+  local showMap = rawget(_G, "EncounterJournalEncounterFrameInstanceFrameMapButtonText")
   ST_CheckAndReplaceTranslationText(showMap, true, "ui")
 end
 
 function M.ShowDelveDifficultFrame()
   local rtl = ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL()
-  local df = _G.DelvesDifficultyPickerFrame
+  local df = rawget(_G, "DelvesDifficultyPickerFrame")
   local desc = df and df.Description
   if rtl then
     ST_CheckAndReplaceTranslationText(desc, true, "Dungeon&Raid:Zone:DelvesFrame", false, false)
@@ -293,8 +312,8 @@ function M.AdventureGuideButton()
       EncounterJournal,
       TT_PS,
       "ui5",
-      WoWTR_Localization.WoWTR_enDESC,
-      WoWTR_Localization.WoWTR_trDESC,
+      WOWTR_Localization.WoWTR_enDESC,
+      WOWTR_Localization.WoWTR_trDESC,
       { "TOPLEFT", EncounterJournal, "TOPRIGHT", -170, 0 },
       function()
         M.ClickBosses()

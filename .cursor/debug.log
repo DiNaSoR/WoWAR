@@ -1,0 +1,1 @@
+﻿{"sessionId":"debug-session","runId":"run1","hypothesisId":"H7","location":"common/Core/Debug.lua:Debug.ClearAgentLogs","message":"after_clear","data":{"clearedDebug":true,"dumpN_after":0,"debugN_before":1,"clearedCache":true,"debugN_after":0,"mode":"all","dumpN_before":0,"clearedDump":true},"timestamp":1769268773000}

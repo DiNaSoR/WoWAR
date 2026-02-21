@@ -1,0 +1,15 @@
+{
+    "mcpServers":  {
+                       "MnemoVector":  {
+                                           "args":  [
+                                                        "-3",
+                                                        "${env:WOWAR_ROOT}/scripts/memory/mnemo_vector.py"
+                                                    ],
+                                           "env":  {
+                                                       "MNEMO_PROVIDER":  "gemini",
+                                                       "GEMINI_API_KEY":  "${env:GEMINI_API_KEY}"
+                                                   },
+                                           "command":  "${env:PYTHON_EXE}"
+                                       }
+                   }
+}

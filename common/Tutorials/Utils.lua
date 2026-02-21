@@ -15,7 +15,7 @@ function U.translateIfAvailable(objFontString, originalText, hash, offset)
   local translated = _G["Tut_Data7"] and _G["Tut_Data7"][hash]
   if translated then
     local _, size, flags = objFontString:GetFont()
-    if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') and offset then
+    if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') and offset then
       objFontString:SetText(QTR_ExpandUnitInfo(translated, false, objFontString, WOWTR_Font2, offset) .. NONBREAKINGSPACE)
     else
       objFontString:SetText(QTR_ReverseIfAR(WOW_ZmienKody(translated)) .. NONBREAKINGSPACE)

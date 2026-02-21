@@ -4,7 +4,7 @@
 -- Depends on global functions/variables:
 --   ST_CheckAndReplaceTranslationTextUI, ST_CheckAndReplaceTranslationText, ST_RenkKoduSil,
 --   ST_OriginalTextCache, ST_OriginalFontCache, ST_OriginalJustifyCache, StartTicker,
---   WoWTR_Localization, QTR_ReverseIfAR, NONBREAKINGSPACE, TT_PS
+--   WOWTR_Localization, QTR_ReverseIfAR, NONBREAKINGSPACE, TT_PS
 -------------------------------------------------------------------------------------------------------
 
 local addonName, ns = ...
@@ -156,8 +156,8 @@ function ST_ProfDescbutton()
            ProfessionsFrame,
            TT_PS,
            "ui7",
-           WoWTR_Localization.WoWTR_enDESC,
-           WoWTR_Localization.WoWTR_trDESC,
+           WOWTR_Localization.WoWTR_enDESC,
+           WOWTR_Localization.WoWTR_trDESC,
            {"TOPLEFT", ProfessionsFrame, "TOPRIGHT", -170, 0},
            function() -- OnClick handler
                  if ST_showProfessionDescription then

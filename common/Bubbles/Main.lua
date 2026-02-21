@@ -4,6 +4,7 @@ ns.Bubbles = ns.Bubbles or {}
 local Bubbles = ns.Bubbles
 local S = Bubbles.State
 local RTL = ns and ns.RTL
+local Text = ns and ns.Text
 local Tutorials = ns and ns.Tutorials
 
 S.trControls = S.trControls or {}
@@ -41,6 +42,58 @@ local function normalizeBubbleText(text)
     return strtrim(WOWTR_DeleteSpecialCodes(text))
   end
   return strtrim(text)
+end
+
+local function isTimekeeperNPC(npcName)
+  return (string.sub(npcName or "", 1, 17) == "Bronze Timekeeper")
+      or (string.sub(npcName or "", 1, 16) == "Grimy Timekeeper")
+end
+
+local function isHonorSpeechTemplate(normalizedText)
+  local text = normalizedText or ""
+  -- Keep both phrase variants mapped to one translation hash.
+  return (string.sub(text, 1, 27) == "For their courage, we honor")
+      or (string.sub(text, 1, 56) == "People of Stormwind! Bear witness today to the deeds of ")
+end
+
+local function normalizeBubbleHashText(text)
+  local s = text or ""
+  if WOWTR_NormalizeForHash then
+    s = WOWTR_NormalizeForHash(s)
+  elseif WOWTR_DeleteSpecialCodes then
+    s = WOWTR_DeleteSpecialCodes(s)
+  end
+  return strtrim(s)
+end
+
+local function normalizeSavedTarget(targetName)
+  if type(targetName) ~= "string" or targetName == "" then
+    return ""
+  end
+  if WOWTR_DetectAndReplacePlayerName then
+    return WOWTR_DetectAndReplacePlayerName(targetName, targetName)
+  end
+  return targetName
+end
+
+local function containsArabicForDirection(text)
+  if type(text) ~= "string" or text == "" then
+    return false
+  end
+  if Text and Text.ContainsArabic then
+    local ok, hasArabic = pcall(Text.ContainsArabic, text)
+    if ok then
+      return hasArabic == true
+    end
+  end
+  local fallback = rawget(_G, "AS_ContainsArabic")
+  if type(fallback) == "function" then
+    local ok, hasArabic = pcall(fallback, text)
+    if ok then
+      return hasArabic == true
+    end
+  end
+  return false
 end
 
 local function applyBubbleTranslation(region, sourceText, translatedText)
@@ -345,7 +398,7 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
   local colorText = ""
   local original_txt = strtrim(arg1)
   local name_NPC = string.gsub(arg2 or "", " says:", "")
-  local target = arg5
+  local target = (type(arg5) == "string" and arg5 ~= "") and arg5 or nil
 
   if (event == "CHAT_MSG_MONSTER_SAY") then
     colorText = "|cFFFFFF9F"
@@ -364,17 +417,17 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
   BB_is_translation = "0"
   if (BB_PM and BB_PM["active"] == "1") then
     local Origin_Text = original_txt
-    if (arg5 and (arg5 ~= "")) then
-      Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text, arg5)
+    if target then
+      Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text, target)
     else
       Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text)
     end
-    local Czysty_Text = WOWTR_DeleteSpecialCodes(Origin_Text)
+    local Czysty_Text = normalizeBubbleHashText(Origin_Text)
 
     local exceptionHash
-    if (string.sub(name_NPC, 1, 17) == "Bronze Timekeeper" or string.sub(name_NPC, 1, 16) == "Grimy Timekeeper") then
+    if isTimekeeperNPC(name_NPC) then
       Czysty_Text = string.gsub(Czysty_Text, "%d", "")
-    elseif ((name_NPC == "General Hammond Clay") and (string.sub(Czysty_Text, 1, 27) == "For their courage, we honor")) then
+    elseif isHonorSpeechTemplate(Czysty_Text) then
       exceptionHash = 4192543970
     end
 
@@ -388,9 +441,9 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
     local gl_BB_Bubbles = rawget(_G, "BB_Bubbles")
     if (gl_BB_Bubbles and gl_BB_Bubbles[HashCode]) then
       local NewMessage = gl_BB_Bubbles[HashCode]
-      NewMessage = WOW_ZmienKody(NewMessage, arg5)
+      NewMessage = WOW_ZmienKody(NewMessage, target)
 
-      if (string.sub(name_NPC, 1, 17) == "Bronze Timekeeper" or string.sub(name_NPC, 1, 16) == "Grimy Timekeeper") then
+      if isTimekeeperNPC(name_NPC) then
         local wartab = { 0, 0, 0, 0, 0, 0 }
         local arg0 = 0
         for w in string.gmatch(strtrim(arg1), "%d+") do
@@ -422,31 +475,34 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
 
       if (BB_PM["chat-tr"] == "1") then
         local _fontC, _sizeC, _C = DEFAULT_CHAT_FRAME:GetFont()
-        if (WoWTR_Localization and WoWTR_Localization.lang ~= 'TR') then
+        if (WOWTR_Localization and WOWTR_Localization.lang ~= 'TR') then
           DEFAULT_CHAT_FRAME:SetFont(WOWTR_Font2, _sizeC, _C)
         end
+        local messageHasArabic = containsArabicForDirection(NewMessage)
+        local shouldRenderRTL = messageHasArabic and (RTL and RTL.IsRTL and RTL.IsRTL())
+        local speakerName = shouldRenderRTL and WOWTR_AnsiReverse(name_NPC) or name_NPC
         if (nr_poz > 0) then
           local fixed_message = ""
           if (nr_poz == 1) then
-            fixed_message = WOWTR_AnsiReverse(name_NPC) .. strsub(NewMessage, 3)
+            fixed_message = speakerName .. strsub(NewMessage, 3)
           else
-            fixed_message = strsub(NewMessage, 1, nr_poz - 1) .. WOWTR_AnsiReverse(name_NPC) .. strsub(NewMessage, nr_poz + 2)
+            fixed_message = strsub(NewMessage, 1, nr_poz - 1) .. speakerName .. strsub(NewMessage, nr_poz + 2)
           end
-          if (RTL and RTL.IsRTL and RTL.IsRTL()) then
+          if shouldRenderRTL then
             local qtrOffset = -10
             if C_AddOns.IsAddOnLoaded("Prat-3.0") then qtrOffset = -50 end
             DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(fixed_message, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
           else
-            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
+            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(fixed_message, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
           end
         elseif (strsub(NewMessage, 1, 2) == "%o") then
           NewMessage = strsub(NewMessage, 3)
           DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo(NewMessage:gsub("^%s*", ""), false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -50, true) .. mark_AI)
         else
-          if (RTL and RTL.IsRTL and RTL.IsRTL()) then
+          if shouldRenderRTL then
             local qtrOffset = -10
             if C_AddOns.IsAddOnLoaded("Prat-3.0") then qtrOffset = -50 end
-            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo("{r}" .. WOWTR_AnsiReverse(name_NPC) .. ":{cFFFFFFFF} " .. NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
+            DEFAULT_CHAT_FRAME:AddMessage(colorText .. QTR_ExpandUnitInfo("{r}" .. speakerName .. ":{cFFFFFFFF} " .. NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, qtrOffset, true))
           else
             DEFAULT_CHAT_FRAME:AddMessage(colorText .. "|cCCDDEEFF" .. name_NPC .. ":|r " .. QTR_ExpandUnitInfo(NewMessage, false, DEFAULT_CHAT_FRAME, WOWTR_Font2, -100, true) .. mark_AI)
           end
@@ -469,12 +525,12 @@ function Bubbles.ChatFilter(self, event, arg1, arg2, arg3, _, arg5, ...)
     else
       if (BB_PM["saveNB"] == "1") then
         local Origin_Text = strtrim(arg1)
-        if (arg5 and (arg5 ~= "")) then
-          Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text, arg5)
+        if target then
+          Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text, target)
         else
           Origin_Text = WOWTR_DetectAndReplacePlayerName(Origin_Text)
         end
-        BB_PS[name_NPC .. ":" .. tostring(HashCode)] = Origin_Text .. "@" .. (target or "") .. ":" .. (WOWTR_player_name or "") .. ":" .. (WOWTR_player_race or "") .. ":" .. (WOWTR_player_class or "")
+        BB_PS[name_NPC .. ":" .. tostring(HashCode)] = Origin_Text .. "@" .. normalizeSavedTarget(target) .. ":" .. (WOWTR_player_name or "") .. ":" .. (WOWTR_player_race or "") .. ":" .. (WOWTR_player_class or "")
       end
 
       if (BB_PM["TRonline"] == "1") then

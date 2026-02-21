@@ -23,7 +23,7 @@ local function SetBookJustify(isArabic)
 end
 
 local function IsArabic()
-  return (WoWTR_Localization and WoWTR_Localization.lang == 'AR') or false
+  return (WOWTR_Localization and WOWTR_Localization.lang == 'AR') or false
 end
 
 -- Remember original fonts/sizes so we can restore them on toggle OFF
@@ -120,7 +120,7 @@ end
 local function UpdateToggleButton(hasTranslation)
   if not BT_ToggleButton0 then return end
   local showID = BT_PM and BT_PM["showID"] == "1"
-  local isAR = (WoWTR_Localization and WoWTR_Localization.lang == 'AR')
+  local isAR = (WOWTR_Localization and WOWTR_Localization.lang == 'AR')
   -- Ensure toggle button uses our font
   do
     local fs = BT_ToggleButton0:GetFontString()
@@ -135,21 +135,21 @@ local function UpdateToggleButton(hasTranslation)
   if act_tr == "1" then
     if showID and bookID and bookID ~= "" then
       if isAR then
-        BT_ToggleButton0:SetText("("..WoWTR_Localization.lang..") "..bookID.." "..QTR_ReverseIfAR(WoWTR_Localization.bookID))
+        BT_ToggleButton0:SetText("("..WOWTR_Localization.lang..") "..bookID.." "..QTR_ReverseIfAR(WOWTR_Localization.bookID))
       else
-        BT_ToggleButton0:SetText(WoWTR_Localization.bookID.." "..bookID.." ("..WoWTR_Localization.lang..")")
+        BT_ToggleButton0:SetText(WOWTR_Localization.bookID.." "..bookID.." ("..WOWTR_Localization.lang..")")
       end
       BT_ToggleButton0:SetWidth(170)
     else
-      BT_ToggleButton0:SetText(WoWTR_Localization and WoWTR_Localization.lang or "TR")
+      BT_ToggleButton0:SetText(WOWTR_Localization and WOWTR_Localization.lang or "TR")
       BT_ToggleButton0:SetWidth(40)
     end
   else
     if showID and bookID and bookID ~= "" then
       if isAR then
-        BT_ToggleButton0:SetText("(EN) "..bookID.." "..QTR_ReverseIfAR(WoWTR_Localization.bookID))
+        BT_ToggleButton0:SetText("(EN) "..bookID.." "..QTR_ReverseIfAR(WOWTR_Localization.bookID))
       else
-        BT_ToggleButton0:SetText(WoWTR_Localization.bookID.." "..bookID.." (EN)")
+        BT_ToggleButton0:SetText(WOWTR_Localization.bookID.." "..bookID.." (EN)")
       end
       BT_ToggleButton0:SetWidth(170)
     else

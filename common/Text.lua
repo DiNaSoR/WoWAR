@@ -6,6 +6,21 @@ ns = ns or {}
 ns.Text = ns.Text or {}
 local Text = ns.Text
 
+-- In Arabic RTL mode we reverse the full string (AS_UTF8reverse / AS_ReverseAndPrepareLineText*).
+-- Because of that, intuitive authoring like `{cFFFFD200}TEXT{r}` will often color the wrong
+-- visual segment after reversal. The correct RTL-safe authoring is `{r}TEXT{cFFFFD200}`.
+--
+-- To keep locale strings readable, we automatically rewrite only the LTR-style spans:
+--   `{cAARRGGBB}...{r}` -> `{r}...{cAARRGGBB}`
+-- and we DO NOT touch spans already written in RTL-safe form.
+local function FixCurlyColorSpansForRTL(msg)
+  if type(msg) ~= "string" or msg == "" then return msg end
+  -- Only rewrite the LTR-style pattern {cHEX}...{r}. Non-greedy match to stop at nearest {r}.
+  return (msg:gsub("(%{c%x%x%x%x%x%x%x%x%})(.-)(%{r%})", function(cTag, inner)
+    return "{r}" .. inner .. cTag
+  end))
+end
+
 -- Handle special WoW codes by replacing them with placeholders, so the text can be reversed/shaped safely.
 function Text.HandleWoWSpecialCodes(msg)
   local specialCodes = {}
@@ -97,6 +112,91 @@ function Text.HandleWoWSpecialCodes(msg)
     return "\001" .. (index-1) .. "\002"
   end)
 
+  -- Protect plain numeric tokens (hardcoded digits) from RTL reversal.
+  -- We must skip existing \001...\002 placeholders (their indices contain digits and are restored later).
+  -- Supports:
+  -- - ASCII digits: 0-9
+  -- - Arabic-Indic digits: U+0660..U+0669 (UTF-8: D9 A0..A9)
+  -- - Eastern Arabic-Indic digits: U+06F0..U+06F9 (UTF-8: DB B0..B9)
+  -- Token may include common separators (., , , :, /, -) and a trailing '%' (e.g., 27%, 12:34, 1,234.56).
+  do
+    local function readDigit(s, i)
+      local b1 = s:byte(i)
+      if not b1 then return nil end
+      -- ASCII digit
+      if b1 >= 48 and b1 <= 57 then
+        return s:sub(i, i), i + 1
+      end
+      -- Arabic-Indic digits (٠١٢٣٤٥٦٧٨٩): D9 A0..A9
+      local b2 = s:byte(i + 1)
+      if b2 then
+        if (b1 == 217 and b2 >= 160 and b2 <= 169) or (b1 == 219 and b2 >= 176 and b2 <= 185) then
+          return s:sub(i, i + 1), i + 2
+        end
+      end
+      return nil
+    end
+
+    local function peekIsDigit(s, i)
+      local _, nextI = readDigit(s, i)
+      return nextI ~= nil
+    end
+
+    local len = #msg
+    local out = {}
+    local i = 1
+    while i <= len do
+      local b = msg:byte(i)
+      -- Skip existing placeholders (\001...\002)
+      if b == 1 then
+        local j = msg:find("\002", i + 1, true)
+        if not j then
+          out[#out + 1] = msg:sub(i)
+          break
+        end
+        out[#out + 1] = msg:sub(i, j)
+        i = j + 1
+      else
+        local d, nextI = readDigit(msg, i)
+        if d then
+          local parts = { d }
+          i = nextI
+          while i <= len do
+            local d2, nextI2 = readDigit(msg, i)
+            if d2 then
+              parts[#parts + 1] = d2
+              i = nextI2
+            else
+              local ch = msg:sub(i, i)
+              -- Allow a trailing percent sign right after a digit run.
+              if ch == "%" then
+                parts[#parts + 1] = ch
+                i = i + 1
+                break
+              end
+              -- Allow separators only when they are between digits (e.g., 12:34, 1,234.56, 10/10, 1-2)
+              if (ch == "." or ch == "," or ch == ":" or ch == "/" or ch == "-") and peekIsDigit(msg, i + 1) then
+                parts[#parts + 1] = ch
+                i = i + 1
+              else
+                break
+              end
+            end
+          end
+
+          local token = table.concat(parts)
+          specialCodes[index] = token
+          index = index + 1
+          out[#out + 1] = "\001" .. (index - 1) .. "\002"
+        else
+          out[#out + 1] = msg:sub(i, i)
+          i = i + 1
+        end
+      end
+    end
+    msg = table.concat(out)
+  end
+
   return msg, specialCodes, prefix
 end
 
@@ -118,28 +218,37 @@ end
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Used to avoid reversing pure English strings when running in AR locale.
 function Text.ContainsArabic(txt)
-  if not txt or txt == "" then return false end
+  if type(txt) ~= "string" then return false end
 
-  -- Fast path: Arabic Presentation Forms-A/B live in UTF-8 sequences starting with 0xEF 0xAD..0xBB
-  if (string.find(txt, "\239\173") ~= nil)
-      or (string.find(txt, "\239\174") ~= nil)
-      or (string.find(txt, "\239\175") ~= nil)
-      or (string.find(txt, "\239\185") ~= nil)
-      or (string.find(txt, "\239\186") ~= nil)
-      or (string.find(txt, "\239\187") ~= nil) then
-    return true
-  end
+  -- Secret values can raise errors on comparison or string ops; guard with pcall.
+  local ok, hasArabic = pcall(function()
+    if txt == "" then return false end
 
-  -- Fast path: most Arabic base letters live in 2-byte UTF-8 sequences starting with 0xD8..0xDB.
-  if string.find(txt, "[\216\217\218\219]") ~= nil then
-    return true
-  end
+    -- Fast path: Arabic Presentation Forms-A/B live in UTF-8 sequences starting with 0xEF 0xAD..0xBB
+    if (string.find(txt, "\239\173") ~= nil)
+        or (string.find(txt, "\239\174") ~= nil)
+        or (string.find(txt, "\239\175") ~= nil)
+        or (string.find(txt, "\239\185") ~= nil)
+        or (string.find(txt, "\239\186") ~= nil)
+        or (string.find(txt, "\239\187") ~= nil) then
+      return true
+    end
 
-  -- Fallback: use reshaper helper if available (base Arabic letters only).
-  if type(_G.AS_ContainsArabic) == "function" then
-    return AS_ContainsArabic(txt) == true
-  end
+    -- Fast path: most Arabic base letters live in 2-byte UTF-8 sequences starting with 0xD8..0xDB.
+    if string.find(txt, "[\216\217\218\219]") ~= nil then
+      return true
+    end
 
+    -- Fallback: use reshaper helper if available (base Arabic letters only).
+    local fn = _G.AS_ContainsArabic
+    if type(fn) == "function" then
+      return fn(txt) == true
+    end
+
+    return false
+  end)
+
+  if ok then return hasArabic end
   return false
 end
 
@@ -155,7 +264,7 @@ function Text.WOW_ZmienKody(message, target)
       effectivePlayerSex = override
     end
   end
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     msg = string.gsub(msg, "{N}", "YOUR_NAME")
     msg = string.gsub(msg, "{B}", "NEW_LINE")
     msg = string.gsub(msg, "{R}", "YOUR_RACE")
@@ -186,7 +295,7 @@ function Text.WOW_ZmienKody(message, target)
 
   msg = string.gsub(msg, "NEW_LINE", "\n")
 
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     if (effectivePlayerSex == 3) then
       msg = string.gsub(msg, "YOUR_CLASS", player_class_table.F)
     else
@@ -213,7 +322,7 @@ function Text.WOW_ZmienKody(message, target)
   -- Substitute player/target names.
   -- In AR locale, many strings will be reversed later for RTL display. To keep LTR names readable,
   -- we pre-reverse them ONLY when the surrounding string contains Arabic (and therefore will be RTL-processed).
-  local shouldAnsiReverse = (WoWTR_Localization and WoWTR_Localization.lang == 'AR') and Text.ContainsArabic(msg)
+  local shouldAnsiReverse = (WOWTR_Localization and WOWTR_Localization.lang == 'AR') and Text.ContainsArabic(msg)
   local function maybeAnsiReverse(s)
     if not s then return "" end
     if shouldAnsiReverse then
@@ -232,7 +341,9 @@ function Text.WOW_ZmienKody(message, target)
   end
 
   if (string.find(msg, "NPC_GENDER")) then
-    if (WoWTR_Localization.lang == 'AR') then
+    if (WOWTR_Localization.lang == 'AR') then
+      -- luacheck: globals QTR_NPC_GENDER
+      ---@diagnostic disable-next-line: undefined-global
       if (QTR_NPC_GENDER == 'F') then
         msg = string.gsub(msg, "NPC_GENDER", "F")
       else
@@ -244,7 +355,7 @@ function Text.WOW_ZmienKody(message, target)
   end
 
   if (string.find(msg, "YOUR_GENDER")) then
-    if (WoWTR_Localization.lang == 'AR') then
+    if (WOWTR_Localization.lang == 'AR') then
       if (effectivePlayerSex == 3) then
         msg = string.gsub(msg, "YOUR_GENDER", "F")
       else
@@ -300,7 +411,8 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
   if (msg == nil) then msg = "" end
   msg = Text.WOW_ZmienKody(msg)
 
-  if ((WoWTR_Localization and WoWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
+  if ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
+    msg = FixCurlyColorSpansForRTL(msg)
     local _font = WOWTR_Font2
     local AR_size = 13
     if AR_obj.GetFont then
@@ -366,11 +478,12 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
 end
 
 function Text.ReverseIfAR(txt)
-  if (txt and WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (txt and WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     local msg = Text.WOW_ZmienKody(txt)
     if not Text.ContainsArabic(msg) then
       return msg
     end
+    msg = FixCurlyColorSpansForRTL(msg)
     local specialCodes, prefix
     msg, specialCodes, prefix = Text.HandleWoWSpecialCodes(msg)
 
@@ -415,20 +528,51 @@ end
 function Text.AnsiReverse(txt)
   if not txt then return "" end
   local text = txt
-  if (WoWTR_Localization and WoWTR_Localization.lang == 'AR') then
+  if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
     text = string.reverse(text)
   end
   return text
 end
 
+local function escapeLuaPatternLiteral(s)
+  if type(s) ~= "string" or s == "" then
+    return ""
+  end
+  return (s:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])", "%%%1"))
+end
+
+local function replaceLiteral(text, literal, replacer)
+  if type(text) ~= "string" then
+    return ""
+  end
+  if type(literal) ~= "string" or literal == "" then
+    return text
+  end
+  local pattern = escapeLuaPatternLiteral(literal)
+  if pattern == "" then
+    return text
+  end
+  return (text:gsub(pattern, replacer))
+end
+
 function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
+  if type(txt) ~= "string" then
+    return ""
+  end
+  if type(finder) ~= "string" or finder == "" then
+    return txt
+  end
   local result = txt
   local last = 1
-  local nr_poz, nr_end = string.find(result, finder)
+  local finderPattern = escapeLuaPatternLiteral(finder)
+  if finderPattern == "" then
+    return result
+  end
+  local nr_poz, nr_end = string.find(result, finderPattern)
   while (nr_poz and nr_poz > 0) do
     if ((nr_poz == 1) or ((nr_poz > 1) and (string.sub(result, nr_poz - 1, nr_poz - 1) == ' ')) or ((nr_poz > 2) and (string.sub(result, nr_poz - 2, nr_poz - 1) == '$B'))) then
       local char_after = string.sub(result, nr_end + 1, nr_end + 1)
-      if ((char_after == '.') or (char_after == ',') or (char_after == '?') or (char_after == '!') or (char_after == ' ') or (char_after == ';') or (char_after == ':') or (char_after == '>') or (char_after == '-')) then
+      if ((char_after == '') or (char_after == '.') or (char_after == ',') or (char_after == '?') or (char_after == '!') or (char_after == ' ') or (char_after == ';') or (char_after == ':') or (char_after == '>') or (char_after == '-')) then
         result = string.sub(result, 1, nr_poz - 1) .. replacer .. string.sub(result, nr_end + 1)
         last = nr_poz + strlen(replacer)
       else
@@ -437,7 +581,7 @@ function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
     else
       last = nr_poz + strlen(finder)
     end
-    nr_poz, nr_end = string.find(result, finder, last)
+    nr_poz, nr_end = string.find(result, finderPattern, last)
   end
   return result
 end
@@ -449,9 +593,10 @@ function Text.DetectAndReplacePlayerName(txt, target, part)
     text = string.gsub(text, '\n', "$B")
   end
   if (part == nil) or (part == '$N') then
-    local upperCaseName = string.upper(WOWTR_player_name or "")
-    text = string.gsub(text, WOWTR_player_name or "", "$N")
-    text = string.gsub(text, upperCaseName, "$N")
+    local playerName = WOWTR_player_name or ""
+    local upperCaseName = string.upper(playerName)
+    text = replaceLiteral(text, playerName, "$N")
+    text = replaceLiteral(text, upperCaseName, "$N")
   end
   if (part == nil) or (part == '$R') then
     text = Text.ReplaceOnlyWholeWords(text, WOWTR_player_race or "", '$R')
@@ -523,6 +668,7 @@ function RestoreWoWSpecialCodes(msg, sc) return Text.RestoreWoWSpecialCodes(msg,
 function WOW_ZmienKody(message, target) return Text.WOW_ZmienKody(message, target) end
 function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) return Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) end
 function QTR_ReverseIfAR(txt) return Text.ReverseIfAR(txt) end
+function WOWTR_ContainsArabic(txt) return Text.ContainsArabic(txt) end
 function WOWTR_AnsiReverse(txt) return Text.AnsiReverse(txt) end
 function WOWTR_ReplaceOnlyWholeWords(txt, f, r) return Text.ReplaceOnlyWholeWords(txt, f, r) end
 function WOWTR_DetectAndReplacePlayerName(txt, target, part) return Text.DetectAndReplacePlayerName(txt, target, part) end

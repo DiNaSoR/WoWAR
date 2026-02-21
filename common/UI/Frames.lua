@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-field
+
 local addonName, ns = ...
 
 ns = ns or {}
@@ -15,7 +17,7 @@ local mountUpdateVisibility
 -- SpellBook Frame
 function M.UpdateSpellBookFrame()
   if (TT_PS and TT_PS["ui1"] == "1") then
-    local ST_titleTextFontString = SpellBookFrame:GetTitleText()
+    local ST_titleTextFontString = _G.SpellBookFrame:GetTitleText()
     if (ST_titleTextFontString and ST_titleTextFontString:GetText()) then
       local str_ID = StringHash(ST_UsunZbedneZnaki(ST_titleTextFontString:GetText()))
       if (ST_TooltipsHS and ST_TooltipsHS[str_ID]) then
@@ -24,43 +26,43 @@ function M.UpdateSpellBookFrame()
       end
     end
 
-    if (SpellBookFrameTabButton1 and SpellBookFrameTabButton1:GetText()) then
-      local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton1:GetText()))
+    if (_G.SpellBookFrameTabButton1 and _G.SpellBookFrameTabButton1:GetText()) then
+      local str_ID = StringHash(ST_UsunZbedneZnaki(_G.SpellBookFrameTabButton1:GetText()))
       if (ST_TooltipsHS and ST_TooltipsHS[str_ID]) then
-        local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton1:GetText()))
-        local fo = SpellBookFrameTabButton1:CreateFontString()
+        local text1 = QTR_ReverseIfAR(ST_SetText(_G.SpellBookFrameTabButton1:GetText()))
+        local fo = _G.SpellBookFrameTabButton1:CreateFontString()
         fo:SetFont(WOWTR_Font2, 11)
         fo:SetText(text1)
-        SpellBookFrameTabButton1:SetFontString(fo)
-        SpellBookFrameTabButton1:SetText(text1)
+        _G.SpellBookFrameTabButton1:SetFontString(fo)
+        _G.SpellBookFrameTabButton1:SetText(text1)
       end
     end
 
-    if (SpellBookFrameTabButton2 and SpellBookFrameTabButton2:GetText()) then
-      local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton2:GetText()))
+    if (_G.SpellBookFrameTabButton2 and _G.SpellBookFrameTabButton2:GetText()) then
+      local str_ID = StringHash(ST_UsunZbedneZnaki(_G.SpellBookFrameTabButton2:GetText()))
       if (ST_TooltipsHS and ST_TooltipsHS[str_ID]) then
-        local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton2:GetText()))
-        local fo = SpellBookFrameTabButton2:CreateFontString()
+        local text1 = QTR_ReverseIfAR(ST_SetText(_G.SpellBookFrameTabButton2:GetText()))
+        local fo = _G.SpellBookFrameTabButton2:CreateFontString()
         fo:SetFont(WOWTR_Font2, 11)
         fo:SetText(text1)
-        SpellBookFrameTabButton2:SetFontString(fo)
-        SpellBookFrameTabButton2:SetText(text1)
+        _G.SpellBookFrameTabButton2:SetFontString(fo)
+        _G.SpellBookFrameTabButton2:SetText(text1)
       end
     end
 
-    if (SpellBookFrameTabButton3 and SpellBookFrameTabButton3:GetText()) then
-      local str_ID = StringHash(ST_UsunZbedneZnaki(SpellBookFrameTabButton3:GetText()))
+    if (_G.SpellBookFrameTabButton3 and _G.SpellBookFrameTabButton3:GetText()) then
+      local str_ID = StringHash(ST_UsunZbedneZnaki(_G.SpellBookFrameTabButton3:GetText()))
       if (ST_TooltipsHS and ST_TooltipsHS[str_ID]) then
-        local text1 = QTR_ReverseIfAR(ST_SetText(SpellBookFrameTabButton3:GetText()))
-        local fo = SpellBookFrameTabButton3:CreateFontString()
+        local text1 = QTR_ReverseIfAR(ST_SetText(_G.SpellBookFrameTabButton3:GetText()))
+        local fo = _G.SpellBookFrameTabButton3:CreateFontString()
         fo:SetFont(WOWTR_Font2, 11)
         fo:SetText(text1)
-        SpellBookFrameTabButton3:SetFontString(fo)
-        SpellBookFrameTabButton3:SetText(text1)
+        _G.SpellBookFrameTabButton3:SetFontString(fo)
+        _G.SpellBookFrameTabButton3:SetText(text1)
       end
     end
 
-    local SBPageText = SpellBookPageText
+    local SBPageText = _G.SpellBookPageText
     ST_CheckAndReplaceTranslationText(SBPageText, true, "ui")
   end
 end
@@ -288,8 +290,8 @@ function M.MountJournalButton()
       MountJournal,
       TT_PS,
       "ui4",
-      WoWTR_Localization.WoWTR_enDESC,
-      WoWTR_Localization.WoWTR_trDESC,
+      WOWTR_Localization.WoWTR_enDESC,
+      WOWTR_Localization.WoWTR_trDESC,
       { "TOPLEFT", MountJournal, "TOPRIGHT", -170, 0 },
       function()
         M.MountJournal()
@@ -486,7 +488,7 @@ end
 
 -- ItemRef Tooltip
 local ignoreList = {}
-if WoWTR_Localization.lang == 'TR' then
+if WOWTR_Localization.lang == 'TR' then
   ignoreList = {
     "Head", "Neck", "Shoulder", "Back", "Chest", "Tabard", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger", "Trinket"
   }

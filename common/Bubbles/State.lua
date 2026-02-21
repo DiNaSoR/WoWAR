@@ -7,7 +7,7 @@ Bubbles.State = Bubbles.State or {}
 local S = Bubbles.State
 
 -- Runtime state used by bubble processing
-S.ctrFrame = CreateFrame("FRAME", "WoWTR-BubblesFrame")
+S.ctrFrame = CreateFrame("FRAME", "WOWTR-BubblesFrame")
 S.bubblesQueue = {}
 S.trVisible = 0
 S.latchCount = 0

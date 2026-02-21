@@ -46,6 +46,7 @@ local Def = {
     PageHeight = 576,
     CategoryGap = 40,
     TabButtonHeight = 40,
+    TabAttachOffsetY = 8,
 
 
     ChangelogLineSpacing = 4,
@@ -99,6 +100,91 @@ local function SetTextColor(obj, color)
     obj:SetTextColor(color[1], color[2], color[3])
 end
 
+local CHANGELOG_TITLE_FONT_SIZE = 20;
+
+-- Changelog entry colors from `common/Locale/changelog.lua` (`color = "legendary"`, etc).
+local CHANGELOG_ENTRY_COLORS = {
+    legendary = {1.000, 0.500, 0.000},
+    purple = {0.640, 0.210, 0.930},
+    blue = {0.000, 0.440, 0.870},
+    red = {1.000, 0.125, 0.125},
+}
+
+local function GetChangelogColor(colorToken, fallbackColor)
+    if type(colorToken) ~= "string" or colorToken == "" then
+        return fallbackColor
+    end
+
+    local key = string.lower(colorToken)
+    local named = CHANGELOG_ENTRY_COLORS[key]
+    if named then
+        return named
+    end
+
+    -- Optional custom color format support: "#RRGGBB" or "RRGGBB".
+    local hex = key:match("^#?(%x%x%x%x%x%x)$")
+    if hex then
+        local r = tonumber(hex:sub(1, 2), 16) / 255
+        local g = tonumber(hex:sub(3, 4), 16) / 255
+        local b = tonumber(hex:sub(5, 6), 16) / 255
+        return {r, g, b}
+    end
+
+    return fallbackColor
+end
+
+local function ApplyChangelogTitleFont(obj)
+    if not obj or type(obj.SetFont) ~= "function" then
+        return
+    end
+    if type(_G.WOWTR_Font1) ~= "string" or _G.WOWTR_Font1 == "" then
+        return
+    end
+
+    local flags = "";
+    if type(obj.GetFont) == "function" then
+        local ok, _, _, existingFlags = pcall(obj.GetFont, obj);
+        if ok and type(existingFlags) == "string" then
+            flags = existingFlags;
+        end
+    end
+
+    pcall(obj.SetFont, obj, _G.WOWTR_Font1, CHANGELOG_TITLE_FONT_SIZE, flags);
+end
+
+local function ApplyChangelogBodyFont(obj, fontObjectName)
+    if not obj or type(obj.SetFont) ~= "function" then
+        return
+    end
+    if type(_G.WOWTR_Font2) ~= "string" or _G.WOWTR_Font2 == "" then
+        return
+    end
+
+    local size = 13;
+    local flags = "";
+
+    local fo = type(fontObjectName) == "string" and _G[fontObjectName] or nil
+    if fo and type(fo.GetFont) == "function" then
+        local ok, _, s, f = pcall(fo.GetFont, fo);
+        if ok and type(s) == "number" then
+            size = s;
+        end
+        if ok and type(f) == "string" then
+            flags = f;
+        end
+    else
+        local ok, _, s, f = pcall(obj.GetFont, obj);
+        if ok and type(s) == "number" then
+            size = s;
+        end
+        if ok and type(f) == "string" then
+            flags = f;
+        end
+    end
+
+    pcall(obj.SetFont, obj, _G.WOWTR_Font2, size, flags);
+end
+
 local function ApplyArabicFonts(obj)
     if WOWTR and WOWTR.Fonts and WOWTR.Fonts.Apply then
         WOWTR.Fonts.Apply(obj);
@@ -109,7 +195,113 @@ local function IsArabicUI()
     if WOWTR and WOWTR.Fonts and type(WOWTR.Fonts.IsArabic) == "function" then
         return WOWTR.Fonts.IsArabic()
     end
-    return (WoWTR_Localization and WoWTR_Localization.lang == "AR") and true or false
+    return (WOWTR_Localization and WOWTR_Localization.lang == "AR") and true or false
+end
+
+local function FormatVersionLabel(versionLabel, versionText, rtl)
+    local label = tostring(versionLabel or "")
+    local version = tostring(versionText or "")
+    if rtl then
+        return string.format("%s %s", version, label)
+    end
+    return string.format("%s %s", label, version)
+end
+
+local function FormatVersionDateLine(versionLabel, versionText, dateText, rtl)
+    local label = tostring(versionLabel or "")
+    local version = tostring(versionText or "")
+    local date = tostring(dateText or "")
+    if rtl then
+        return string.format("%s %s   %s", version, label, date)
+    end
+    return string.format("%s %s   %s", label, version, date)
+end
+
+local PREVIEW_PLACEHOLDER_RELATIVE_PATH = "Images\\ControlCenter\\placeholder_temp.png"
+
+local function NormalizePreviewPrefix(dbKey)
+    local prefix = string.lower(tostring(dbKey or ""))
+    prefix = string.gsub(prefix, "^wowtr_", "")
+    prefix = string.gsub(prefix, "[^%w]+", "_")
+    prefix = string.gsub(prefix, "_+", "_")
+    prefix = string.gsub(prefix, "^_+", "")
+    prefix = string.gsub(prefix, "_+$", "")
+    return prefix
+end
+
+local function BuildPreviewPngRelativePath(dbKey)
+    local prefix = NormalizePreviewPrefix(dbKey)
+    if prefix == "" then
+        return nil
+    end
+    return "Images\\ControlCenter\\preview_wowar_" .. prefix .. ".png"
+end
+
+local function BuildLegacyPreviewJpgRelativePath(dbKey)
+    local key = tostring(dbKey or "")
+    if key == "" then
+        return nil
+    end
+    return "Images\\ControlCenter\\Preview_" .. key .. ".jpg"
+end
+
+local function ResolvePreviewPath(relativePath)
+    if type(relativePath) ~= "string" or relativePath == "" then
+        return nil
+    end
+    if ControlCenter.Assets and type(ControlCenter.Assets.Path) == "function" then
+        return ControlCenter.Assets.Path(relativePath)
+    end
+    return relativePath
+end
+
+local function TrySetTexturePath(textureObj, path)
+    if not textureObj or type(textureObj.SetTexture) ~= "function" then
+        return false
+    end
+    if type(path) ~= "string" or path == "" then
+        return false
+    end
+
+    pcall(textureObj.SetTexture, textureObj, nil)
+    local ok = pcall(textureObj.SetTexture, textureObj, path)
+    if not ok then
+        return false
+    end
+
+    if type(textureObj.GetTexture) == "function" then
+        return textureObj:GetTexture() ~= nil
+    end
+    return true
+end
+
+local function SetSettingPreviewTexture(textureObj, moduleData, parentDBKey)
+    if not textureObj then return end
+
+    local moduleDBKey = moduleData and moduleData.dbKey or nil
+    local candidates = {}
+
+    if parentDBKey then
+        -- Sub-settings: prefer dedicated wowar preview, then parent/module legacy art.
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildPreviewPngRelativePath(moduleDBKey))
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildPreviewPngRelativePath(parentDBKey))
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildLegacyPreviewJpgRelativePath(parentDBKey))
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildLegacyPreviewJpgRelativePath(moduleDBKey))
+    else
+        -- Top-level settings: keep legacy visuals first, then new wowar naming.
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildLegacyPreviewJpgRelativePath(moduleDBKey))
+        candidates[#candidates + 1] = ResolvePreviewPath(BuildPreviewPngRelativePath(moduleDBKey))
+    end
+
+    candidates[#candidates + 1] = ResolvePreviewPath(PREVIEW_PLACEHOLDER_RELATIVE_PATH)
+
+    for _, path in ipairs(candidates) do
+        if TrySetTexturePath(textureObj, path) then
+            return
+        end
+    end
+
+    pcall(textureObj.SetTexture, textureObj, nil)
 end
 
 local function ShapeTextIfArabic(text)
@@ -275,6 +467,72 @@ do
     local SearchBoxMixin = {};
     local StringTrim = API.StringTrim;
 
+    local function ContainsArabicText(text)
+        if type(text) ~= "string" or text == "" then
+            return false
+        end
+        local containsFn = _G.AS_ContainsArabic
+        if type(containsFn) == "function" then
+            local ok, hasArabic = pcall(containsFn, text)
+            if ok and hasArabic then
+                return true
+            end
+        end
+        return string.find(text, "[\216-\219]") ~= nil
+    end
+
+    local function BuildArabicSearchPreviewText(text)
+        if type(text) ~= "string" or text == "" then
+            return "", false
+        end
+
+        if not ContainsArabicText(text) then
+            return text, false
+        end
+
+        local reverseRS = _G.AS_UTF8reverseRS
+        if type(reverseRS) == "function" then
+            local ok, out = pcall(reverseRS, text, true)
+            if ok and type(out) == "string" and out ~= "" then
+                return out, true
+            end
+        end
+
+        local reverseIfAR = _G.QTR_ReverseIfAR
+        if type(reverseIfAR) == "function" then
+            local ok, out = pcall(reverseIfAR, text)
+            if ok and type(out) == "string" and out ~= "" then
+                return out, true
+            end
+        end
+
+        return text, true
+    end
+
+    local function SetEditBoxHiddenText(editBox)
+        if not editBox or type(editBox.SetTextColor) ~= "function" then
+            return
+        end
+        -- Keep caret/edit behavior from EditBox while rendering shaped preview on an overlay.
+        local ok = pcall(editBox.SetTextColor, editBox, 1, 1, 1, 0)
+        if not ok then
+            pcall(editBox.SetTextColor, editBox, 0, 0, 0)
+        end
+    end
+
+    function SearchBoxMixin:HasArabicPreviewOverlay()
+        return IsArabicUI() and self.DisplayText ~= nil
+    end
+
+    function SearchBoxMixin:UpdateArabicPreviewText()
+        if not self:HasArabicPreviewOverlay() then return end
+
+        local raw = self:GetText() or ""
+        local previewText, isArabic = BuildArabicSearchPreviewText(raw)
+        self.DisplayText:SetText(previewText)
+        self.DisplayText:SetJustifyH(isArabic and "RIGHT" or "LEFT")
+    end
+
     function SearchBoxMixin:SetTexture(texture)
         SkinObjects(self, texture);
     end
@@ -293,12 +551,28 @@ do
 
     function SearchBoxMixin:UpdateVisual()
         if self:IsEnabled() then
+            local useOverlay = self:HasArabicPreviewOverlay()
             if self:HasFocus() then
-                self:SetTextColor(1, 1, 1);
+                if useOverlay then
+                    SetEditBoxHiddenText(self)
+                    SetTextColor(self.DisplayText, Def.TextColorHighlight);
+                else
+                    self:SetTextColor(1, 1, 1);
+                end
             elseif self:IsMouseMotionFocus() then
-                self:SetTextColor(1, 1, 1);
+                if useOverlay then
+                    SetEditBoxHiddenText(self)
+                    SetTextColor(self.DisplayText, Def.TextColorHighlight);
+                else
+                    self:SetTextColor(1, 1, 1);
+                end
             else
-                SetTextColor(self, Def.TextColorNormal);
+                if useOverlay then
+                    SetEditBoxHiddenText(self)
+                    SetTextColor(self.DisplayText, Def.TextColorNormal);
+                else
+                    SetTextColor(self, Def.TextColorNormal);
+                end
             end
             self.Left:SetDesaturated(false);
             self.Center:SetDesaturated(false);
@@ -331,6 +605,10 @@ do
             self:SetScript("OnUpdate", self.OnUpdate);
         end
         self.ResetButton:SetShown(self:HasText());
+        if self:HasArabicPreviewOverlay() then
+            self:UpdateArabicPreviewText();
+            self:UpdateVisual();
+        end
     end
 
     function SearchBoxMixin:OnUpdate(elapsed)
@@ -362,6 +640,9 @@ do
         local text = self:GetText();
         text = StringTrim(text);
         self:SetText(text or "");
+        if self:HasArabicPreviewOverlay() then
+            self:UpdateArabicPreviewText();
+        end
         if text then
             self.Instruction:Hide();
             self.ResetButton:Show();
@@ -382,11 +663,17 @@ do
         self.Instruction:Hide();
         self.Magnifier:SetVertexColor(1, 1, 1);
         self:LockHighlight();
+        if self:HasArabicPreviewOverlay() then
+            self:UpdateArabicPreviewText();
+        end
         self:UpdateVisual();
     end
 
     function SearchBoxMixin:ClearText()
         self:SetText("");
+        if self:HasArabicPreviewOverlay() then
+            self:UpdateArabicPreviewText();
+        end
         if not self:HasFocus() then
             self.Instruction:Show();
         end
@@ -444,6 +731,20 @@ do
         f:SetSearchFunc(function(self, text)
             MainFrame:RunSearch(text);
         end);
+
+        if IsArabicUI() then
+            local displayText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal");
+            f.DisplayText = displayText;
+            displayText:SetPoint("LEFT", f, "LEFT", 26, 0);
+            displayText:SetPoint("RIGHT", f, "RIGHT", -28, 0);
+            displayText:SetJustifyV("MIDDLE");
+            displayText:SetJustifyH("RIGHT");
+            displayText:SetWordWrap(false);
+            displayText:SetText("");
+            ApplyArabicFonts(displayText);
+            f:UpdateArabicPreviewText();
+            SetEditBoxHiddenText(f);
+        end
 
         ApplyArabicFonts(f);
         return f
@@ -1027,9 +1328,7 @@ do  --Right Section
         end
 
         self.FeatureDescription:SetText(desc);
-        if ControlCenter.Assets and ControlCenter.Assets.Path then
-            self.FeaturePreview:SetTexture(ControlCenter.Assets.Path("Images\\ControlCenter\\Preview_"..tostring(parentDBKey or moduleData.dbKey)..".jpg"));
-        end
+        SetSettingPreviewTexture(self.FeaturePreview, moduleData, parentDBKey);
     end
 end
 
@@ -1438,6 +1737,10 @@ do
         self.Label:SetText(string.format("%d.%d.%d", x, y, z));
     end
 
+    function VersionButtonMixin:SetBaseColor(color)
+        self.baseColor = color
+    end
+
     function VersionButtonMixin:OnClick()
         MainFrame:ShowChangelog(self.versionID);
         LandingPageUtil.PlayUISound("ScrollBarStep");
@@ -1514,6 +1817,11 @@ do  --ChangelogTab
             self.utilityFontTag = fontTag;
             self.UtilityFontString:SetFontObject(self.TagFonts[fontTag]);
             ApplyArabicFonts(self.UtilityFontString);
+        end
+        if fontTag == "h1" then
+            ApplyChangelogTitleFont(self.UtilityFontString);
+        else
+            ApplyChangelogBodyFont(self.UtilityFontString, self.TagFonts[fontTag]);
         end
         self.UtilityFontString:SetText(ShapeTextIfArabic(text));
         local height = self.UtilityFontString:GetHeight();
@@ -1634,8 +1942,7 @@ do  --ChangelogTab
 
         local DivBottom = CreateDivider(Tab2, sideSectionWidth - 0.5*Def.WidgetGap);
         DivBottom:SetPoint("CENTER", LeftSection, "BOTTOM", 0, 2*Def.WidgetGap + Def.ButtonSize);
-        -- WoWLang: "Auto show changelog" is managed by WOWTR's own changelog system (common/UI/Changelog.lua),
-        -- so we omit this toggle in the embedded Release Notes tab.
+        -- WoWLang: We omit an "auto show changelog" toggle here; the embedded Release Notes tab is manual-only.
 
 
         local VersionTitle = Tab2:CreateFontString(nil, "OVERLAY", "GameFontNormal");
@@ -1644,7 +1951,7 @@ do  --ChangelogTab
         VersionTitle:SetPoint("LEFT", LeftSection, "TOPLEFT", Def.WidgetGap + 9 + 2, -Def.WidgetGap - 0.5 * Def.ButtonSize);
         SetTextColor(VersionTitle, Def.TextColorNonInteractable);
         local versionLabel = _Label("ControlCenter_Version", GAME_VERSION_LABEL or "Version")
-        VersionTitle:SetText(versionLabel .. " " .. tostring(WOWTR_version or ""));
+        VersionTitle:SetText(FormatVersionLabel(versionLabel, WOWTR_version or "", IsArabicUI()));
         ApplyArabicFonts(VersionTitle);
 
         local DivH = CreateDivider(Tab2, sideSectionWidth - 0.5*Def.WidgetGap);
@@ -1738,6 +2045,9 @@ do  --ChangelogTab
                 if info.isNewFeature then
                     text = text .. postfixNewFeature;
                 end
+                local entryTextColor = (info.type == "h1")
+                    and GetChangelogColor(info.color, Def.TextColorReadable)
+                    or Def.TextColorReadable;
                 local textWidthShrink;
                 if info.bullet then
                     textWidthShrink = Def.ChangelogIndent;
@@ -1764,8 +2074,13 @@ do  --ChangelogTab
                         obj:SetFontObject(Formatter.TagFonts[info.type]);
                         obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
                         obj:SetText(ShapeTextIfArabic(text));
-                        SetTextColor(obj, Def.TextColorReadable);
+                        SetTextColor(obj, entryTextColor);
                         ApplyArabicFonts(obj);
+                        if info.type == "h1" then
+                            ApplyChangelogTitleFont(obj);
+                        else
+                            ApplyChangelogBodyFont(obj, Formatter.TagFonts[info.type]);
+                        end
 
                         if redacted then
                             local redactor = self.redactorPool:Acquire();
@@ -1893,7 +2208,8 @@ do  --ChangelogTab
                     -- Keep the version/date header LTR even in Arabic UI (avoid mixed RTL/LTR reordering).
                     local versionLabel = _Label("ControlCenter_Version", GAME_VERSION_LABEL or "Version")
                     local dateText = (info.dateText and info.dateText ~= "") and info.dateText or API.SecondsToDate(info.timestamp)
-                    local text = string.format("%s %s   %s", versionLabel, info.versionText, dateText);
+                    local text = FormatVersionDateLine(versionLabel, info.versionText, dateText, rtl);
+                    local dateColor = GetChangelogColor(info.color, Def.TextColorNonInteractable);
                     objectHeight = Formatter:GetTextHeight("p", text);
                     bottom = top + objectHeight;
                     n = n + 1;
@@ -1910,8 +2226,9 @@ do  --ChangelogTab
                             obj:SetFontObject(Formatter.TagFonts["p"]);
                             obj:SetText(text);
                             obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
-                            SetTextColor(obj, Def.TextColorNonInteractable);
+                            SetTextColor(obj, dateColor);
                             ApplyArabicFonts(obj);
+                            ApplyChangelogBodyFont(obj, Formatter.TagFonts["p"]);
                         end;
                     };
 
@@ -1929,7 +2246,12 @@ do  --ChangelogTab
                         offsetX = edgeOffsetX - indentSign * 1,
                         setupFunc = function(obj)
                             obj:SetSize(objectWidth + 32, 8);
-                            SetTexCoord(obj, 424, 864, 132, 148)
+                            if rtl then
+                                -- Mirror the divider artwork for RTL so decorative direction reads correctly.
+                                SetTexCoord(obj, 864, 424, 132, 148)
+                            else
+                                SetTexCoord(obj, 424, 864, 132, 148)
+                            end
                             obj:SetVertexColor(1, 1, 1);
                             obj:SetTexture(Def.TextureFile, nil, nil, "TRILINEAR");
                             DisableSharpening(obj, true);
@@ -1972,6 +2294,8 @@ do  --ChangelogTab
             for index, v in ipairs(tbl) do
                 local button = pool:Acquire();
                 button:SetVersionID(v.versionID);
+                local dateInfo = v.changelog and v.changelog[1];
+                button:SetBaseColor(GetChangelogColor(dateInfo and dateInfo.color, nil));
                 button:SetPoint("TOP", self.LeftSection, "TOP", 0, fromOffsetY - (index - 1) * Def.ButtonSize);
             end
         end
@@ -2084,13 +2408,15 @@ do  --Tab Buttons
 
             for k, v in ipairs(TabInfo) do
                 local button = self.tabButtonPool:Acquire();
-                button:SetPoint("TOPLEFT", self, "BOTTOMLEFT", offsetX, 0);
+                button:ClearAllPoints();
+                button:SetPoint("TOPLEFT", self.TabButtonContainer, "TOPLEFT", offsetX, 0);
                 local width = button:SetTabInfo(v);
                 button.index = k;
                 offsetX = offsetX + width + gap;
             end
 
-            self.TabButtonContainer:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+            -- Attach tabs slightly upward so they visually meet the bottom frame art (no floating gap).
+            self.TabButtonContainer:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, Def.TabAttachOffsetY);
             self.TabButtonContainer:SetSize(offsetX, Def.TabButtonHeight);
         end
 
