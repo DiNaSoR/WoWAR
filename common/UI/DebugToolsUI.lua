@@ -14,35 +14,89 @@ local C_GOLD  = "|cFFFFD700"
 local C_GREY  = "|cFF666666"
 local C_BLUE  = "|cFF00BFFF"
 
--- Verbosity meta-data (mirrors Debug.lua _verbosityNames / _verbosityColors)
-local VerbMeta = {
-  { level = 0, name = "OFF", color = { 0.40, 0.40, 0.40 } },
-  { level = 1, name = "ERR", color = { 1.00, 0.27, 0.27 } },
-  { level = 2, name = "MIN", color = { 1.00, 0.67, 0.00 } },
-  { level = 3, name = "INF", color = { 0.00, 1.00, 0.53 } },
-  { level = 4, name = "VRB", color = { 0.60, 0.60, 1.00 } },
+local function _debug()
+  return WOWTR and WOWTR.Debug or nil
+end
+
+local function _schema()
+  local d = _debug()
+  return d and d.Schema or nil
+end
+
+local PRESET_LABELS = {
+  ["off"]                  = "Off",
+  ["minimal"]              = "Min",
+  ["quest-investigation"]  = "Quest",
+  ["ui-dump"]              = "UI Dump",
+  ["full-trace"]           = "Full",
 }
 
--- Category display order, 3-letter tags, and colours (match Debug.lua _catBadge)
-local Categories = {
-  { key = "quests",   tag = "QST", label = "Quests",   r=0.30, g=0.72, b=1.00 },
-  { key = "gossip",   tag = "GSP", label = "Gossip",   r=1.00, g=0.62, b=0.78 },
-  { key = "tooltips", tag = "TIP", label = "Tooltips", r=0.73, g=0.50, b=1.00 },
-  { key = "books",    tag = "BKS", label = "Books",    r=1.00, g=0.70, b=0.28 },
-  { key = "movies",   tag = "MOV", label = "Movies",   r=0.35, g=0.90, b=0.35 },
-  { key = "bubbles",  tag = "BBL", label = "Bubbles",  r=0.53, g=0.81, b=0.92 },
-  { key = "chat",     tag = "CHT", label = "Chat",     r=1.00, g=0.84, b=0.00 },
-  { key = "config",   tag = "CFG", label = "Config",   r=0.87, g=0.63, b=0.87 },
-  { key = "general",  tag = "GEN", label = "General",  r=1.00, g=1.00, b=1.00 },
-}
+local function _buildVerbMeta()
+  local s = _schema()
+  local out = {}
+  if s and s.VerbosityMeta then
+    for level = 0, 4 do
+      local m = s.VerbosityMeta[level]
+      out[level + 1] = {
+        level = level,
+        name = (m and m.name) or tostring(level),
+        color = (m and m.rgb) or { 1, 1, 1 },
+      }
+    end
+    return out
+  end
+  return {
+    { level = 0, name = "OFF", color = { 0.40, 0.40, 0.40 } },
+    { level = 1, name = "ERR", color = { 1.00, 0.27, 0.27 } },
+    { level = 2, name = "MIN", color = { 1.00, 0.67, 0.00 } },
+    { level = 3, name = "INF", color = { 0.00, 1.00, 0.53 } },
+    { level = 4, name = "VRB", color = { 0.60, 0.60, 1.00 } },
+  }
+end
 
-local Presets = {
-  { key = "off",                  label = "Off"    },
-  { key = "minimal",              label = "Min"    },
-  { key = "quest-investigation",  label = "Quest"  },
-  { key = "ui-dump",              label = "UI Dump"},
-  { key = "full-trace",           label = "Full"   },
-}
+local function _buildCategories()
+  local s = _schema()
+  local out = {}
+  if s and s.CategoryOrder and s.CategoryMeta then
+    for i = 1, #s.CategoryOrder do
+      local key = s.CategoryOrder[i]
+      local m = s.CategoryMeta[key] or {}
+      local rgb = m.rgb or { 1, 1, 1 }
+      out[#out + 1] = {
+        key = key,
+        tag = m.tag or string.upper(key),
+        label = m.label or key,
+        r = rgb[1], g = rgb[2], b = rgb[3],
+      }
+    end
+    return out
+  end
+  return {
+    { key = "quests",   tag = "QST", label = "Quests",   r = 0.30, g = 0.72, b = 1.00 },
+    { key = "gossip",   tag = "GSP", label = "Gossip",   r = 1.00, g = 0.62, b = 0.78 },
+    { key = "tooltips", tag = "TIP", label = "Tooltips", r = 0.73, g = 0.50, b = 1.00 },
+    { key = "books",    tag = "BKS", label = "Books",    r = 1.00, g = 0.70, b = 0.28 },
+    { key = "movies",   tag = "MOV", label = "Movies",   r = 0.35, g = 0.90, b = 0.35 },
+    { key = "bubbles",  tag = "BBL", label = "Bubbles",  r = 0.53, g = 0.81, b = 0.92 },
+    { key = "chat",     tag = "CHT", label = "Chat",     r = 1.00, g = 0.84, b = 0.00 },
+    { key = "config",   tag = "CFG", label = "Config",   r = 0.87, g = 0.63, b = 0.87 },
+    { key = "general",  tag = "GEN", label = "General",  r = 1.00, g = 1.00, b = 1.00 },
+  }
+end
+
+local function _buildPresets()
+  local d = _debug()
+  local names = (d and d.GetPresetNames and d.GetPresetNames()) or { "off", "minimal", "quest-investigation", "ui-dump", "full-trace" }
+  local out = {}
+  for i = 1, #names do
+    out[#out + 1] = { key = names[i], label = PRESET_LABELS[names[i]] or names[i] }
+  end
+  return out
+end
+
+local VerbMeta = _buildVerbMeta()
+local Categories = _buildCategories()
+local Presets = _buildPresets()
 
 -- -------------------------------------------------------
 -- Apply WOWTR_Font2 to a FontString so Unicode block glyphs
@@ -62,23 +116,19 @@ local function _msg(text)
   end
 end
 
-local function _getDb()
-  return WOWTR and WOWTR.db and WOWTR.db.profile and WOWTR.db.profile.core
-end
-
 local function _getCategoryLevel(key)
-  local core = _getDb()
-  if core and core.debugConfig then return core.debugConfig[key] or 3 end
+  local d = _debug()
+  if d and d.GetCategoryLevel then
+    return d.GetCategoryLevel(key)
+  end
   return 3
 end
 
 local function _setCategoryLevel(key, val)
-  local core = _getDb()
-  if core then
-    core.debugConfig = core.debugConfig or {}
-    core.debugConfig[key] = val
+  local d = _debug()
+  if d and d.SetCategoryLevel then
+    d.SetCategoryLevel(key, val, true)
   end
-  if WOWTR and WOWTR.Debug and WOWTR.Debug.Initialize then WOWTR.Debug.Initialize() end
 end
 
 -- -------------------------------------------------------
@@ -156,6 +206,7 @@ function UI.CreateFrame()
     tab:SetNormalFontObject("GameFontNormalSmall")
     tab:SetHighlightFontObject("GameFontHighlightSmall")
     tab:SetText(text)
+    _setF2(tab:GetFontString(), 11)
     local bg2 = tab:CreateTexture(nil, "BACKGROUND")
     bg2:SetAllPoints()
     bg2:SetColorTexture(0.15, 0.15, 0.25, 0.9)
@@ -226,7 +277,6 @@ function UI.CreateFrame()
   local presetLabel = sp:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
   presetLabel:SetPoint("TOPLEFT", masterLabel, "BOTTOMLEFT", 0, -16)
   presetLabel:SetText(C_GOLD .. "Preset:" .. RESET)
-  presetLabel:SetTextColor(1, 0.84, 0, 1)
   _setF2(presetLabel, 12)
 
   local lastPresetBtn = presetLabel
@@ -240,6 +290,7 @@ function UI.CreateFrame()
       btn:SetPoint("LEFT", f.presetBtns[i-1], "RIGHT", 3, 0)
     end
     btn:SetText(p.label)
+    _setF2(btn:GetFontString(), 12)
     local pk = p.key
     btn:SetScript("OnClick", function()
       if WOWTR and WOWTR.Debug and WOWTR.Debug.SetPreset then
@@ -279,7 +330,7 @@ function UI.CreateFrame()
   scrollFrame:SetPoint("TOPLEFT",  colTag, "BOTTOMLEFT", -2, -6)
   scrollFrame:SetPoint("BOTTOMRIGHT", sp, "BOTTOMRIGHT", -22, 5)
 
-  local scrollBar = scrollFrame.ScrollBar or _G[scrollFrame:GetName() and scrollFrame:GetName().."ScrollBar"]
+  local scrollBar = scrollFrame.ScrollBar
   if scrollBar then
     scrollBar:ClearAllPoints()
     scrollBar:SetPoint("TOPLEFT",    scrollFrame, "TOPRIGHT",    2, -16)
@@ -385,6 +436,7 @@ function UI.CreateFrame()
     local cb = CreateFrame("CheckButton", nil, tp, "UICheckButtonTemplate")
     cb:SetPoint("TOPLEFT", tp, "TOPLEFT", x, y)
     cb.text:SetText(text)
+    _setF2(cb.text, 11)
     cb:SetChecked(false)
     cb:SetScript("OnClick", function(self) opts[field] = self:GetChecked() and true or false end)
     return cb
@@ -400,6 +452,7 @@ function UI.CreateFrame()
     b:SetSize(w or 120, 22)
     b:SetPoint("TOPLEFT", tp, "TOPLEFT", x, y)
     b:SetText(label)
+    _setF2(b:GetFontString(), 12)
     b:SetScript("OnClick", onClick)
     return b
   end
@@ -426,7 +479,6 @@ function UI.CreateFrame()
   local clearLabel = tp:CreateFontString(nil, "ARTWORK", "GameFontNormal")
   clearLabel:SetPoint("TOPLEFT", tp, "TOPLEFT", 10, -165)
   clearLabel:SetText(C_GOLD .. "Clear agent logs:" .. RESET)
-  clearLabel:SetTextColor(1, 0.84, 0, 1)
   _setF2(clearLabel, 13)
 
   mkBtn("Clear ALL",   10, -188, 100, function()
@@ -441,7 +493,7 @@ function UI.CreateFrame()
   mkBtn("Clear cache",  10, -216, 100, function()
     if WOWTR and WOWTR.Debug and WOWTR.Debug.ClearAgentLogs then WOWTR.Debug.ClearAgentLogs("cache") end
   end)
-  mkBtn("/reload",     118, -216, 100, function() if ReloadUI then ReloadUI() end end)
+  mkBtn("/reload", 118, -216, 100, function() if ReloadUI then ReloadUI() end end)
 
   -- Help text at bottom of dump tools.
   -- NOTE: avoid |t and |h (lowercase) directly after pipe — WoW treats |t as
@@ -468,8 +520,8 @@ function UI.UpdateSettings()
   if not UI.frame then return end
   local f = UI.frame
 
-  local core        = _getDb()
-  local debugOn     = core and core.debug or false
+  local d = _debug()
+  local debugOn = d and d.IsEnabled and d.IsEnabled() or false
 
   -- Status banner
   local bannerText
@@ -491,7 +543,7 @@ function UI.UpdateSettings()
     for _, cat in ipairs(Categories) do
       local row = f.catRows[cat.key]
       if row then
-        local lvl = core and core.debugConfig and core.debugConfig[cat.key] or 3
+        local lvl = _getCategoryLevel(cat.key)
         local vm  = VerbMeta[lvl + 1] or VerbMeta[1]
 
         -- Level label: coloured number

@@ -33,6 +33,11 @@ Translations\Tooltips_AR.lua
 common/Locale/AR.lua
 common/Locale/changelog.lua
 common/Core/State.lua
+common/Core/DebugSchema.lua
+common/Core/DebugState.lua
+common/Core/DebugPrint.lua
+common/Core/DebugAgentLog.lua
+common/Core/DebugDump.lua
 common/Core/Debug.lua
 common/Core/LegacyBridge.lua
 common/Core/Main.lua

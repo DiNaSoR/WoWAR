@@ -262,12 +262,19 @@ function Core.OnEvent(self, event, name, ...)
         end
 
       elseif msg == "help" or msg == "?" then
+        local presetNames = { "off", "minimal", "quest-investigation", "ui-dump", "full-trace" }
+        if WOWTR and WOWTR.Debug and WOWTR.Debug.GetPresetNames then
+          local names = WOWTR.Debug.GetPresetNames()
+          if type(names) == "table" and #names > 0 then
+            presetNames = names
+          end
+        end
         local h = "|cFF00FF00[WoWAR]|r |cFFFFD700/wowardebug|r commands:"
         DEFAULT_CHAT_FRAME:AddMessage(h)
         DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFon|r / |cFF00BFFFoff|r / |cFF00BFFftoggle|r  — enable/disable debug output")
         DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFstatus|r               — show category verbosity levels")
         DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFFpreset <name>|r        — apply preset:")
-        DEFAULT_CHAT_FRAME:AddMessage("    |cFF888888off  minimal  quest-investigation  ui-dump  full-trace|r")
+        DEFAULT_CHAT_FRAME:AddMessage("    |cFF888888" .. table.concat(presetNames, "  ") .. "|r")
         DEFAULT_CHAT_FRAME:AddMessage("  |cFF00BFFF(no args)|r            — open visual Debug Tools panel")
 
       else
