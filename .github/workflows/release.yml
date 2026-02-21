@@ -322,7 +322,7 @@ jobs:
                 clean_msg="${clean_msg#"${clean_msg%%[![:space:]]*}"}"
                 clean_msg="${clean_msg%"${clean_msg##*[![:space:]]}"}"
                 [[ -z "$clean_msg" ]] && clean_msg="$commit_msg"
-                SECTION_LINES[$label]="${SECTION_LINES[$label]}- $clean_msg ([${commit_hash}](https://github.com/${GITHUB_REPOSITORY}/commit/${commit_hash}))"$'\n'
+                SECTION_LINES[$label]="${SECTION_LINES[$label]:-}- $clean_msg ([${commit_hash}](https://github.com/${GITHUB_REPOSITORY}/commit/${commit_hash}))"$'\n'
                 categorized=1
                 break
               fi
