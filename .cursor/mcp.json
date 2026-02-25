@@ -3,13 +3,12 @@
                        "MnemoVector":  {
                                            "args":  [
                                                         "-3",
-                                                        "${env:WOWAR_ROOT}/scripts/memory/mnemo_vector.py"
+                                                        "D:/WoWAR/scripts/memory/mnemo_vector.py"
                                                     ],
                                            "env":  {
-                                                       "MNEMO_PROVIDER":  "gemini",
-                                                       "GEMINI_API_KEY":  "${env:GEMINI_API_KEY}"
+                                                       "MNEMO_PROVIDER":  "gemini"
                                                    },
-                                           "command":  "${env:PYTHON_EXE}"
+                                           "command":  "py"
                                        }
                    }
 }

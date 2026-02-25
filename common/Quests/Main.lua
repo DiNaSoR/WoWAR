@@ -271,17 +271,9 @@ function Quests.Start()
            end
            return 
         end
-        -- Get current quest ID to check if we just processed it
-        local currentQuestID = Quests.GetQuestID and Quests.GetQuestID() or 0
-        local now = GetTime()
-        
-        -- Skip if we just processed this same quest (avoid double processing)
-        if currentQuestID > 0 and _G._lastProcessedQuestID == currentQuestID and (now - _G._lastProcessedQuestTime) < 0.5 then
-           if WOWTR and WOWTR.Debug then
-             WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestInfo_Display: Already processed quest", currentQuestID, "recently, skipping to avoid double processing")
-           end
-           return
-        end
+        -- Do not short-circuit here by _lastProcessedQuest*.
+        -- QuestPrepare has finer duplicate guards and post-layout re-apply logic.
+        -- Skipping at this outer hook can leave first render untranslated.
       
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestInfo_Display hook fired, processing quest...")

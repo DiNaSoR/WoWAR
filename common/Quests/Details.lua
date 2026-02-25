@@ -826,10 +826,9 @@ function Quests.Details.TranslateOff(typ,event)
    if QTR_QuestReward_InfoXP then QTR_QuestReward_InfoXP:Hide() end
    if QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
       local receive = QuestInfoRewardsFrame.ItemReceiveText
-      if receive.ClearAllPoints and receive.SetPoint and QuestInfoRewardsFrame.Header then
-         receive:ClearAllPoints()
-         receive:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
-      end
+      -- Keep Blizzard-managed vertical stacking for reward labels.
+      -- Forcing ItemReceiveText directly under Header causes overlap with
+      -- questline/spell reward headers (e.g. "The end of this quest line rewards:").
       if receive.SetWidth then receive:SetWidth(0) end
       if receive.SetJustifyH then receive:SetJustifyH("LEFT") end
    end
@@ -1121,10 +1120,6 @@ function Quests.Details.TranslateOff(typ,event)
          QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT")
          QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
          if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
-         if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
-            QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
-            QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
-         end
          if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
             QuestInfoMoneyFrame:ClearAllPoints()
             QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
@@ -1147,6 +1142,24 @@ function Quests.Details.TranslateOff(typ,event)
             REWARD_UNLOCK = "rewardUnlock",
             REWARD_BONUS = "rewardBonus"
          }
+         local questlineUnlockSrc = rawget(_G, "REWARD_QUESTLINE_UNLOCK") or "This quest line is part of unlocking:"
+         local questlineRewardSrc = rawget(_G, "REWARD_QUESTLINE_REWARD") or "The end of this quest line rewards:"
+         local questlineUnlockAR_RS, questlineUnlockAR = nil, nil
+         local questlineRewardAR_RS, questlineRewardAR = nil, nil
+         if QTR_Messages then
+            if type(QTR_Messages.questline_unlocking) == "string" and QTR_Messages.questline_unlocking ~= "" then
+               if type(AS_UTF8reverseRS) == "function" then
+                  questlineUnlockAR_RS = AS_UTF8reverseRS(QTR_Messages.questline_unlocking, true)
+               end
+               questlineUnlockAR = AS_UTF8reverse(QTR_Messages.questline_unlocking)
+            end
+            if type(QTR_Messages.questline_rewards_end) == "string" and QTR_Messages.questline_rewards_end ~= "" then
+               if type(AS_UTF8reverseRS) == "function" then
+                  questlineRewardAR_RS = AS_UTF8reverseRS(QTR_Messages.questline_rewards_end, true)
+               end
+               questlineRewardAR = AS_UTF8reverse(QTR_Messages.questline_rewards_end)
+            end
+         end
          for constant, property in pairs(rewardHeaders) do
             if QuestInfoRewardsFrame[property] then
                QuestInfoRewardsFrame[property]:SetText(_G[constant])
@@ -1155,12 +1168,33 @@ function Quests.Details.TranslateOff(typ,event)
             end
          end
          for fontString in QuestInfoRewardsFrame.spellHeaderPool:EnumerateActive() do
-            for constant, _ in pairs(rewardHeaders) do
-               if fontString:GetText() == QTR_Messages[string.lower(constant)] then
-                  fontString:SetText(_G[constant])
-                  fontString:SetFont(Original_Font2, 13)
-                  fontString:SetJustifyH("LEFT")
+            local txt = fontString:GetText()
+            local restored = false
+            if txt then
+               for constant, _ in pairs(rewardHeaders) do
+                  if txt == QTR_Messages[string.lower(constant)] then
+                     txt = _G[constant]
+                     restored = true
+                     break
+                  end
                end
+
+               if not restored then
+                  if (questlineUnlockAR_RS and txt == questlineUnlockAR_RS) or (questlineUnlockAR and txt == questlineUnlockAR) then
+                     txt = questlineUnlockSrc
+                     restored = true
+                  elseif (questlineRewardAR_RS and txt == questlineRewardAR_RS) or (questlineRewardAR and txt == questlineRewardAR) then
+                     txt = questlineRewardSrc
+                     restored = true
+                  end
+               end
+            end
+
+            if restored then
+               fontString:SetText(txt)
+               fontString:SetFont(Original_Font2, 13)
+               if fontString.SetWidth then fontString:SetWidth(0) end
+               fontString:SetJustifyH("LEFT")
             end
          end
       end
@@ -1913,10 +1947,6 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("RIGHT")
                QuestInfoRewardsFrame.ItemReceiveText:SetWidth(260)
-               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
-                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
-                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
-               end
                if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
                   -- Keep money inside rewards pane in RTL even when receive label uses a wide right-justified column.
                   QuestInfoMoneyFrame:ClearAllPoints()
@@ -1966,10 +1996,6 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("LEFT")
                if QuestInfoRewardsFrame.ItemReceiveText.SetWidth then QuestInfoRewardsFrame.ItemReceiveText:SetWidth(0) end
-               if QuestInfoRewardsFrame.ItemReceiveText.ClearAllPoints and QuestInfoRewardsFrame.ItemReceiveText.SetPoint and QuestInfoRewardsFrame.Header then
-                  QuestInfoRewardsFrame.ItemReceiveText:ClearAllPoints()
-                  QuestInfoRewardsFrame.ItemReceiveText:SetPoint("TOPLEFT", QuestInfoRewardsFrame.Header, "BOTTOMLEFT", 0, -5)
-               end
 
                QuestInfoXPFrame.ReceiveText:SetText(QTR_Messages.experience)
                QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
@@ -2145,6 +2171,36 @@ function Quests.Details.DisplayConstants(lg)
             end
         end
 
+        local questlineUnlockSrc = rawget(_G, "REWARD_QUESTLINE_UNLOCK") or "This quest line is part of unlocking:"
+        local questlineRewardSrc = rawget(_G, "REWARD_QUESTLINE_REWARD") or "The end of this quest line rewards:"
+        local questlineUnlockTR, questlineRewardTR = nil, nil
+        if isArabic and QTR_Messages then
+           if type(QTR_Messages.questline_unlocking) == "string" and QTR_Messages.questline_unlocking ~= "" then
+              if type(AS_UTF8reverseRS) == "function" then
+                 questlineUnlockTR = AS_UTF8reverseRS(QTR_Messages.questline_unlocking, true)
+              else
+                 questlineUnlockTR = AS_UTF8reverse(QTR_Messages.questline_unlocking)
+              end
+           end
+           if type(QTR_Messages.questline_rewards_end) == "string" and QTR_Messages.questline_rewards_end ~= "" then
+              if type(AS_UTF8reverseRS) == "function" then
+                 questlineRewardTR = AS_UTF8reverseRS(QTR_Messages.questline_rewards_end, true)
+              else
+                 questlineRewardTR = AS_UTF8reverse(QTR_Messages.questline_rewards_end)
+              end
+           end
+        end
+
+        local rtlRewardHeaderWidth = nil
+        if isArabic and QuestInfoRewardsFrame and QuestInfoRewardsFrame.GetWidth then
+           local rewardsW = tonumber(QuestInfoRewardsFrame:GetWidth()) or 0
+           if rewardsW > 0 then
+              -- Match Map rewards behavior: give headers a full RTL column so RIGHT justify
+              -- is visually aligned to the pane's right edge.
+              rtlRewardHeaderWidth = math.max(220, math.floor(rewardsW - 24))
+           end
+        end
+
         for fontString in QuestInfoRewardsFrame.spellHeaderPool:EnumerateActive() do
            local txt = fontString:GetText()
            if (txt) then
@@ -2157,9 +2213,28 @@ function Quests.Details.DisplayConstants(lg)
               txt = string.gsub(txt, QTR_MessOrig.reward_tradeskill, QTR_Messages.reward_tradeskill)
               txt = string.gsub(txt, QTR_MessOrig.reward_unlock, QTR_Messages.reward_unlock)
               txt = string.gsub(txt, QTR_MessOrig.reward_bonus, QTR_Messages.reward_bonus)
+              if questlineUnlockTR then
+                 txt = string.gsub(txt, questlineUnlockSrc, questlineUnlockTR)
+              end
+              if questlineRewardTR then
+                 txt = string.gsub(txt, questlineRewardSrc, questlineRewardTR)
+              end
               fontString:SetText(txt)
               fontString:SetFont(WOWTR_Font2, 13)
-              if isArabic then fontString:SetJustifyH("RIGHT") else fontString:SetJustifyH("LEFT") end
+              if isArabic then
+                 if fontString.SetWidth then
+                    if rtlRewardHeaderWidth then
+                       fontString:SetWidth(rtlRewardHeaderWidth)
+                    else
+                       local curW = (fontString.GetWidth and tonumber(fontString:GetWidth())) or 0
+                       fontString:SetWidth(math.max(curW, 240))
+                    end
+                 end
+                 fontString:SetJustifyH("RIGHT")
+              else
+                 if fontString.SetWidth then fontString:SetWidth(0) end
+                 fontString:SetJustifyH("LEFT")
+              end
            end
         end
    end
