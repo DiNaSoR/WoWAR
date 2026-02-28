@@ -238,13 +238,18 @@ function Quests.Details.TranslateOn(typ,event)
             -- Cache the ORIGINAL quest title font so we can render any "icon glyph" that doesn't exist in Arabic fonts.
             -- (Some decorations use private glyphs that only render correctly with the original FontString font.)
             Quests.Details._TitleIconFontCache = Quests.Details._TitleIconFontCache or {}
+            local titleCacheKey = tostring(QTR_quest_ID or 0)
             do
                local f, s, flags
                if QuestInfoTitleHeader and QuestInfoTitleHeader.GetFont then
                   f, s, flags = QuestInfoTitleHeader:GetFont()
                end
-               if f and f ~= "" then
-                  Quests.Details._TitleIconFontCache[QTR_quest_ID] = { font = f, size = s, flags = flags }
+               -- Only capture from non-Arabic header text.
+               -- During post passes the header already uses Arabic font; caching it here
+               -- makes glyph decorations like "!" disappear.
+               local canCaptureOriginalFont = (currentHeaderTitle ~= "") and (not ContainsArabic(currentHeaderTitle))
+               if f and f ~= "" and canCaptureOriginalFont then
+                  Quests.Details._TitleIconFontCache[titleCacheKey] = { font = f, size = s, flags = flags }
                end
             end
 
@@ -337,20 +342,86 @@ function Quests.Details.TranslateOn(typ,event)
 
             local titleLG = QTR_quest_LG[QTR_quest_ID] and QTR_quest_LG[QTR_quest_ID].title or ""
             local titleEN = QTR_quest_EN[QTR_quest_ID] and QTR_quest_EN[QTR_quest_ID].title or ""
-            -- Prefer the live header title (still English at this moment) to capture late-applied Blizzard decorations.
-            local titleENDecorated = titleEN
-            if currentHeaderTitle ~= "" and (not ContainsArabic(currentHeaderTitle)) then
-               titleENDecorated = currentHeaderTitle
+            local decorKey = tostring(QTR_quest_ID or 0)
+            Quests.Details._TitleDecorCache = Quests.Details._TitleDecorCache or {}
+            local decorCache = Quests.Details._TitleDecorCache[decorKey]
+
+            local function probeDecor(txt)
+               if type(txt) ~= "string" or txt == "" then
+                  return false, "", "", nil, nil
+               end
+               local tags, glyph = extractLeadingTitleDecorations(txt)
+               local ref = txt:match("^|H([^|]+)|h")
+               local ltxt = txt:match("^|H.-|h(.-)|h")
+               local has = (tags ~= "") or (glyph ~= "") or (ref and ref ~= "")
+               return has, tags, glyph, ref, ltxt
             end
-            local leadingTags, leadingGlyph = extractLeadingTitleDecorations(titleENDecorated)
-            -- Capture the leading hyperlink decoration (if present) so our overlay icon can reproduce its tooltip behavior.
-            local leadingLinkRef = titleENDecorated:match("^|H([^|]+)|h")
-            local leadingLinkText = titleENDecorated:match("^|H.-|h(.-)|h")
+
+            local headerCandidate = ((currentHeaderTitle ~= "") and (not ContainsArabic(currentHeaderTitle))) and currentHeaderTitle or ""
+            local titleCandidate = (type(titleEN) == "string" and titleEN ~= "" and (not ContainsArabic(titleEN))) and titleEN or ""
+            local cacheCandidate = (decorCache and type(decorCache.title) == "string" and decorCache.title ~= "" and (not ContainsArabic(decorCache.title))) and decorCache.title or ""
+
+            -- Prefer a candidate that still has decorations, then fall back to any non-Arabic title.
+            local titleENDecorated, leadingTags, leadingGlyph, leadingLinkRef, leadingLinkText
+            local hasDecor = false
+            hasDecor, leadingTags, leadingGlyph, leadingLinkRef, leadingLinkText = probeDecor(headerCandidate)
+            if hasDecor then
+               titleENDecorated = headerCandidate
+            else
+               hasDecor, leadingTags, leadingGlyph, leadingLinkRef, leadingLinkText = probeDecor(titleCandidate)
+               if hasDecor then
+                  titleENDecorated = titleCandidate
+               else
+                  hasDecor, leadingTags, leadingGlyph, leadingLinkRef, leadingLinkText = probeDecor(cacheCandidate)
+                  if hasDecor then
+                     titleENDecorated = cacheCandidate
+                  else
+                     titleENDecorated = (headerCandidate ~= "" and headerCandidate) or (titleCandidate ~= "" and titleCandidate) or cacheCandidate or ""
+                  end
+               end
+            end
+
+            -- Toggle/reflow paths can briefly expose plain titles; keep previous icon state stable.
+            if (leadingTags == "" and leadingGlyph == "" and (not leadingLinkRef or leadingLinkRef == "")) and decorCache then
+               leadingTags = decorCache.tags or leadingTags or ""
+               leadingGlyph = decorCache.glyph or leadingGlyph or ""
+               if (not leadingLinkRef or leadingLinkRef == "") and decorCache.linkRef and decorCache.linkRef ~= "" then
+                  leadingLinkRef = decorCache.linkRef
+                  leadingLinkText = decorCache.linkText or leadingLinkText
+               end
+            end
+
+            local hasLiveDecor = (leadingTags ~= "")
+               or (leadingGlyph ~= "")
+               or (leadingLinkRef and leadingLinkRef ~= "")
+            if hasLiveDecor then
+               Quests.Details._TitleDecorCache[decorKey] = {
+                  title = titleENDecorated,
+                  tags = leadingTags,
+                  glyph = leadingGlyph,
+                  linkRef = leadingLinkRef,
+                  linkText = leadingLinkText,
+               }
+            end
+
             Quests.Details._TitleDecorLinks = Quests.Details._TitleDecorLinks or {}
             if leadingLinkRef and leadingLinkRef ~= "" then
-               Quests.Details._TitleDecorLinks[QTR_quest_ID] = { ref = leadingLinkRef, text = leadingLinkText }
+               Quests.Details._TitleDecorLinks[decorKey] = { ref = leadingLinkRef, text = leadingLinkText }
             else
-               Quests.Details._TitleDecorLinks[QTR_quest_ID] = nil
+               Quests.Details._TitleDecorLinks[decorKey] = nil
+            end
+            if WOWTR and WOWTR.Debug then
+               WOWTR.Debug.Verbose(
+                  WOWTR.Debug.Categories.QUESTS,
+                  "Title decor resolve | key:", decorKey,
+                  "| event:", event or "nil",
+                  "| hdr:", (headerCandidate ~= "") and "Y" or "N",
+                  "| en:", (titleCandidate ~= "") and "Y" or "N",
+                  "| cache:", (decorCache and "Y") or "N",
+                  "| glyph:", (leadingGlyph ~= "") and "Y" or "N",
+                  "| tags:", (leadingTags ~= "") and "Y" or "N",
+                  "| link:", (leadingLinkRef and leadingLinkRef ~= "") and "Y" or "N"
+               )
             end
 
             -- Reserve space for the glyph icon in RTL mode by reducing title width.
@@ -359,7 +430,10 @@ function Quests.Details.TranslateOn(typ,event)
             if rtl and leadingGlyph ~= "" then
                glyphReservedW = 14 -- space for glyph (minimal, X offset handles positioning)
             end
-            local titleTargetW = textW - glyphReservedW
+            -- Additional right-side padding keeps the title/icon away from the frame edge in RTL.
+            local titleRightPadding = rtl and 2 or 0
+            local titleTargetW = textW - glyphReservedW - titleRightPadding
+            if titleTargetW < 40 then titleTargetW = 40 end
             QuestInfoTitleHeader:SetWidth(titleTargetW)
             QuestProgressTitleText:SetWidth(titleTargetW)
             enforceWidth(QuestInfoTitleHeader, titleTargetW)
@@ -435,13 +509,46 @@ function Quests.Details.TranslateOn(typ,event)
                Quests.Details._IconPosLock = Quests.Details._IconPosLock or {}
                local lockIdTitle = tostring(QTR_quest_ID or 0) .. ":title:" .. (inQuestMap and "map" or "other")
                local lockIdProg = tostring(QTR_quest_ID or 0) .. ":prog:" .. (inQuestMap and "map" or "other")
+               if event ~= "__post__" then
+                  -- Any non-post pass can follow anchor/width changes (toggle/force); unlock so we recalculate placement.
+                  Quests.Details._IconPosLock[lockIdTitle] = nil
+                  Quests.Details._IconPosLock[lockIdProg] = nil
+               end
 
                if leadingGlyph ~= "" and Original_Font1 then
                   local titleSize = C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18
-                  local cache = Quests.Details._TitleIconFontCache and Quests.Details._TitleIconFontCache[QTR_quest_ID]
-                  local iconFont = (cache and cache.font) or Original_Font1
-                  local iconSize = (cache and cache.size) or titleSize
-                  local iconFlags = (cache and cache.flags) or ""
+                  local cache = Quests.Details._TitleIconFontCache and Quests.Details._TitleIconFontCache[titleCacheKey]
+                  local function normFontPath(p)
+                     if type(p) ~= "string" then return "" end
+                     return p:gsub("/", "\\"):lower()
+                  end
+                  local cacheFontPath = normFontPath(cache and cache.font)
+                  local arFontPath = normFontPath(WOWTR_Font1)
+                  local useCacheFont = (cacheFontPath ~= "") and (cacheFontPath ~= arFontPath)
+                  local iconFont = (useCacheFont and cache.font) or Original_Font1
+                  local iconSize = (useCacheFont and cache.size) or titleSize
+                  local iconFlags = (useCacheFont and cache.flags) or ""
+                  if WOWTR and WOWTR.Debug then
+                     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Title icon font source | key:", titleCacheKey, "| event:", event or "nil", "| src:", useCacheFont and "cache" or "original")
+                  end
+                  local function clampRTLIconX(iconFSLocal, anchorFS, parentFS, baseX)
+                     local x = baseX or 0
+                     if not (iconFSLocal and anchorFS and parentFS and iconFSLocal.GetStringWidth and anchorFS.GetRight and parentFS.GetRight) then
+                        return x
+                     end
+                     local iconW = iconFSLocal:GetStringWidth() or 0
+                     if iconW <= 0 then iconW = 12 end
+                     local anchorRight = anchorFS:GetRight()
+                     local parentRight = parentFS:GetRight()
+                     local rightEdgePadding = 8
+                     if anchorRight and parentRight and parentRight > anchorRight then
+                        local maxX = (parentRight - anchorRight) - iconW - rightEdgePadding
+                        if maxX < x then x = maxX end
+                     end
+                     local minX = -math.max(iconW, 12)
+                     if x < minX then x = minX end
+                     return x
+                  end
                   local function showHyperlinkTooltip(ownerFrame, linkRef, linkText)
                      -- Try to reuse Blizzard's handler on the owning frame (if present), else fall back to GameTooltip.
                      if ownerFrame and ownerFrame.GetScript then
@@ -484,7 +591,11 @@ function Quests.Details.TranslateOn(typ,event)
                               -- Position at RIGHT edge of title + X offset, so it sits visually before the Arabic text.
                               iconFS:SetWidth(0) -- let it size naturally
                               iconFS:SetJustifyH("LEFT")
-                              iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "RIGHT", 4, 0)
+                              local xOff = clampRTLIconX(iconFS, QuestInfoTitleHeader, titleParent, 0)
+                              iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "RIGHT", xOff, 0)
+                              if WOWTR and WOWTR.Debug then
+                                 WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Title icon RTL clamp | key:", titleCacheKey, "| event:", event or "nil", "| x:", string.format("%.1f", xOff))
+                              end
                            else
                               iconFS:SetWidth(0)
                               iconFS:SetPoint("LEFT", QuestInfoTitleHeader, "LEFT", 0, 0)
@@ -508,7 +619,8 @@ function Quests.Details.TranslateOn(typ,event)
                               -- Same positioning logic for progress title
                               iconFS2:SetWidth(0)
                               iconFS2:SetJustifyH("LEFT")
-                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", 20, 0)
+                              local xOff2 = clampRTLIconX(iconFS2, QuestProgressTitleText, progParent, 4)
+                              iconFS2:SetPoint("LEFT", QuestProgressTitleText, "RIGHT", xOff2, 0)
                            else
                               iconFS2:SetWidth(0)
                               iconFS2:SetPoint("LEFT", QuestProgressTitleText, "LEFT", 0, 0)
@@ -524,7 +636,7 @@ function Quests.Details.TranslateOn(typ,event)
                   end
 
                   -- Position and wire hover tooltips for the icon hit boxes.
-                  local linkInfo = Quests.Details._TitleDecorLinks and Quests.Details._TitleDecorLinks[QTR_quest_ID]
+                  local linkInfo = Quests.Details._TitleDecorLinks and Quests.Details._TitleDecorLinks[decorKey]
                   local linkRef = linkInfo and linkInfo.ref or nil
                   local linkText = linkInfo and linkInfo.text or nil
                   if Quests.Details._TitleIconHit and iconFS and iconFS.IsShown and iconFS:IsShown() and linkRef and allowIconShow then
@@ -968,6 +1080,16 @@ function Quests.Details.TranslateOff(typ,event)
      if Quests.Details._ProgressTitleIconFS then Quests.Details._ProgressTitleIconFS:Hide() end
      if Quests.Details._TitleIconHit then Quests.Details._TitleIconHit:Hide() end
      if Quests.Details._ProgressTitleIconHit then Quests.Details._ProgressTitleIconHit:Hide() end
+     if Quests.Details._IconPosLock then
+       local key = tostring(QTR_quest_ID or 0)
+       Quests.Details._IconPosLock[key .. ":title:map"] = nil
+       Quests.Details._IconPosLock[key .. ":prog:map"] = nil
+       Quests.Details._IconPosLock[key .. ":title:other"] = nil
+       Quests.Details._IconPosLock[key .. ":prog:other"] = nil
+     end
+     if Quests.Details._PostAfterToggle then
+       Quests.Details._PostAfterToggle[QTR_quest_ID] = nil
+     end
    end
 
    -- Restore original anchor points for any FontStrings we tightened for RTL "perfect width".
@@ -1085,8 +1207,21 @@ function Quests.Details.TranslateOff(typ,event)
          end
          QuestInfoTitleHeader:SetFont(Original_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18)
          QuestProgressTitleText:SetFont(Original_Font1, C_AddOns.IsAddOnLoaded("ElvUI") and ElvUI[1].db.general.fonts.questtext.enable and ElvUI[1].db.general.fonts.questtitle.size or 18)
-         QuestInfoTitleHeader:SetText(QTR_quest_EN[QTR_quest_ID].title)
-         QuestProgressTitleText:SetText(QTR_quest_EN[QTR_quest_ID].title)
+         local titleEN = QTR_quest_EN[QTR_quest_ID].title
+         local decorKey = tostring(QTR_quest_ID or 0)
+         local decorCache = Quests and Quests.Details and Quests.Details._TitleDecorCache and Quests.Details._TitleDecorCache[decorKey]
+         if WOWTR and WOWTR.Debug then
+            WOWTR.Debug.Verbose(
+               WOWTR.Debug.Categories.QUESTS,
+               "TranslateOff title source | key:", decorKey,
+               "| cache:", (decorCache and type(decorCache.title) == "string" and decorCache.title ~= "") and "Y" or "N"
+            )
+         end
+         if decorCache and type(decorCache.title) == "string" and decorCache.title ~= "" and (not ContainsArabic(decorCache.title)) then
+            titleEN = decorCache.title
+         end
+         QuestInfoTitleHeader:SetText(titleEN or "")
+         QuestProgressTitleText:SetText(titleEN or "")
          QuestInfoDescriptionText:SetWidth(WOW_width - 1)
          QuestInfoObjectivesText:SetWidth(WOW_width - 1)
          QuestProgressText:SetWidth(WOW_width - 1)
@@ -1495,11 +1630,28 @@ function Quests.Details.QuestPrepare(event)
         if not cur or cur == "" then
           QTR_quest_EN[QTR_quest_ID].title = chosen
         else
-          -- Upgrade existing cached title to the decorated version if we previously captured the plain title.
-          local curHasDeco = (type(cur) == "string") and (cur:find("|H", 1, true) or cur:find("|T", 1, true) or cur:find("|A", 1, true))
-          local newHasDeco = (type(chosen) == "string") and (chosen:find("|H", 1, true) or chosen:find("|T", 1, true) or chosen:find("|A", 1, true))
+          -- Upgrade existing cached title to a decorated version (including leading glyph decorations).
+          local function hasTitleDecor(txt)
+            if type(txt) ~= "string" or txt == "" then return false end
+            local rest = txt:gsub("^%s+", "")
+            if rest:find("|H", 1, true) or rest:find("|T", 1, true) or rest:find("|A", 1, true) then
+              return true
+            end
+            local ch = rest:match("^[%z\1-\127\194-\244][\128-\191]*")
+            if ch and ch ~= "" then
+              if (#ch > 1) or ch == "!" or ch == "?" then
+                return true
+              end
+            end
+            return false
+          end
+          local curHasDeco = hasTitleDecor(cur)
+          local newHasDeco = hasTitleDecor(chosen)
           if (not curHasDeco) and newHasDeco then
             QTR_quest_EN[QTR_quest_ID].title = chosen
+            if WOWTR and WOWTR.Debug then
+              WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestPrepare title upgraded to decorated EN | qid:", QTR_quest_ID)
+            end
           end
         end
       end
