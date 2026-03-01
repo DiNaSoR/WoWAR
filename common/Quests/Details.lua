@@ -1244,9 +1244,27 @@ function Quests.Details.TranslateOff(typ,event)
          QuestInfoXPFrame.ReceiveText:SetText(EXPERIENCE_COLON)
          QuestInfoXPFrame.ReceiveText:SetFont(Original_Font2, 13)
          QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+         if QuestInfoXPFrame.ReceiveText.SetWidth then QuestInfoXPFrame.ReceiveText:SetWidth(0) end
          if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
             QuestInfoXPFrame.ValueText:ClearAllPoints()
             QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
+            if QuestInfoXPFrame.ValueText.SetJustifyH then QuestInfoXPFrame.ValueText:SetJustifyH("LEFT") end
+         end
+         if QuestInfoRewardsFrame and QuestInfoRewardsFrame.XPFrame and QuestInfoRewardsFrame.XPFrame.ReceiveText then
+            local xp = QuestInfoRewardsFrame.XPFrame
+            xp.ReceiveText:SetText(EXPERIENCE_COLON)
+            xp.ReceiveText:SetFont(Original_Font2, 13)
+            xp.ReceiveText:SetJustifyH("LEFT")
+            if xp.ReceiveText.SetWidth then xp.ReceiveText:SetWidth(0) end
+            if xp.ReceiveText.ClearAllPoints and xp.ReceiveText.SetPoint then
+               xp.ReceiveText:ClearAllPoints()
+               xp.ReceiveText:SetPoint("LEFT", xp, "LEFT", 0, 0)
+            end
+            if xp.ValueText and xp.ValueText.ClearAllPoints and xp.ValueText.SetPoint then
+               xp.ValueText:ClearAllPoints()
+               xp.ValueText:SetPoint("LEFT", xp.ReceiveText, "RIGHT", 15, 0)
+               if xp.ValueText.SetJustifyH then xp.ValueText:SetJustifyH("LEFT") end
+            end
          end
          QuestInfoRewardsFrame.ItemChooseText:SetText(QTR_quest_EN[QTR_quest_ID].itemchoose)
          QuestInfoRewardsFrame.ItemReceiveText:SetText(QTR_quest_EN[QTR_quest_ID].itemreceive)
@@ -2120,18 +2138,44 @@ function Quests.Details.DisplayConstants(lg)
                end
 
                if QuestInfoRewardsFrame.XPFrame and QuestInfoRewardsFrame.XPFrame.ReceiveText then
-                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetText(experienceAR)
-                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
-                  QuestInfoRewardsFrame.XPFrame.ReceiveText:SetJustifyH("RIGHT")
+                  local mapXP = QuestInfoRewardsFrame.XPFrame
+                  mapXP.ReceiveText:SetText(experienceAR)
+                  mapXP.ReceiveText:SetFont(WOWTR_Font2, 13)
+                  mapXP.ReceiveText:SetJustifyH("RIGHT")
+                  if mapXP.ReceiveText.SetWidth then
+                     local rw = (QuestInfoRewardsFrame.GetWidth and tonumber(QuestInfoRewardsFrame:GetWidth())) or 0
+                     local xpLabelW = (rw > 0) and math.max(100, math.floor(rw * 0.42)) or 120
+                     mapXP.ReceiveText:SetWidth(xpLabelW)
+                  end
+                  if mapXP.ReceiveText.ClearAllPoints and mapXP.ReceiveText.SetPoint then
+                     mapXP.ReceiveText:ClearAllPoints()
+                     mapXP.ReceiveText:SetPoint("RIGHT", mapXP, "RIGHT", -8, 0)
+                  end
+                  if mapXP.ValueText and mapXP.ValueText.ClearAllPoints and mapXP.ValueText.SetPoint then
+                     mapXP.ValueText:ClearAllPoints()
+                     -- RTL: value before label (to the left of the Arabic "الخبرة:" text)
+                     mapXP.ValueText:SetPoint("RIGHT", mapXP.ReceiveText, "LEFT", -10, 0)
+                     if mapXP.ValueText.SetJustifyH then mapXP.ValueText:SetJustifyH("RIGHT") end
+                  end
                end
                QuestInfoXPFrame.ReceiveText:SetText(experienceAR)
                QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoXPFrame.ReceiveText:SetJustifyH("RIGHT")
+               if QuestInfoXPFrame.ReceiveText.SetWidth then
+                  local rw = (QuestInfoRewardsFrame.GetWidth and tonumber(QuestInfoRewardsFrame:GetWidth())) or 0
+                  local xpLabelW = (rw > 0) and math.max(100, math.floor(rw * 0.42)) or 120
+                  QuestInfoXPFrame.ReceiveText:SetWidth(xpLabelW)
+               end
+               if QuestInfoXPFrame.ReceiveText.ClearAllPoints and QuestInfoXPFrame.ReceiveText.SetPoint then
+                  QuestInfoXPFrame.ReceiveText:ClearAllPoints()
+                  QuestInfoXPFrame.ReceiveText:SetPoint("RIGHT", QuestInfoXPFrame, "RIGHT", -8, 0)
+               end
 
-               -- Keep Blizzard default XP value anchor; custom TOPRIGHT anchor can collapse reward spacing.
                if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
                   QuestInfoXPFrame.ValueText:ClearAllPoints()
-                  QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
+                  -- RTL: value before label (to the left of the Arabic "الخبرة:" text)
+                  QuestInfoXPFrame.ValueText:SetPoint("RIGHT", QuestInfoXPFrame.ReceiveText, "LEFT", -10, 0)
+                  if QuestInfoXPFrame.ValueText.SetJustifyH then QuestInfoXPFrame.ValueText:SetJustifyH("RIGHT") end
                end
 
                -- Keep legacy overlay labels hidden to avoid duplicate/overlapping text stacks.
@@ -2152,6 +2196,30 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoXPFrame.ReceiveText:SetText(QTR_Messages.experience)
                QuestInfoXPFrame.ReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoXPFrame.ReceiveText:SetJustifyH("LEFT")
+               if QuestInfoXPFrame.ReceiveText.SetWidth then QuestInfoXPFrame.ReceiveText:SetWidth(0) end
+               if QuestInfoXPFrame.ReceiveText.ClearAllPoints and QuestInfoXPFrame.ReceiveText.SetPoint then
+                  QuestInfoXPFrame.ReceiveText:ClearAllPoints()
+                  QuestInfoXPFrame.ReceiveText:SetPoint("LEFT", QuestInfoXPFrame, "LEFT", 0, 0)
+               end
+               if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
+                  QuestInfoXPFrame.ValueText:ClearAllPoints()
+                  QuestInfoXPFrame.ValueText:SetPoint("LEFT", QuestInfoXPFrame.ReceiveText, "RIGHT", 15, 0)
+                  if QuestInfoXPFrame.ValueText.SetJustifyH then QuestInfoXPFrame.ValueText:SetJustifyH("LEFT") end
+               end
+               if QuestInfoRewardsFrame.XPFrame and QuestInfoRewardsFrame.XPFrame.ReceiveText then
+                  local mapXP = QuestInfoRewardsFrame.XPFrame
+                  if mapXP.ReceiveText.SetWidth then mapXP.ReceiveText:SetWidth(0) end
+                  mapXP.ReceiveText:SetJustifyH("LEFT")
+                  if mapXP.ReceiveText.ClearAllPoints and mapXP.ReceiveText.SetPoint then
+                     mapXP.ReceiveText:ClearAllPoints()
+                     mapXP.ReceiveText:SetPoint("LEFT", mapXP, "LEFT", 0, 0)
+                  end
+                  if mapXP.ValueText and mapXP.ValueText.ClearAllPoints and mapXP.ValueText.SetPoint then
+                     mapXP.ValueText:ClearAllPoints()
+                     mapXP.ValueText:SetPoint("LEFT", mapXP.ReceiveText, "RIGHT", 15, 0)
+                     if mapXP.ValueText.SetJustifyH then mapXP.ValueText:SetJustifyH("LEFT") end
+                  end
+               end
                if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
                   QuestInfoMoneyFrame:ClearAllPoints()
                   QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)

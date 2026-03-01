@@ -6,23 +6,20 @@ CLEAR this file when the task is done:
 - Run `scripts/memory/clear-active.ps1`
 
 ## Current Goal
-- Investigate QuestMapFrame title icon disappearing after AR/EN toggle cycles for quest details.
+- Fix quest rewards XP field (`الخبرة`) to render true RTL (label/value order + alignment).
 
 ## Files in Focus
 - `common/Quests/Details.lua`
 
 ## Findings / Decisions
-- Root cause likely state-loss of title decoration extraction during `__toggle__` passes when the current EN header text is plain.
-- Added per-quest `_TitleDecorCache` fallback so glyph/tags/link metadata persists across toggle/reflow.
-- On EN restore path (`TranslateOff`), prefer cached decorated EN title when available to keep UI consistent.
-- Strengthened decoration detection to treat leading glyph icons (`!`, `?`, non-ASCII glyphs) as title decorations (not only `|H`/`|T`/`|A` tags).
-- Normalized decoration/font cache keys to `tostring(questID)` for stability across numeric/string ID paths.
-- New root-cause hypothesis confirmed in code path: title icon font cache was overwritten during AR `__post__` passes, causing glyph icons to render with `WOWTR_Font1` (missing glyph).
-- Hardened icon font selection to ignore Arabic cached font and fall back to `Original_Font1`.
-- Additional layout fix: icon position lock now resets on non-`__post__` passes and on `TranslateOff`, so stale coordinates cannot push icon outside/clipped after width/anchor restoration.
-- Reduced RTL icon X offsets (`title: 0`, `progress: 4`) to keep overlay inside reserved header area.
-- Added runtime RTL X-clamp against parent right edge (`GetRight` + icon string width) so title icon cannot render outside quest frame even if title width/anchors jitter.
-- Added explicit RTL right padding for title width (`titleRightPadding = 8`) and increased icon right-edge clamp padding (`rightEdgePadding = 8`).
+- XP row was still LTR-anchored in AR (`ValueText` to the right of `ReceiveText`), so `الخبرة` looked non-RTL.
+- Updated AR XP rows (`QuestInfoXPFrame`, `QuestInfoRewardsFrame.XPFrame`) to:
+  - right-justify + apply width to label,
+  - anchor value to the LEFT of label (`RIGHT` -> `LEFT` with negative gap).
+- Added EN/off resets for XP widths/anchors/justification so toggles don't keep stale RTL anchors.
+- Root cause refinement: value disappeared because label was still LEFT-anchored while value was moved to label's LEFT; this pushed value off the frame.
+- Fixed by right-anchoring XP `ReceiveText` itself in AR (`SetPoint("RIGHT", frame, "RIGHT", -8, 0)`) before placing value to its left.
+- Added explicit LTR reset for `QuestInfoRewardsFrame.XPFrame` in `TranslateOff` (label/value anchor + justify + width), not only `QuestInfoXPFrame`, to avoid persistent RTL after toggle OFF.
 
 ## Temporary Constraints
 -
