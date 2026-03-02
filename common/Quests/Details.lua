@@ -944,6 +944,11 @@ function Quests.Details.TranslateOff(typ,event)
       if receive.SetWidth then receive:SetWidth(0) end
       if receive.SetJustifyH then receive:SetJustifyH("LEFT") end
    end
+   if QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemChooseText then
+      local choose = QuestInfoRewardsFrame.ItemChooseText
+      if choose.SetWidth then choose:SetWidth(0) end
+      if choose.SetJustifyH then choose:SetJustifyH("LEFT") end
+   end
    if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint and QuestInfoRewardsFrame and QuestInfoRewardsFrame.ItemReceiveText then
       QuestInfoMoneyFrame:ClearAllPoints()
       QuestInfoMoneyFrame:SetPoint("LEFT", QuestInfoRewardsFrame.ItemReceiveText, "RIGHT", 15, 0)
@@ -2108,15 +2113,21 @@ function Quests.Details.DisplayConstants(lg)
                local itemReceiveAR = AS_UTF8reverse(itemReceiveText)
                local experienceAR = AS_UTF8reverse(QTR_Messages.experience)
 
+               -- Compute label width that reaches the right edge of the rewards frame
+               -- (matches the XP label which is pinned at RIGHT -8).
+               -- Assumes Blizzard's default TOPLEFT anchor for these labels starts at x=0.
+               local rw = (QuestInfoRewardsFrame.GetWidth and tonumber(QuestInfoRewardsFrame:GetWidth())) or 0
+               local rewardLabelW = (rw > 0) and math.max(200, rw - 8) or 260
+
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 14)
-               QuestInfoRewardsFrame.ItemChooseText:SetWidth(260)
+               QuestInfoRewardsFrame.ItemChooseText:SetWidth(rewardLabelW)
                QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("RIGHT")
                QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseAR)
 
                QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveAR)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemReceiveText:SetJustifyH("RIGHT")
-               QuestInfoRewardsFrame.ItemReceiveText:SetWidth(260)
+               QuestInfoRewardsFrame.ItemReceiveText:SetWidth(rewardLabelW)
                if QuestInfoMoneyFrame and QuestInfoMoneyFrame.ClearAllPoints and QuestInfoMoneyFrame.SetPoint then
                   -- Keep money inside rewards pane in RTL even when receive label uses a wide right-justified column.
                   QuestInfoMoneyFrame:ClearAllPoints()
@@ -2168,7 +2179,7 @@ function Quests.Details.DisplayConstants(lg)
                end
                if QuestInfoXPFrame.ReceiveText.ClearAllPoints and QuestInfoXPFrame.ReceiveText.SetPoint then
                   QuestInfoXPFrame.ReceiveText:ClearAllPoints()
-                  QuestInfoXPFrame.ReceiveText:SetPoint("RIGHT", QuestInfoXPFrame, "RIGHT", -8, 0)
+                  QuestInfoXPFrame.ReceiveText:SetPoint("RIGHT", QuestInfoXPFrame, "RIGHT", -2, 0)
                end
 
                if QuestInfoXPFrame.ValueText and QuestInfoXPFrame.ReceiveText then
@@ -2187,6 +2198,7 @@ function Quests.Details.DisplayConstants(lg)
                QuestInfoRewardsFrame.ItemChooseText:SetText(itemChooseText)
                QuestInfoRewardsFrame.ItemChooseText:SetFont(WOWTR_Font2, 13)
                QuestInfoRewardsFrame.ItemChooseText:SetJustifyH("LEFT")
+               if QuestInfoRewardsFrame.ItemChooseText.SetWidth then QuestInfoRewardsFrame.ItemChooseText:SetWidth(0) end
 
                QuestInfoRewardsFrame.ItemReceiveText:SetText(itemReceiveText)
                QuestInfoRewardsFrame.ItemReceiveText:SetFont(WOWTR_Font2, 13)
