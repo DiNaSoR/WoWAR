@@ -252,9 +252,90 @@ function Text.ContainsArabic(txt)
   return false
 end
 
+-- Normalize newline representations used across datasets to one internal token.
+-- Canonical authoring remains {B}, but we accept legacy forms for compatibility.
+local function normalizeLineBreakTokens(msg)
+  if type(msg) ~= "string" or msg == "" then return msg end
+  local text = msg
+
+  -- Real line breaks.
+  text = text:gsub("\r\n", "NEW_LINE")
+  text = text:gsub("\r", "NEW_LINE")
+  text = text:gsub("\n", "NEW_LINE")
+
+  -- Escaped line breaks stored as literal backslash sequences in Lua strings.
+  text = text:gsub("\\r\\n", "NEW_LINE")
+  text = text:gsub("\\n", "NEW_LINE")
+  text = text:gsub("\\r", "NEW_LINE")
+
+  -- Addon/WoW newline tokens seen in translation data.
+  text = text:gsub("%{B%}", "NEW_LINE")
+  text = text:gsub("%$[Bb]", "NEW_LINE")
+  text = text:gsub("%{n%}", "NEW_LINE")
+  text = text:gsub("|n", "NEW_LINE")
+
+  return text
+end
+
+local function fallbackLinkText(linkRef)
+  local label = linkRef or "link"
+  if type(label) ~= "string" then
+    label = tostring(label)
+  end
+  local afterType = label:match("^[^:]+:(.+)$")
+  if afterType and afterType ~= "" then
+    label = afterType
+  end
+  label = label:gsub("%[", ""):gsub("%]", "")
+  label = label:gsub("^%s+", ""):gsub("%s+$", "")
+  if label == "" then
+    label = "link"
+  end
+  return label
+end
+
+-- Complete malformed links like "|Hspell:161767|h" to a clickable fallback:
+-- "|Hspell:161767|h[161767]|h". Valid links remain unchanged.
+local function autoCompleteHyperlinks(msg)
+  if type(msg) ~= "string" or msg == "" then return msg end
+
+  local out = {}
+  local cursor = 1
+  local len = #msg
+
+  while cursor <= len do
+    local openStart, openEnd, linkRef = msg:find("|H([^|]+)|h", cursor)
+    if not openStart then
+      out[#out + 1] = msg:sub(cursor)
+      break
+    end
+
+    out[#out + 1] = msg:sub(cursor, openStart - 1)
+
+    local closeStart, closeEnd = msg:find("|h", openEnd + 1, true)
+    if closeStart then
+      out[#out + 1] = msg:sub(openStart, closeEnd)
+      cursor = closeEnd + 1
+    else
+      out[#out + 1] = "|H" .. linkRef .. "|h[" .. fallbackLinkText(linkRef) .. "]|h"
+      cursor = openEnd + 1
+    end
+  end
+
+  return table.concat(out)
+end
+
 -- Replace addon placeholders with game-friendly sequences and player data.
 function Text.WOW_ZmienKody(message, target)
   local msg = message
+  if type(msg) ~= "string" then
+    if msg == nil then return "" end
+    msg = tostring(msg)
+  end
+
+  msg = autoCompleteHyperlinks(msg)
+  msg = normalizeLineBreakTokens(msg)
+
   -- Config: allow forcing player gender used for $G / YOUR_GENDER expansions (Male/Female/Character).
   -- Stored under bubbles config as BB_PM["sex"]: "2"=Male, "3"=Female, "4"=Character (use UnitSex("player")).
   local effectivePlayerSex = WOWTR_player_sex

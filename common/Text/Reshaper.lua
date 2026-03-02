@@ -1109,9 +1109,10 @@ function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
          char1 = strsub(Atext, pos, pos + charbytes - 1);
          newstr = newstr .. char1;
 
-         if ((char2 .. char1 == "|r") and (pos < bytes)) then
+         local pair = char2 .. char1;
+         if (((pair == "|r") or (pair == "r|")) and (pos < bytes)) then
             link_start_stop = true;
-         elseif ((char2 .. char1 == "|c") and (pos < bytes)) then
+         elseif (((pair == "|c") or (pair == "c|")) and (pos < bytes)) then
             link_start_stop = false;
          end
 
@@ -1182,9 +1183,10 @@ function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
          char1 = strsub(Atext, pos, pos + charbytes - 1);         -- retrieved letter character
          newstr = newstr .. char1;                                -- add the next retrieved character
 
-         if ((char2 .. char1 == "|r") and (pos < bytes)) then     -- start of the link
+         local pair = char2 .. char1;
+         if (((pair == "|r") or (pair == "r|")) and (pos < bytes)) then     -- start of the link
             link_start_stop = true;
-         elseif ((char2 .. char1 == "|c") and (pos < bytes)) then -- end of the link
+         elseif (((pair == "|c") or (pair == "c|")) and (pos < bytes)) then -- end of the link
             link_start_stop = false;
          end
 

@@ -12,6 +12,24 @@ local function setOnShowOnce(frame, handler, flagRef)
   end
 end
 
+local function isRTL()
+  return (ns and ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL())
+      or ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and true or false)
+end
+
+local function applyTutorialTextRTL(fs, defaultJustify)
+  if not fs then return end
+  if ns and ns.RTL and ns.RTL.JustifyFontString then
+    ns.RTL.JustifyFontString(fs, defaultJustify or "LEFT")
+  elseif fs.SetJustifyH then
+    if isRTL() then
+      fs:SetJustifyH("RIGHT")
+    else
+      fs:SetJustifyH(defaultJustify or "LEFT")
+    end
+  end
+end
+
 function Tutorials.OnTutorialShow()
   local function repeater(iter)
     if (TT_PS and TT_PS["active"] == "1") then
@@ -71,6 +89,7 @@ function Tutorials.OnTutorialShow()
                   content.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
                   content.Text:SetFont(WOWTR_Font2, size)
                 end
+                applyTutorialTextRTL(content.Text, "LEFT")
               elseif (TT_PS and TT_PS["save"] == "1") then
                 TT_TUTORIALS[tostring(id)] = txt
               end
@@ -94,12 +113,12 @@ function Tutorials.OnTutorialShow()
                 local _, size = content.Text:GetFont()
                 if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
                   content.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, content.Text, WOWTR_Font2, -30) .. NONBREAKINGSPACE)
-                  content.Text:SetJustifyH("LEFT")
                   content.Text:SetFont(WOWTR_Font2, size)
                 else
                   content.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
                   content.Text:SetFont(WOWTR_Font2, size)
                 end
+                applyTutorialTextRTL(content.Text, "LEFT")
               elseif (TT_PS and TT_PS["save"] == "1") then
                 TT_TUTORIALS[tostring(id)] = txt
               end
@@ -132,6 +151,7 @@ function Tutorials.CheckFrames()
           obj.ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
         end
         obj.ContainerFrame.Text:SetFont(WOWTR_Font2, size)
+        applyTutorialTextRTL(obj.ContainerFrame.Text, "LEFT")
         obj.ContainerFrame.Text:SetHeight(150)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(id)] = txt
@@ -152,6 +172,7 @@ function Tutorials.CheckFrames()
           obj.ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
         end
         obj.ContainerFrame.Text:SetFont(WOWTR_Font2, size)
+        applyTutorialTextRTL(obj.ContainerFrame.Text, "LEFT")
         obj.ContainerFrame.Text:SetHeight(150)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(id)] = txt
@@ -168,6 +189,7 @@ function Tutorials.CheckFrames()
         local _, size = obj.Text:GetFont()
         obj.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
         obj.Text:SetFont(WOWTR_Font2, size)
+        applyTutorialTextRTL(obj.Text, "LEFT")
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(id)] = txt
       end
@@ -183,6 +205,7 @@ function Tutorials.CheckFrames()
         local _, size = obj.ContainerFrame.Text:GetFont()
         obj.ContainerFrame.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
         obj.ContainerFrame.Text:SetFont(WOWTR_Font2, size)
+        applyTutorialTextRTL(obj.ContainerFrame.Text, "LEFT")
         obj.ContainerFrame.Text:SetHeight(150)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(id)] = txt
@@ -416,6 +439,7 @@ function Tutorials.CampaignOverview()
       else
         frame:SetFont(WOWTR_Font2, 12)
       end
+      applyTutorialTextRTL(frame, "LEFT")
     elseif (TT_PS and TT_PS["save"] == "1") then
       TT_TUTORIALS[tostring(HashCode)] = txt
     end
