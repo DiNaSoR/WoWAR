@@ -277,6 +277,18 @@ local function normalizeLineBreakTokens(msg)
   return text
 end
 
+-- Some imported locale strings mix pipe color starts with curly resets, e.g.:
+-- "|cnNORMAL_FONT_COLOR:Text{R}".
+-- Convert these hybrids to the native WoW pair ("|cn...|r") so RTL protection
+-- logic can preserve them instead of exposing reversed color token text.
+local function normalizeMixedColorResets(msg)
+  if type(msg) ~= "string" or msg == "" then return msg end
+  local text = msg
+  text = text:gsub("(|cn[%w_]+:.-)%{[Rr]%}", "%1|r")
+  text = text:gsub("(|c%x%x%x%x%x%x%x%x.-)%{[Rr]%}", "%1|r")
+  return text
+end
+
 local function fallbackLinkText(linkRef)
   local label = linkRef or "link"
   if type(label) ~= "string" then
@@ -335,6 +347,7 @@ function Text.WOW_ZmienKody(message, target)
 
   msg = autoCompleteHyperlinks(msg)
   msg = normalizeLineBreakTokens(msg)
+  msg = normalizeMixedColorResets(msg)
 
   -- Config: allow forcing player gender used for $G / YOUR_GENDER expansions (Male/Female/Character).
   -- Stored under bubbles config as BB_PM["sex"]: "2"=Male, "3"=Female, "4"=Character (use UnitSex("player")).

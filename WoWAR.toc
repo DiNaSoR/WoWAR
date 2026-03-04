@@ -1,6 +1,6 @@
 ## Interface: 110205, 110207, 120000, 120001
 ## Title: WoWAR |cff8080ffv12.01|r
-## Version: 12.01
+## Version: 12.02
 ## Notes: World of Warcraft in Arabic.
 ## Authors: Dragonarab[DiNaSoR], Platine
 ## E-mail: Dragonarab@gmail.com
@@ -24,7 +24,8 @@ common\Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 
 Translations\QuestData_AR.lua
 Translations\Gossip_AR.lua
-Translations\Bubbles_AR.lua
+Translations\Bubbles_AR_1.lua
+Translations\Bubbles_AR_2.lua
 Translations\Subtitles_AR.lua
 Translations\TutorialsData7_AR.lua
 Translations\Books_AR.lua
