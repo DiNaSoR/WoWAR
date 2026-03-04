@@ -112,7 +112,9 @@ function Tutorials.OnTutorialShow()
               if (_G["Tut_Data7"] and _G["Tut_Data7"][id]) then
                 local _, size = content.Text:GetFont()
                 if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') then
-                  content.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, content.Text, WOWTR_Font2, -30) .. NONBREAKINGSPACE)
+                  -- Keep frame-1 wrapping consistent with other pointer frames in AR.
+                  -- The older -30 correction made short key-hint lines break too aggressively.
+                  content.Text:SetText(QTR_ExpandUnitInfo(_G["Tut_Data7"][id], false, content.Text, WOWTR_Font2, -5) .. NONBREAKINGSPACE)
                   content.Text:SetFont(WOWTR_Font2, size)
                 else
                   content.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data7"][id])) .. NONBREAKINGSPACE)
