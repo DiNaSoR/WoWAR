@@ -195,13 +195,21 @@ local function processDungeonBubbles()
 end
 
 local function processTalkingHead()
-  if (TalkingHeadFrame and TalkingHeadFrame:IsVisible()) then
+  if (TalkingHeadFrame and TalkingHeadFrame:IsVisible() and TalkingHeadFrame.TextFrame and TalkingHeadFrame.TextFrame.Text) then
+    local textRegion = TalkingHeadFrame.TextFrame.Text
     for idx = #S.bubblesQueue, 1, -1 do
       local item = S.bubblesQueue[idx]
-      if (normalizeBubbleText(TalkingHeadFrame.TextFrame.Text:GetText()) == normalizeBubbleText(item[1])) then
-        local _, sz, fl = TalkingHeadFrame.TextFrame.Text:GetFont()
-        TalkingHeadFrame.TextFrame.Text:SetFont(WOWTR_Font2, sz, fl)
-        TalkingHeadFrame.TextFrame.Text:SetText(QTR_ExpandUnitInfo(item[2], false, TalkingHeadFrame.TextFrame.Text, WOWTR_Font2, -15))
+      if (normalizeBubbleText(textRegion:GetText()) == normalizeBubbleText(item[1])) then
+        local _, sz, fl = textRegion:GetFont()
+        textRegion:SetFont(WOWTR_Font2, sz, fl)
+
+        local translatedText = item[2] or ""
+        local shouldRenderRTL = containsArabicForDirection(translatedText) and (RTL and RTL.IsRTL and RTL.IsRTL())
+        textRegion:SetText(QTR_ExpandUnitInfo(translatedText, false, textRegion, WOWTR_Font2, -15, shouldRenderRTL))
+        if textRegion.SetJustifyH then
+          textRegion:SetJustifyH(shouldRenderRTL and "RIGHT" or "LEFT")
+        end
+
         table.remove(S.bubblesQueue, idx)
       end
     end
