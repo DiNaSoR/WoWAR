@@ -15,16 +15,35 @@ local page_str = "1"
 local function SetBookJustify(isArabic)
   local just = isArabic and "RIGHT" or "LEFT"
   if ItemTextPageText and ItemTextPageText.SetJustifyH then
-    ItemTextPageText:SetJustifyH("P", just)
-    ItemTextPageText:SetJustifyH("H1", just)
-    ItemTextPageText:SetJustifyH("H2", just)
-    ItemTextPageText:SetJustifyH("H3", just)
+    -- ItemTextPageText is a SimpleHTML region. Different books use different tags/casing,
+    -- so apply alignment to the common body/header tags defensively.
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "body", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "BODY", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "p", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "P", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "h1", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "H1", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "h2", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "H2", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "h3", just)
+    pcall(ItemTextPageText.SetJustifyH, ItemTextPageText, "H3", just)
+  end
+  if ItemTextPageText and ItemTextPageText.GetRegions then
+    local regions = { ItemTextPageText:GetRegions() }
+    for _, region in ipairs(regions) do
+      if region and region.GetObjectType and region:GetObjectType() == "FontString" and region.SetJustifyH then
+        pcall(region.SetJustifyH, region, just)
+      end
+    end
   end
 end
 
 local function IsArabic()
   return (WOWTR_Localization and WOWTR_Localization.lang == 'AR') or false
 end
+
+local BOOK_TEXT_TYPES = { "body", "BODY", "p", "P", "h1", "H1", "h2", "H2", "h3", "H3" }
+local BOOK_FONT_OBJECT_TYPES = { "body", "p", "h1", "h2", "h3" }
 
 -- Remember original fonts/sizes so we can restore them on toggle OFF
 Books.origFonts = Books.origFonts or {}
@@ -43,6 +62,15 @@ local function CaptureOriginalFonts()
       local f,s,fl = ItemTextPageText:GetFont("H3"); Books.origFonts.H3 = { f or Books.origFonts.P[1], s or Books.origFonts.P[2], fl or Books.origFonts.P[3] }
     end
   end
+  if ItemTextPageText and ItemTextPageText.GetFontObject then
+    Books.origFontObjects = Books.origFontObjects or {}
+    for _, textType in ipairs(BOOK_FONT_OBJECT_TYPES) do
+      if Books.origFontObjects[textType] == nil then
+        local ok, fontObj = pcall(ItemTextPageText.GetFontObject, ItemTextPageText, textType)
+        Books.origFontObjects[textType] = ok and fontObj or false
+      end
+    end
+  end
   if ItemTextFrameTitleText and ItemTextFrameTitleText.GetFont and not Books.origFonts.title then
     local f,s,fl = ItemTextFrameTitleText:GetFont(); Books.origFonts.title = { f, s or 13, fl or "" }
   end
@@ -55,6 +83,13 @@ local function ApplyOriginalBodyFont()
   if f and f.H1 then ItemTextPageText:SetFont("H1", f.H1[1], f.H1[2], f.H1[3]) end
   if f and f.H2 then ItemTextPageText:SetFont("H2", f.H2[1], f.H2[2], f.H2[3]) end
   if f and f.H3 then ItemTextPageText:SetFont("H3", f.H3[1], f.H3[2], f.H3[3]) end
+  if ItemTextPageText.SetFontObject and Books.origFontObjects then
+    for textType, fontObj in pairs(Books.origFontObjects) do
+      if fontObj then
+        pcall(ItemTextPageText.SetFontObject, ItemTextPageText, textType, fontObj)
+      end
+    end
+  end
 end
 
 local function SetBookJustifyAsync(isArabic)
@@ -79,11 +114,27 @@ local function ApplyBodyFont()
   if not ItemTextPageText or not ItemTextPageText.SetFont then return end
   local _, size, flags = ItemTextPageText:GetFont("P")
   local fsize = (BT_PM and BT_PM["setsize"] == "1") and (tonumber(BT_PM["fontsize"]) or size) or size
+  local alignment = IsArabic() and "RIGHT" or "LEFT"
   if WOWTR_Font2 then
-    ItemTextPageText:SetFont("P", WOWTR_Font2, fsize, flags)
-    ItemTextPageText:SetFont("H1", WOWTR_Font2, fsize, flags)
-    ItemTextPageText:SetFont("H2", WOWTR_Font2, fsize, flags)
-    ItemTextPageText:SetFont("H3", WOWTR_Font2, fsize, flags)
+    pcall(ItemTextPageText.SetFont, ItemTextPageText, "P", WOWTR_Font2, fsize, flags)
+    pcall(ItemTextPageText.SetFont, ItemTextPageText, "H1", WOWTR_Font2, fsize, flags)
+    pcall(ItemTextPageText.SetFont, ItemTextPageText, "H2", WOWTR_Font2, fsize, flags)
+    pcall(ItemTextPageText.SetFont, ItemTextPageText, "H3", WOWTR_Font2, fsize, flags)
+    if ItemTextPageText.SetFontObject then
+      Books.translatedFontObjects = Books.translatedFontObjects or {}
+      for _, textType in ipairs(BOOK_FONT_OBJECT_TYPES) do
+        local key = textType
+        local fontObj = Books.translatedFontObjects[key]
+        if not fontObj then
+          local fontName = "WOWTRBookBodyFont_" .. key:gsub("[^%w]", "_")
+          fontObj = CreateFont(fontName)
+          Books.translatedFontObjects[key] = fontObj
+        end
+        fontObj:SetFont(WOWTR_Font2, fsize, flags or "")
+        fontObj:SetJustifyH(alignment)
+        pcall(ItemTextPageText.SetFontObject, ItemTextPageText, textType, fontObj)
+      end
+    end
   end
 end
 
@@ -98,8 +149,13 @@ local function RegisterOneShotPageEvents()
   local handled = false
   booksEventFrame:SetScript("OnEvent", function(self, event)
     if (Books.justifyToken or 0) ~= token then return end
-    ApplyBodyFont()
-    SetBookJustify(IsArabic() and act_tr == "1")
+    if act_tr == "1" then
+      ApplyBodyFont()
+      SetBookJustify(IsArabic())
+    else
+      ApplyOriginalBodyFont()
+      SetBookJustify(false)
+    end
     if not handled then
       handled = true
       self:UnregisterAllEvents(); self:SetScript("OnEvent", nil)
@@ -164,19 +220,18 @@ end
 function Books.Toggle()
   if (act_tr == "0") then
     act_tr = "1"
-    if BT_PM then BT_PM["book_tr_on"] = "1" end
     BumpJustifyToken(); RegisterOneShotPageEvents()
     CaptureOriginalFonts()
     if (BT_PM and BT_PM["title"] == "1" and title_tr) then
       ItemTextFrameTitleText:SetText(QTR_ReverseIfAR(title_tr))
       ItemTextFrameTitleText:SetFont(WOWTR_Font2, 11)
     end
+    ApplyBodyFont()
     ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
     SetBookJustifyAsync(IsArabic())
     UpdateToggleButton(true)
   else
     act_tr = "0"
-    if BT_PM then BT_PM["book_tr_on"] = "0" end
     BumpJustifyToken(); RegisterOneShotPageEvents()
     CaptureOriginalFonts()
     if (BT_PM and BT_PM["title"] == "1") then
@@ -202,14 +257,16 @@ function Books.ShowTranslation()
   if BT_ToggleButton0 then
     BT_ToggleButton0:Show()
   end
-  -- Restore last toggle state if remembered
-  if BT_PM and BT_PM["book_tr_on"] then act_tr = BT_PM["book_tr_on"] else act_tr = act_tr or "0" end
+  -- Default to the translated view whenever a book opens.
+  -- The toggle button still allows switching back to EN for the current page/session.
+  act_tr = "1"
   BumpJustifyToken(); RegisterOneShotPageEvents()
 
   title_en = ItemTextGetItem() or ""
   text_en = WOWTR_DetectAndReplacePlayerName(ItemTextGetText(), nil, "$N") or ""
   page_str = tostring(ItemTextGetPage() or "1")
   if (not page_str or page_str == "nil" or page_str == "") then page_str = '1' end
+  CaptureOriginalFonts()
 
   local _, link = C_Item.GetItemInfo(ItemTextGetItem())
   local hashID = tostring(StringHash(WOWTR_NormalizeForHash(text_en)))
@@ -279,21 +336,15 @@ function Books.ShowTranslation()
         pos = string.find(text_tr, "$O", pos + 1)
       end
 
-      -- Apply according to remembered toggle state
-      local font, size, flags = ItemTextPageText:GetFont("P")
-      if (BT_PM and BT_PM["setsize"] == "1") then
-        ItemTextPageText:SetFont("P", WOWTR_Font2, tonumber(BT_PM["fontsize"]) or size, flags)
-      else
-        ItemTextPageText:SetFont("P", WOWTR_Font2, size, flags)
-      end
-
       if act_tr == "1" then
         -- Show translated (respect RTL for AR)
+        ApplyBodyFont()
         ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
-        SetBookJustifyAsync(ns and ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL())
+        SetBookJustifyAsync(IsArabic())
         UpdateToggleButton(true)
       else
         -- Show original EN (LTR)
+        ApplyOriginalBodyFont()
         ItemTextPageText:SetText(text_en)
         SetBookJustifyAsync(false)
         UpdateToggleButton(true)
