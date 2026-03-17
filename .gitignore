@@ -32,4 +32,6 @@ Tools/
 
 .env
 
-scripts/*
+scripts/memory/__pycache__/
+scripts/memory/*.pyc
+scripts/memory/*.pyo
