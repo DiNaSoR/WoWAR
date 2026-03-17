@@ -21,6 +21,35 @@ local function FixCurlyColorSpansForRTL(msg)
   end))
 end
 
+local KNOWN_SIMPLE_HTML_TAGS = {
+  HTML = true, BODY = true, P = true, H1 = true, H2 = true, H3 = true,
+  IMG = true, HR = true, BR = true,
+}
+
+local function normalizeHtmlTagToken(token)
+  if type(token) ~= "string" or token == "" then return nil end
+
+  local function isKnownHtmlTag(candidate)
+    if type(candidate) ~= "string" or candidate == "" then return false end
+    local tagName = candidate:match("^<%s*/?%s*([%a%d]+)")
+    if not tagName then return false end
+    return KNOWN_SIMPLE_HTML_TAGS[string.upper(tagName)] == true
+  end
+
+  if isKnownHtmlTag(token) then
+    return token
+  end
+
+  if token:sub(1, 1) == ">" and token:sub(-1) == "<" then
+    local reversed = string.reverse(token)
+    if isKnownHtmlTag(reversed) then
+      return reversed
+    end
+  end
+
+  return nil
+end
+
 -- Handle special WoW codes by replacing them with placeholders, so the text can be reversed/shaped safely.
 function Text.HandleWoWSpecialCodes(msg)
   local specialCodes = {}
@@ -76,6 +105,27 @@ function Text.HandleWoWSpecialCodes(msg)
     specialCodes[index] = code
     index = index + 1
     return "\001" .. (index-1) .. "\002"
+  end)
+
+  -- Protect HTML/SimpleHTML tags used by books and UI rich text.
+  -- Books AR data stores tags in reversed form (e.g. `>LMTH<`) so that a later
+  -- whole-string RTL reversal restores them to valid HTML. Convert both normal
+  -- and reversed tag tokens into placeholders before the RTL pipeline so line
+  -- wrapping and shaping do not split them apart.
+  msg = msg:gsub("(<[^<>\r\n]+>)", function(code)
+    local html = normalizeHtmlTagToken(code)
+    if not html then return code end
+    specialCodes[index] = html
+    index = index + 1
+    return "\001" .. (index - 1) .. "\002"
+  end)
+
+  msg = msg:gsub("(>[^<>\r\n]+<)", function(code)
+    local html = normalizeHtmlTagToken(code)
+    if not html then return code end
+    specialCodes[index] = html
+    index = index + 1
+    return "\001" .. (index - 1) .. "\002"
   end)
 
   -- Protect Blizzard dynamic placeholders {1}, {2}, {3}, etc.

@@ -12,6 +12,108 @@ local bookID = "0"
 local title_en, title_tr, text_en, text_tr = "", "", "", ""
 local page_str = "1"
 
+local BOOK_HTML_TAGS = {
+  HTML = true, BODY = true, P = true, H1 = true, H2 = true, H3 = true,
+  IMG = true, HR = true, BR = true,
+}
+
+local function NormalizeStoredHtmlTag(token)
+  if type(token) ~= "string" or token == "" then return nil end
+
+  local function isKnownHtmlTag(candidate)
+    local tagName = candidate:match("^<%s*/?%s*([%a%d]+)")
+    return tagName and BOOK_HTML_TAGS[string.upper(tagName)] == true or false
+  end
+
+  if isKnownHtmlTag(token) then
+    return token
+  end
+
+  if token:sub(1, 1) == ">" and token:sub(-1) == "<" then
+    local reversed = string.reverse(token)
+    if isKnownHtmlTag(reversed) then
+      return reversed
+    end
+  end
+
+  return nil
+end
+
+local function IsStoredHtmlBookText(msg)
+  if type(msg) ~= "string" or msg == "" then return false end
+  return NormalizeStoredHtmlTag(">LMTH<") and (
+    msg:find(">LMTH<", 1, true)
+    or msg:find("<HTML", 1, true)
+    or msg:find(">YDOB<", 1, true)
+    or msg:find("<BODY", 1, true)
+  ) and true or false
+end
+
+local function PrepareBookHtmlText(msg, renderObj, renderFont, renderOffset)
+  if type(msg) ~= "string" or msg == "" then return "" end
+
+  local out = {}
+  local i = 1
+  local len = #msg
+
+  local function appendTextChunk(chunk)
+    if chunk == "" then return end
+    if type(_G.QTR_ReverseIfAR) == "function" then
+      out[#out + 1] = QTR_ReverseIfAR(chunk)
+    else
+      out[#out + 1] = WOW_ZmienKody(chunk)
+    end
+  end
+
+  while i <= len do
+    local ch = msg:sub(i, i)
+    if ch == ">" then
+      local j = msg:find("<", i + 1, true)
+      if j then
+        local token = msg:sub(i, j)
+        local html = NormalizeStoredHtmlTag(token)
+        if html then
+          out[#out + 1] = html
+          i = j + 1
+        else
+          local nextTagPos = msg:find("[<>]", i + 1)
+          local chunkEnd = nextTagPos and (nextTagPos - 1) or len
+          appendTextChunk(msg:sub(i, chunkEnd))
+          i = chunkEnd + 1
+        end
+      else
+        appendTextChunk(msg:sub(i))
+        break
+      end
+    elseif ch == "<" then
+      local j = msg:find(">", i + 1, true)
+      if j then
+        local token = msg:sub(i, j)
+        local html = NormalizeStoredHtmlTag(token)
+        if html then
+          out[#out + 1] = html
+          i = j + 1
+        else
+          local nextTagPos = msg:find("[<>]", i + 1)
+          local chunkEnd = nextTagPos and (nextTagPos - 1) or len
+          appendTextChunk(msg:sub(i, chunkEnd))
+          i = chunkEnd + 1
+        end
+      else
+        appendTextChunk(msg:sub(i))
+        break
+      end
+    else
+      local nextTagPos = msg:find("[<>]", i)
+      local chunkEnd = nextTagPos and (nextTagPos - 1) or len
+      appendTextChunk(msg:sub(i, chunkEnd))
+      i = chunkEnd + 1
+    end
+  end
+
+  return table.concat(out)
+end
+
 local function SetBookJustify(isArabic)
   local just = isArabic and "RIGHT" or "LEFT"
   if ItemTextPageText and ItemTextPageText.SetJustifyH then
@@ -224,10 +326,14 @@ function Books.Toggle()
     CaptureOriginalFonts()
     if (BT_PM and BT_PM["title"] == "1" and title_tr) then
       ItemTextFrameTitleText:SetText(QTR_ReverseIfAR(title_tr))
-      ItemTextFrameTitleText:SetFont(WOWTR_Font2, 11)
+      ItemTextFrameTitleText:SetFont(WOWTR_Font1, 11)
     end
     ApplyBodyFont()
-    ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
+    if IsStoredHtmlBookText(text_tr) then
+      ItemTextPageText:SetText(PrepareBookHtmlText(text_tr))
+    else
+      ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
+    end
     SetBookJustifyAsync(IsArabic())
     UpdateToggleButton(true)
   else
@@ -306,7 +412,7 @@ function Books.ShowTranslation()
         title_tr = gl_BT_Books[bookID]["Title"]
         if act_tr == "1" and title_tr and title_tr ~= "" then
           ItemTextFrameTitleText:SetText(QTR_ReverseIfAR(title_tr))
-          ItemTextFrameTitleText:SetFont(WOWTR_Font2, 11)
+          ItemTextFrameTitleText:SetFont(WOWTR_Font1, 11)
         else
           ItemTextFrameTitleText:SetText(title_en)
         end
@@ -339,7 +445,11 @@ function Books.ShowTranslation()
       if act_tr == "1" then
         -- Show translated (respect RTL for AR)
         ApplyBodyFont()
-        ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
+        if IsStoredHtmlBookText(text_tr) then
+          ItemTextPageText:SetText(PrepareBookHtmlText(text_tr))
+        else
+          ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
+        end
         SetBookJustifyAsync(IsArabic())
         UpdateToggleButton(true)
       else

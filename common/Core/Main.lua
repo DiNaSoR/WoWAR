@@ -307,7 +307,7 @@ function Core.OnEvent(self, event, name, ...)
       BT_ToggleButton0:SetText("EN")
       BT_ToggleButton0:Show()
       BT_ToggleButton0:ClearAllPoints()
-      BT_ToggleButton0:SetPoint("BOTTOMRIGHT", ItemTextFrame, "BOTTOMRIGHT", -29, 5)
+      BT_ToggleButton0:SetPoint("BOTTOMRIGHT", ItemTextFrame, "BOTTOMRIGHT", -29, -15)
       BT_ToggleButton0:SetScript("OnClick", BT_ON_OFF)
     end
 
