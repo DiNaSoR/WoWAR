@@ -12,7 +12,7 @@ end
 function U.translateIfAvailable(objFontString, originalText, hash, offset)
   if not objFontString or not originalText or originalText == "" then return false end
   if U.isTranslated(originalText) then return false end
-  local translated = _G["Tut_Data7"] and _G["Tut_Data7"][hash]
+  local translated = _G["Tut_Data"] and _G["Tut_Data"][hash]
   if translated then
     local _, size, flags = objFontString:GetFont()
     if (WOWTR_Localization and WOWTR_Localization.lang == 'AR') and offset then

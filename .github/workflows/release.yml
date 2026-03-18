@@ -244,7 +244,7 @@ jobs:
 
             fname=$(basename "$lua_file")
             # Strip _AR[0-9]*.lua suffix, then trailing Data[0-9]* word
-            # e.g. TutorialsData7_AR.lua → Tutorials, QuestData_AR.lua → Quest
+            # e.g. TutorialsData_AR.lua → Tutorials, QuestData_AR.lua → Quest
             display_name=$(echo "$fname" | sed -E 's/_AR[0-9]*\.lua$//; s/Data[0-9]*$//')
             base_int="${tr_base//,/}"
             if [[ "$base_int" =~ ^[0-9]+$ ]]; then

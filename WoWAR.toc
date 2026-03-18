@@ -27,7 +27,7 @@ Translations\Gossip_AR.lua
 Translations\Bubbles_AR_1.lua
 Translations\Bubbles_AR_2.lua
 Translations\Subtitles_AR.lua
-Translations\TutorialsData7_AR.lua
+Translations\TutorialsData_AR.lua
 Translations\Books_AR.lua
 Translations\Tooltips_AR.lua
 
