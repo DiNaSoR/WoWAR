@@ -1071,6 +1071,37 @@ function AS_CreateTestLine()
    AS_TestLine:Hide(); -- the frame is invisible in the game
 end
 
+local AS_LineHeightCache = {}
+
+local function AS_GetWrapLineHeight(Afont, AfontSize)
+   if (not Afont) or (not AfontSize) then
+      return (AfontSize or 13) * 1.5
+   end
+   if (AS_TestLine == nil) then
+      AS_CreateTestLine();
+   end
+
+   local cacheKey = tostring(Afont) .. "|" .. tostring(AfontSize)
+   if AS_LineHeightCache[cacheKey] then
+      return AS_LineHeightCache[cacheKey]
+   end
+
+   AS_TestLine.text:SetWidth(2048);
+   if AS_TestLine.text.SetSpacing then
+      pcall(AS_TestLine.text.SetSpacing, AS_TestLine.text, 0);
+   end
+   AS_TestLine.text:SetFont(Afont, AfontSize);
+   AS_TestLine.text:SetText("Hg");
+
+   local measuredHeight = AS_TestLine.text:GetHeight();
+   if (not measuredHeight) or (measuredHeight <= 0) then
+      measuredHeight = AfontSize * 1.5;
+   end
+
+   AS_LineHeightCache[cacheKey] = measuredHeight
+   return measuredHeight
+end
+
 -------------------------------------------------------------------------------------------------------
 -- This function prepares Arabic text to be displayed in a specific window width;
 -- Parameters: Atext=arabic UTF8 text, Awidth=frame width to the text, AfontSize=size of current font
@@ -1089,6 +1120,7 @@ function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
       if (AS_TestLine == nil) then
          AS_CreateTestLine();
       end
+      local wrapLineHeight = AS_GetWrapLineHeight(Afont, AfontSize)
       Atext = string.gsub(Atext, " #", "#");
       Atext = string.gsub(Atext, "# ", "#");
 
@@ -1128,7 +1160,7 @@ function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
             AS_TestLine.text:SetWidth(Awidth);
             AS_TestLine.text:SetFont(Afont, AfontSize);
             AS_TestLine.text:SetText(AS_UTF8reverse(newstr));
-            if ((char1 == '#') or (AS_TestLine.text:GetHeight() > AfontSize * 1.5)) then
+            if ((char1 == '#') or (AS_TestLine.text:GetHeight() > wrapLineHeight + 1)) then
                newstr = string.sub(newstr, 1, strlen(newstr) - last_space);
                newstr = string.gsub(newstr, "#", "");
                -- *** MODIFICATION: Remove call to AS_AddSpaces ***
@@ -1165,6 +1197,7 @@ function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
       if (AS_TestLine == nil) then -- a separate frame for displaying the translation of texts and determining the length
          AS_CreateTestLine();
       end
+      local wrapLineHeight = AS_GetWrapLineHeight(Afont, AfontSize)
       Atext = string.gsub(Atext, " #", "#");
       Atext = string.gsub(Atext, "# ", "#");
       local bytes = strlen(Atext);
@@ -1201,7 +1234,7 @@ function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
             AS_TestLine.text:SetWidth(Awidth); -- set the frame width to the text
             AS_TestLine.text:SetFont(Afont, AfontSize);
             AS_TestLine.text:SetText(AS_UTF8reverse(newstr));
-            if ((char1 == '#') or (AS_TestLine.text:GetHeight() > AfontSize * 1.5)) then -- text no longer fits in one line
+            if ((char1 == '#') or (AS_TestLine.text:GetHeight() > wrapLineHeight + 1)) then -- text no longer fits in one line
                newstr = string.sub(newstr, 1, strlen(newstr) - last_space);              -- text up to the last space
                newstr = string.gsub(newstr, "#", "");
                retstr = retstr .. AS_AddSpaces(AS_UTF8reverse(newstr), Awidth, Afont, AfontSize) .. "\n";

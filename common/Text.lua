@@ -551,6 +551,92 @@ function Text.WOW_ZmienKody(message, target)
 end
 
 -- Expand unit info and shape Arabic text for display in a FontString-like region.
+local textMeasureFrame
+local textMeasureFontString
+
+local function normalizeFontPath(fontPath)
+  if type(fontPath) ~= "string" or fontPath == "" then return nil end
+  return (fontPath:gsub("/", "\\"):lower())
+end
+
+local function isFont1(fontPath)
+  return normalizeFontPath(fontPath) == normalizeFontPath(rawget(_G, "WOWTR_Font1"))
+end
+
+local function ensureTextMeasureFontString()
+  if textMeasureFontString then return textMeasureFontString end
+  textMeasureFrame = CreateFrame("Frame", nil, UIParent)
+  textMeasureFrame:SetSize(2048, 256)
+  textMeasureFrame:Hide()
+  textMeasureFontString = textMeasureFrame:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  textMeasureFontString:SetPoint("TOPLEFT", textMeasureFrame, "TOPLEFT", 0, 0)
+  textMeasureFontString:SetJustifyH("LEFT")
+  return textMeasureFontString
+end
+
+local function measureFontLineHeight(fontPath, fontSize, fontFlags)
+  if (not fontPath) or (not fontSize) then return nil end
+  local fs = ensureTextMeasureFontString()
+  fs:SetWidth(2048)
+  if fs.SetSpacing then
+    pcall(fs.SetSpacing, fs, 0)
+  end
+  pcall(fs.SetFont, fs, fontPath, fontSize, fontFlags or "")
+  fs:SetText("Hg")
+  local measuredHeight = fs:GetHeight()
+  if measuredHeight and measuredHeight > 0 then
+    return measuredHeight
+  end
+  return nil
+end
+
+local function resolveSpacingTarget(obj)
+  if not obj then return nil end
+  if obj.SetSpacing and obj.GetSpacing then
+    return obj
+  end
+  if obj.Text and obj.Text.SetSpacing and obj.Text.GetSpacing then
+    return obj.Text
+  end
+  if obj.GetRegions then
+    local regions = { obj:GetRegions() }
+    for _, region in ipairs(regions) do
+      if region and region.GetObjectType and region:GetObjectType() == "FontString" and region.SetSpacing and region.GetSpacing then
+        return region
+      end
+    end
+  end
+  return nil
+end
+
+local function applyDynamicFontSpacing(obj, sourceFont, targetFont, fontSize, fontFlags)
+  local spacingTarget = resolveSpacingTarget(obj)
+  if not spacingTarget then return end
+
+  if spacingTarget.WoWAR_DefaultSpacing == nil then
+    local ok, currentSpacing = pcall(spacingTarget.GetSpacing, spacingTarget)
+    spacingTarget.WoWAR_DefaultSpacing = ok and currentSpacing or 0
+  end
+
+  local defaultSpacing = spacingTarget.WoWAR_DefaultSpacing or 0
+  local desiredSpacing = defaultSpacing
+
+  if isFont1(targetFont) then
+    local spacingFromMetrics = 0
+    local sourceLineHeight = measureFontLineHeight(sourceFont or targetFont, fontSize, fontFlags)
+    local targetLineHeight = measureFontLineHeight(targetFont, fontSize, fontFlags)
+    if sourceLineHeight and targetLineHeight and (targetLineHeight + 0.5 < sourceLineHeight) then
+      spacingFromMetrics = math.floor((sourceLineHeight - targetLineHeight) + 0.5)
+    end
+    desiredSpacing = math.max(defaultSpacing, spacingFromMetrics + 2)
+  end
+
+  local ok, currentSpacing = pcall(spacingTarget.GetSpacing, spacingTarget)
+  if (not ok) or (not currentSpacing) or (math.abs(currentSpacing - desiredSpacing) > 0.1) then
+    pcall(spacingTarget.SetSpacing, spacingTarget, desiredSpacing)
+  end
+end
+
 function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT)
   if (msg == nil) then msg = "" end
   msg = Text.WOW_ZmienKody(msg)
@@ -559,18 +645,19 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
     msg = FixCurlyColorSpansForRTL(msg)
     local _font = WOWTR_Font2
     local AR_size = 13
+    local _flags = ""
     if AR_obj.GetFont then
-      local ok, f, s = pcall(AR_obj.GetFont, AR_obj, "P")
-      if ok and f then _font = f; AR_size = s or AR_size else
-        ok, f, s = pcall(AR_obj.GetFont, AR_obj)
-        if ok and f then _font = f; AR_size = s or AR_size end
+      local ok, f, s, fl = pcall(AR_obj.GetFont, AR_obj, "P")
+      if ok and f then _font = f; AR_size = s or AR_size; _flags = fl or _flags else
+        ok, f, s, fl = pcall(AR_obj.GetFont, AR_obj)
+        if ok and f then _font = f; AR_size = s or AR_size; _flags = fl or _flags end
       end
     elseif AR_obj.GetRegions then
       local regions = { AR_obj:GetRegions() }
       for _, v in pairs(regions) do
         if (v.GetObjectType and v:GetObjectType() == "FontString" and v.GetFont) then
-          local ok, f, s = pcall(v.GetFont, v)
-          if ok and f then _font = f; AR_size = s or AR_size; break end
+          local ok, f, s, fl = pcall(v.GetFont, v)
+          if ok and f then _font = f; AR_size = s or AR_size; _flags = fl or _flags; break end
         end
       end
     end
@@ -613,6 +700,8 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
     else
       msg = AS_ReverseAndPrepareLineText(msg, AR_obj:GetWidth() + _corr, AR_font or _font, AR_size)
     end
+
+    applyDynamicFontSpacing(AR_obj, _font, AR_font or _font, AR_size, _flags)
 
     msg = Text.RestoreWoWSpecialCodes(msg, specialCodes)
     msg = (prefix or "") .. msg
