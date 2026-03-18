@@ -7,11 +7,16 @@ local S = Movies.State
 
 -- Runtime state for Movies/Cinematics/Intro subtitles
 S.movieId = nil
-S.subtitleFontSize = 16
 S.lastSubtitle = ""
 S.lineIndex = 0
-S.timerStart = 0
-S.isPlaying = false
+S.liveCaptureThrottleUntil = 0
+S.cinematicStartedAt = 0
+S.cinematicWatching = false
+S.liveSubtitleSeen = false
+S.introDataAvailable = false
+S.introFallbackArmed = false
+S.introFallbackActive = false
+S.cinematicOnUpdateHooked = false
 S.isShowing = false
 S.currentStartTime = 0
 S.currentStopTime = 0
