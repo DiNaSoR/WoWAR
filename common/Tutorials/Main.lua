@@ -233,6 +233,12 @@ end
 
 function Tutorials.OnChoiceShow()
   local isRTL = (ns and ns.RTL and ns.RTL.IsRTL and ns.RTL.IsRTL()) or ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and true or false)
+  local choiceFont = WOWTR_Font1 or WOWTR_Font2
+  local function applyChoiceFont(fs)
+    if (not isRTL) or (not fs) or (not choiceFont) or (not fs.GetFont) or (not fs.SetFont) then return end
+    local _, size, flags = fs:GetFont()
+    fs:SetFont(choiceFont, size, flags)
+  end
   local function applyRTL(fs, defaultJustify)
     if (not isRTL) or (not fs) then return end
     if ns and ns.RTL and ns.RTL.JustifyFontString then
@@ -244,6 +250,13 @@ function Tutorials.OnChoiceShow()
   local function applyChoiceHTMLRTL(optionFrame, htmlRegion)
     if (not isRTL) or (not optionFrame) then return end
     local html = optionFrame.OptionText and optionFrame.OptionText.HTML
+    if html and htmlRegion and choiceFont and html.SetFont and htmlRegion.GetFont then
+      local _, size, flags = htmlRegion:GetFont()
+      pcall(html.SetFont, html, "p", choiceFont, size, flags)
+      pcall(html.SetFont, html, "P", choiceFont, size, flags)
+      pcall(html.SetFont, html, "body", choiceFont, size, flags)
+      pcall(html.SetFont, html, "BODY", choiceFont, size, flags)
+    end
     if html and html.SetJustifyH then
       -- SimpleHTML API supports per-text-type alignment; set common body tags to RIGHT.
       pcall(html.SetJustifyH, html, "p", "RIGHT")
@@ -251,6 +264,7 @@ function Tutorials.OnChoiceShow()
       pcall(html.SetJustifyH, html, "body", "RIGHT")
       pcall(html.SetJustifyH, html, "BODY", "RIGHT")
     end
+    applyChoiceFont(htmlRegion)
     applyRTL(htmlRegion, "LEFT")
   end
 
@@ -258,14 +272,15 @@ function Tutorials.OnChoiceShow()
   if (txt and string.find(txt, NONBREAKINGSPACE) == nil) then
     local hash = StringHash(txt)
     if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-      local _, size = PlayerChoiceFrame.Title.Text:GetFont()
+      local _, size, flags = PlayerChoiceFrame.Title.Text:GetFont()
       PlayerChoiceFrame.Title.Text:SetText(QTR_ReverseIfAR(WOW_ZmienKody(_G["Tut_Data"][hash])) .. NONBREAKINGSPACE)
-      PlayerChoiceFrame.Title.Text:SetFont(WOWTR_Font2, size)
+      PlayerChoiceFrame.Title.Text:SetFont(choiceFont, size, flags)
       applyRTL(PlayerChoiceFrame.Title.Text, "LEFT")
     elseif (TT_PS and TT_PS["save"] == "1") then
       TT_TUTORIALS[tostring(hash)] = txt
     end
   end
+  applyChoiceFont(PlayerChoiceFrame and PlayerChoiceFrame.Title and PlayerChoiceFrame.Title.Text)
   applyRTL(PlayerChoiceFrame and PlayerChoiceFrame.Title and PlayerChoiceFrame.Title.Text, "LEFT")
 
   if (PlayerChoiceFrame and PlayerChoiceFrame.Option1 and PlayerChoiceFrame.Option1.OptionText) then
@@ -275,9 +290,9 @@ function Tutorials.OnChoiceShow()
       txt = string.gsub(txt, '\r', '')
       local hash = StringHash(txt)
       if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-        local _, size = obj:GetFont()
-        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, WOWTR_Font2) .. NONBREAKINGSPACE)
-        obj:SetFont(WOWTR_Font2, size)
+        local _, size, flags = obj:GetFont()
+        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, choiceFont) .. NONBREAKINGSPACE)
+        obj:SetFont(choiceFont, size, flags)
         applyChoiceHTMLRTL(PlayerChoiceFrame.Option1, obj)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(hash)] = txt
@@ -291,14 +306,15 @@ function Tutorials.OnChoiceShow()
       if (txt and string.find(txt, NONBREAKINGSPACE) == nil) then
         local hash = StringHash(txt)
         if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-          local _, size = btn.Text:GetFont()
-          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, WOWTR_Font2) .. NONBREAKINGSPACE)
-          btn.Text:SetFont(WOWTR_Font2, size)
+          local _, size, flags = btn.Text:GetFont()
+          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, choiceFont) .. NONBREAKINGSPACE)
+          btn.Text:SetFont(choiceFont, size, flags)
           applyRTL(btn.Text, "LEFT")
         elseif (TT_PS and TT_PS["save"] == "1") then
           TT_TUTORIALS[tostring(hash)] = txt
         end
       end
+      applyChoiceFont(btn.Text)
       applyRTL(btn.Text, "LEFT")
     end
   end
@@ -310,9 +326,9 @@ function Tutorials.OnChoiceShow()
       txt = string.gsub(txt, '\r', '')
       local hash = StringHash(txt)
       if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-        local _, size = obj:GetFont()
-        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, WOWTR_Font2) .. NONBREAKINGSPACE)
-        obj:SetFont(WOWTR_Font2, size)
+        local _, size, flags = obj:GetFont()
+        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, choiceFont) .. NONBREAKINGSPACE)
+        obj:SetFont(choiceFont, size, flags)
         applyChoiceHTMLRTL(PlayerChoiceFrame.Option2, obj)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(hash)] = txt
@@ -326,14 +342,15 @@ function Tutorials.OnChoiceShow()
       if (txt and string.find(txt, NONBREAKINGSPACE) == nil) then
         local hash = StringHash(txt)
         if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-          local _, size = btn.Text:GetFont()
-          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, WOWTR_Font2) .. NONBREAKINGSPACE)
-          btn.Text:SetFont(WOWTR_Font2, size)
+          local _, size, flags = btn.Text:GetFont()
+          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, choiceFont) .. NONBREAKINGSPACE)
+          btn.Text:SetFont(choiceFont, size, flags)
           applyRTL(btn.Text, "LEFT")
         elseif (TT_PS and TT_PS["save"] == "1") then
           TT_TUTORIALS[tostring(hash)] = txt
         end
       end
+      applyChoiceFont(btn.Text)
       applyRTL(btn.Text, "LEFT")
     end
   end
@@ -345,9 +362,9 @@ function Tutorials.OnChoiceShow()
       txt = string.gsub(txt, '\r', '')
       local hash = StringHash(txt)
       if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-        local _, size = obj:GetFont()
-        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, WOWTR_Font2) .. NONBREAKINGSPACE)
-        obj:SetFont(WOWTR_Font2, size)
+        local _, size, flags = obj:GetFont()
+        obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, choiceFont) .. NONBREAKINGSPACE)
+        obj:SetFont(choiceFont, size, flags)
         applyChoiceHTMLRTL(PlayerChoiceFrame.Option3, obj)
       elseif (TT_PS and TT_PS["save"] == "1") then
         TT_TUTORIALS[tostring(hash)] = txt
@@ -361,14 +378,15 @@ function Tutorials.OnChoiceShow()
       if (txt and string.find(txt, NONBREAKINGSPACE) == nil) then
         local hash = StringHash(txt)
         if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-          local _, size = btn.Text:GetFont()
-          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, WOWTR_Font2) .. NONBREAKINGSPACE)
-          btn.Text:SetFont(WOWTR_Font2, size)
+          local _, size, flags = btn.Text:GetFont()
+          btn:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, btn, choiceFont) .. NONBREAKINGSPACE)
+          btn.Text:SetFont(choiceFont, size, flags)
           applyRTL(btn.Text, "LEFT")
         elseif (TT_PS and TT_PS["save"] == "1") then
           TT_TUTORIALS[tostring(hash)] = txt
         end
       end
+      applyChoiceFont(btn.Text)
       applyRTL(btn.Text, "LEFT")
     end
   end
@@ -396,9 +414,9 @@ function Tutorials.OnChoiceShow()
             txt = string.gsub(txt, '\r', '')
             local hash = StringHash(txt)
             if (_G["Tut_Data"] and _G["Tut_Data"][hash]) then
-              local _, size = obj:GetFont()
-              obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, WOWTR_Font2) .. NONBREAKINGSPACE)
-              obj:SetFont(WOWTR_Font2, size)
+              local _, size, flags = obj:GetFont()
+              obj:SetText(QTR_ExpandUnitInfo(WOW_ZmienKody(_G["Tut_Data"][hash]), false, obj, choiceFont) .. NONBREAKINGSPACE)
+              obj:SetFont(choiceFont, size, flags)
               applyChoiceHTMLRTL(frame, obj)
             elseif (TT_PS and TT_PS["save"] == "1") then
               TT_TUTORIALS[tostring(hash)] = txt

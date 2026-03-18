@@ -160,6 +160,122 @@ end
 
 -------------------------------------------------------------------------------------------------------
 
+local function CH_ForEachRenderedFontString(frame, callback)
+   if (not frame) or (type(callback) ~= "function") then
+      return
+   end
+
+   local container = frame.FontStringContainer or frame
+   if not container then
+      return
+   end
+
+   local function visitRegions(owner)
+      if (not owner) or (not owner.GetNumRegions) then
+         return
+      end
+      for i = 1, owner:GetNumRegions() do
+         local region = select(i, owner:GetRegions())
+         if region and region.GetObjectType and (region:GetObjectType() == "FontString") then
+            callback(region, container)
+         end
+      end
+   end
+
+   visitRegions(container)
+
+   if container.GetNumChildren then
+      for i = 1, container:GetNumChildren() do
+         local child = select(i, container:GetChildren())
+         visitRegions(child)
+      end
+   end
+end
+
+local function CH_UpdateChatFrameLayout(frame)
+   if not frame then
+      return
+   end
+
+   CH_ForEachRenderedFontString(frame, function(region, container)
+      if region.WoWAR_DefaultJustifyH == nil and region.GetJustifyH then
+         local ok, justify = pcall(region.GetJustifyH, region)
+         region.WoWAR_DefaultJustifyH = (ok and justify and justify ~= "") and justify or "LEFT"
+      end
+
+      local text = region.GetText and region:GetText() or nil
+      local isArabic = CH_Check_Arabic_Letters(text)
+      local desiredJustify = isArabic and "RIGHT" or (region.WoWAR_DefaultJustifyH or "LEFT")
+
+      if region.GetJustifyH and region.SetJustifyH then
+         local ok, currentJustify = pcall(region.GetJustifyH, region)
+         if (not ok) or (currentJustify ~= desiredJustify) then
+            pcall(region.SetJustifyH, region, desiredJustify)
+         end
+      end
+
+      if isArabic and region.SetIndentedWordWrap then
+         pcall(region.SetIndentedWordWrap, region, false)
+      end
+
+      if isArabic and region.SetWidth and container and container.GetWidth then
+         local width = container:GetWidth()
+         if width and width > 0 then
+            pcall(region.SetWidth, region, width)
+         end
+      end
+   end)
+end
+
+local function CH_ScheduleChatFrameLayoutUpdate(frame)
+   if not frame then
+      return
+   end
+
+   if frame.WoWAR_LayoutUpdatePending then
+      return
+   end
+
+   frame.WoWAR_LayoutUpdatePending = true
+
+   local function run()
+      if frame then
+         frame.WoWAR_LayoutUpdatePending = nil
+         CH_UpdateChatFrameLayout(frame)
+      end
+   end
+
+   if C_Timer and C_Timer.After then
+      C_Timer.After(0, run)
+   else
+      run()
+   end
+end
+
+local function CH_HookChatFrameLayout(frame)
+   if (not frame) or frame.WoWAR_LayoutHooked then
+      return
+   end
+
+   frame.WoWAR_LayoutHooked = true
+
+   if frame.HookScript then
+      frame:HookScript("OnSizeChanged", function(self)
+         CH_ScheduleChatFrameLayoutUpdate(self)
+      end)
+   end
+
+   if hooksecurefunc and (type(frame.AddMessage) == "function") then
+      hooksecurefunc(frame, "AddMessage", function(self)
+         CH_ScheduleChatFrameLayoutUpdate(self)
+      end)
+   end
+
+   CH_ScheduleChatFrameLayoutUpdate(frame)
+end
+
+-------------------------------------------------------------------------------------------------------
+
 local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, lineID, ...)
    if (CH_PM["active"]=="0") then
       return false;     -- wyświetlaj tekst oryginalny w oknie czatu
@@ -264,10 +380,6 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, ar
 
       CH_Debug("Generated playerLink:", playerLink or "nil")
 
-      local _fontC, _sizeC, _C = self:GetFont();   -- odczytaj aktualną czcionkę, rozmiar i typ
-      -- Font should be handled by hooks/guardian, setting it here might be redundant/cause issues
-      -- self:SetFont(CH_Font, _sizeC, _C);
-      
       if (event == "CHAT_MSG_SAY") then
          output = arg1..AS_UTF8reverseRS(" يتحدث: ")..playerLink;   -- said (forma właściwa)
          local czystyArg = CH_Usun_Linki(arg1);
@@ -331,7 +443,8 @@ local function CH_ChatFilter(self, event, arg1, arg2, arg3, arg4, arg5, arg6, ar
          return false;  -- wyświetlaj tekst oryginalny w oknie czatu
       end   
 
-      self:AddMessage(colorText..CH_LineChat(output, _sizeC)); 
+      self:AddMessage(colorText..output);
+      CH_ScheduleChatFrameLayoutUpdate(self)
       return true;      -- nie wyświetlaj oryginalnego tekstu
    else
       return false;     -- wyświetlaj tekst oryginalny w oknie czatu
@@ -1003,6 +1116,7 @@ function CHAT_START()
    DEFAULT_CHAT_FRAME:SetFont(CH_Font, frameSize, frameFlags)
    HookSetFontToForceArabic(DEFAULT_CHAT_FRAME)
    fontGuardian:Register(DEFAULT_CHAT_FRAME, frameSize, frameFlags)
+   CH_HookChatFrameLayout(DEFAULT_CHAT_FRAME)
    
    -- Setup DEFAULT_CHAT_FRAME.editBox
    DEFAULT_CHAT_FRAME.editBox:SetFont(CH_Font, editBoxSize, editBoxFlags)
@@ -1024,6 +1138,7 @@ function CHAT_START()
            frame:SetFont(CH_Font, currentFrameSize or frameSize, currentFrameFlags or frameFlags)
            HookSetFontToForceArabic(frame)
            fontGuardian:Register(frame, currentFrameSize or frameSize, currentFrameFlags or frameFlags)
+           CH_HookChatFrameLayout(frame)
        end
        
        if editBox then
@@ -1238,10 +1353,14 @@ function CHAT_START()
       frame.originalAddMessage_WoWinArabic = frame.AddMessage
       frame.AddMessage = function(self, text, r, g, b, id, holdTime, ...)
          if (CH_PM and CH_PM["active"] == "0") or (not text) then
-            return self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+            local result = self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+            CH_ScheduleChatFrameLayoutUpdate(self)
+            return result
          end
          if (not CH_Check_Arabic_Letters(text)) or HasArabicPresentationForms(text) then
-            return self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+            local result = self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+            CH_ScheduleChatFrameLayoutUpdate(self)
+            return result
          end
 
          -- Try to keep the player/link prefix intact and only reshape the message payload.
@@ -1259,7 +1378,9 @@ function CHAT_START()
             text = ReverseAndReshapeSafe(text)
          end
 
-         return self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+         local result = self.originalAddMessage_WoWinArabic(self, text, r, g, b, id, holdTime, ...)
+         CH_ScheduleChatFrameLayoutUpdate(self)
+         return result
       end
    end
 
@@ -1277,6 +1398,7 @@ function CHAT_START()
          fontGuardian:Register(messageFrame, size or frameSize, flags)
          HookSetFontObject(messageFrame)
          HookMessageFrameAddMessage(messageFrame)
+         CH_HookChatFrameLayout(messageFrame)
       end
 
       if editBox and editBox.GetFont and editBox.SetFont then

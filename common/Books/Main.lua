@@ -318,6 +318,26 @@ local function UpdateToggleButton(hasTranslation)
   if hasTranslation then BT_ToggleButton0:Enable() else BT_ToggleButton0:Disable() end
 end
 
+local function HasTranslatedBody()
+  return type(text_tr) == "string" and text_tr ~= ""
+end
+
+local function ShowTranslatedBodyOrFallback()
+  if HasTranslatedBody() then
+    ApplyBodyFont()
+    if IsStoredHtmlBookText(text_tr) then
+      ItemTextPageText:SetText(PrepareBookHtmlText(text_tr))
+    else
+      ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
+    end
+    SetBookJustifyAsync(IsArabic())
+  else
+    ApplyOriginalBodyFont()
+    ItemTextPageText:SetText(text_en)
+    SetBookJustifyAsync(false)
+  end
+end
+
 -- Toggle translated/original view
 function Books.Toggle()
   if (act_tr == "0") then
@@ -328,13 +348,7 @@ function Books.Toggle()
       ItemTextFrameTitleText:SetText(QTR_ReverseIfAR(title_tr))
       ItemTextFrameTitleText:SetFont(WOWTR_Font1, 11)
     end
-    ApplyBodyFont()
-    if IsStoredHtmlBookText(text_tr) then
-      ItemTextPageText:SetText(PrepareBookHtmlText(text_tr))
-    else
-      ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
-    end
-    SetBookJustifyAsync(IsArabic())
+    ShowTranslatedBodyOrFallback()
     UpdateToggleButton(true)
   else
     act_tr = "0"
@@ -408,6 +422,9 @@ function Books.ShowTranslation()
     local hasPage = gl_BT_Books[bookID][page_str]
     local hasTitle = (BT_PM and BT_PM["title"] == "1" and gl_BT_Books[bookID].Title and gl_BT_Books[bookID].Title ~= '')
     if hasPage or hasTitle then
+      if not hasPage then
+        save_original()
+      end
       if hasTitle then
         title_tr = gl_BT_Books[bookID]["Title"]
         if act_tr == "1" and title_tr and title_tr ~= "" then
@@ -443,14 +460,8 @@ function Books.ShowTranslation()
       end
 
       if act_tr == "1" then
-        -- Show translated (respect RTL for AR)
-        ApplyBodyFont()
-        if IsStoredHtmlBookText(text_tr) then
-          ItemTextPageText:SetText(PrepareBookHtmlText(text_tr))
-        else
-          ItemTextPageText:SetText(QTR_ExpandUnitInfo(text_tr, false, ItemTextPageText, WOWTR_Font2, -10))
-        end
-        SetBookJustifyAsync(IsArabic())
+        -- Show translated body when available; otherwise keep the original page visible.
+        ShowTranslatedBodyOrFallback()
         UpdateToggleButton(true)
       else
         -- Show original EN (LTR)
