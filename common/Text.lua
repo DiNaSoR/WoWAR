@@ -788,6 +788,44 @@ local function replaceLiteral(text, literal, replacer)
   return (text:gsub(pattern, replacer))
 end
 
+local function buildIdentityVariants(value)
+  local variants = {}
+  local seen = {}
+
+  local function addVariant(variant)
+    if type(variant) == "string" and variant ~= "" and not seen[variant] then
+      seen[variant] = true
+      variants[#variants + 1] = variant
+    end
+  end
+
+  addVariant(value)
+  if type(value) == "string" and value ~= "" then
+    addVariant(string.lower(value))
+    addVariant(string.upper(value))
+  end
+
+  return variants
+end
+
+local function replaceBlizzardGrammarIdentity(text, value, placeholder)
+  if type(text) ~= "string" then
+    return ""
+  end
+  if type(value) ~= "string" or value == "" then
+    return text
+  end
+
+  local result = text
+  for _, variant in ipairs(buildIdentityVariants(value)) do
+    -- Blizzard can prefix player race/class with grammar markers like "|5Paladin".
+    -- Canonicalize those forms before hashing/saving so contributors see $R/$C placeholders.
+    result = result:gsub("%|%d+" .. escapeLuaPatternLiteral(variant) .. "%f[%A]", placeholder)
+  end
+
+  return result
+end
+
 function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
   if type(txt) ~= "string" then
     return ""
@@ -819,32 +857,44 @@ function Text.ReplaceOnlyWholeWords(txt, finder, replacer)
   return result
 end
 
-function Text.DetectAndReplacePlayerName(txt, target, part)
+local function detectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part)
   if (txt == nil) then return "" end
   local text = string.gsub(txt, '\r', "")
+  playerName = playerName or ""
+  playerRace = playerRace or ""
+  playerClass = playerClass or ""
   if (part == nil) or (part == '$B') then
     text = string.gsub(text, '\n', "$B")
   end
   if (part == nil) or (part == '$N') then
-    local playerName = WOWTR_player_name or ""
     local upperCaseName = string.upper(playerName)
     text = replaceLiteral(text, playerName, "$N")
     text = replaceLiteral(text, upperCaseName, "$N")
   end
   if (part == nil) or (part == '$R') then
-    text = Text.ReplaceOnlyWholeWords(text, WOWTR_player_race or "", '$R')
-    text = Text.ReplaceOnlyWholeWords(text, string.lower(WOWTR_player_race or ""), '$R')
-    text = Text.ReplaceOnlyWholeWords(text, string.upper(WOWTR_player_race or ""), '$R$')
+    text = replaceBlizzardGrammarIdentity(text, playerRace, '$R')
+    text = Text.ReplaceOnlyWholeWords(text, playerRace, '$R')
+    text = Text.ReplaceOnlyWholeWords(text, string.lower(playerRace), '$R')
+    text = Text.ReplaceOnlyWholeWords(text, string.upper(playerRace), '$R$')
   end
   if (part == nil) or (part == '$C') then
-    text = Text.ReplaceOnlyWholeWords(text, WOWTR_player_class or "", '$C')
-    text = Text.ReplaceOnlyWholeWords(text, string.lower(WOWTR_player_class or ""), '$C')
-    text = Text.ReplaceOnlyWholeWords(text, string.upper(WOWTR_player_class or ""), '$C$')
+    text = replaceBlizzardGrammarIdentity(text, playerClass, '$C')
+    text = Text.ReplaceOnlyWholeWords(text, playerClass, '$C')
+    text = Text.ReplaceOnlyWholeWords(text, string.lower(playerClass), '$C')
+    text = Text.ReplaceOnlyWholeWords(text, string.upper(playerClass), '$C$')
   end
   if (target) then
     text = Text.ReplaceOnlyWholeWords(text, target, "$N")
   end
   return text
+end
+
+function Text.DetectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part)
+  return detectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part)
+end
+
+function Text.DetectAndReplacePlayerName(txt, target, part)
+  return detectAndReplacePlayerIdentity(txt, WOWTR_player_name or "", WOWTR_player_race or "", WOWTR_player_class or "", target, part)
 end
 
 function Text.DeleteSpecialCodes(txt, part)
@@ -904,6 +954,7 @@ function QTR_ReverseIfAR(txt) return Text.ReverseIfAR(txt) end
 function WOWTR_ContainsArabic(txt) return Text.ContainsArabic(txt) end
 function WOWTR_AnsiReverse(txt) return Text.AnsiReverse(txt) end
 function WOWTR_ReplaceOnlyWholeWords(txt, f, r) return Text.ReplaceOnlyWholeWords(txt, f, r) end
+function WOWTR_DetectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part) return Text.DetectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part) end
 function WOWTR_DetectAndReplacePlayerName(txt, target, part) return Text.DetectAndReplacePlayerName(txt, target, part) end
 function WOWTR_DeleteSpecialCodes(txt, part) return Text.DeleteSpecialCodes(txt, part) end
 function WOWTR_StripUEColorMarker(txt) return Text.StripUEColorMarker(txt) end

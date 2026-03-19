@@ -88,6 +88,90 @@ function Core.StartDelayedFunction(func, delay)
   C_Timer.After(delay, func)
 end
 
+local function normalizeCapturedTextWithPlayerInfo(text, playerName, playerRace, playerClass, target)
+  if type(text) ~= "string" or text == "" then
+    return text
+  end
+  if WOWTR_DetectAndReplacePlayerIdentity then
+    return WOWTR_DetectAndReplacePlayerIdentity(text, playerName or "", playerRace or "", playerClass or "", target, nil)
+  end
+  return text
+end
+
+local function normalizeTableStringValues(tbl, normalizer)
+  if type(tbl) ~= "table" or type(normalizer) ~= "function" then
+    return
+  end
+
+  for key, value in pairs(tbl) do
+    if type(value) == "string" then
+      local normalized = normalizer(value, key)
+      if type(normalized) == "string" and normalized ~= value then
+        tbl[key] = normalized
+      end
+    end
+  end
+end
+
+local function normalizeLegacyPlayerCaptureTables()
+  if not QTR_PS or QTR_PS["playerTokenNormalizationV1"] == "1" then
+    return
+  end
+  if not WOWTR_DetectAndReplacePlayerIdentity then
+    return
+  end
+
+  normalizeTableStringValues(QTR_GOSSIP, function(value)
+    local text, playerName, playerRace, playerClass = value:match("^(.*)@(.-):([^:]*):([^:]+)$")
+    if not text then
+      return value
+    end
+    local normalized = normalizeCapturedTextWithPlayerInfo(text, playerName, playerRace, playerClass)
+    return normalized .. "@" .. playerName .. ":" .. playerRace .. ":" .. playerClass
+  end)
+
+  normalizeTableStringValues(MF_PS, function(value)
+    local text, playerName, playerRace, playerClass = value:match("^(.*)@(.-):([^:]*):([^:]+)$")
+    if not text then
+      return value
+    end
+    local normalized = normalizeCapturedTextWithPlayerInfo(text, playerName, playerRace, playerClass)
+    return normalized .. "@" .. playerName .. ":" .. playerRace .. ":" .. playerClass
+  end)
+
+  normalizeTableStringValues(BB_PS, function(value)
+    local text, target, playerName, playerRace, playerClass = value:match("^(.*)@(.*):([^:]*):([^:]*):([^:]+)$")
+    if not text then
+      return value
+    end
+    local normalized = normalizeCapturedTextWithPlayerInfo(text, playerName, playerRace, playerClass, target ~= "" and target or nil)
+    return normalized .. "@" .. target .. ":" .. playerName .. ":" .. playerRace .. ":" .. playerClass
+  end)
+
+  normalizeTableStringValues(QTR_SAVED, function(value, key)
+    local keyText = tostring(key)
+    local questID =
+      keyText:match("^(.-) DESCRIPTION$")
+      or keyText:match("^(.-) OBJECTIVE$")
+      or keyText:match("^(.-) PROGRESS$")
+      or keyText:match("^(.-) COMPLETE$")
+    if not questID then
+      return value
+    end
+    local playerMeta = QTR_SAVED[questID .. " PLAYER"]
+    if type(playerMeta) ~= "string" then
+      return value
+    end
+    local playerName, playerRace, playerClass = playerMeta:match("^(.-)@([^@]*)@([^@]+)$")
+    if not playerClass then
+      return value
+    end
+    return normalizeCapturedTextWithPlayerInfo(value, playerName, playerRace, playerClass)
+  end)
+
+  QTR_PS["playerTokenNormalizationV1"] = "1"
+end
+
 -- SavedVariables initialization and migration shim (legacy globals preserved)
 function Core.CheckVars()
   QTR_PS = QTR_PS or {}
@@ -131,6 +215,8 @@ function Core.CheckVars()
       end
     end
   end
+
+  normalizeLegacyPlayerCaptureTables()
 
   if (not BB_PM["TRonline"]) then BB_PM["TRonline"] = "0" end
   BB_PM["dungeonF"] = "0"
