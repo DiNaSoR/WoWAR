@@ -1370,18 +1370,18 @@ end
 function QTR_Translate_On(typ, event) return Quests.Details.TranslateOn(typ, event) end
 function QTR_Translate_Off(typ, event) return Quests.Details.TranslateOff(typ, event) end
 function QTR_display_constants(lg) return Quests.Details.DisplayConstants(lg) end
-function QTR_QuestPrepare(event) return Quests.Details.QuestPrepare(event) end
+function QTR_QuestPrepare(event, questID) return Quests.Details.QuestPrepare(event, questID) end
 function QTR_PrepareReload() return Quests.Details.QuestPrepare() end
 
 -- Prepare quest data and switch translated view on
-function Quests.Details.QuestPrepare(event)
+function Quests.Details.QuestPrepare(event, questID)
   local startTime = GetTime()
   local QTR_QuestData = rawget(_G, "QTR_QuestData")
   QTR_PrepareTime = time()
   if QTR_IconAI then QTR_IconAI:Hide() end
   if GoQ_IconAI then GoQ_IconAI:Hide() end
 
-  local q_ID = Quests.GetQuestID and Quests.GetQuestID() or 0
+  local q_ID = (type(questID) == "number" and questID > 0) and questID or ((Quests.GetQuestID and Quests.GetQuestID()) or 0)
 
   -- QuestMapFrame can fire multiple forced prepares while its details panel finishes showing.
   -- We already schedule a single __post__ re-apply pass from TranslateOn, so suppress rapid duplicate forced calls.
@@ -2253,6 +2253,7 @@ function Quests.Details.DisplayConstants(lg)
                 (df and df.RewardsFrameContainer and df.RewardsFrameContainer.RewardsFrame)
                 or rawget(_G, "MapQuestInfoRewardsFrame")
               if mapRewards and mapRewards.GetRegions then
+                local rewardUIFont = WOWTR_Font1 or WOWTR_Font2
                 local function norm(s)
                   if not s then return "" end
                   -- Normalize whitespace and NBSP for robust matching.
@@ -2320,6 +2321,13 @@ function Quests.Details.DisplayConstants(lg)
                   end
                 end
 
+                local function applyRewardLabelFont()
+                  if not (isArabic and mapRewards and mapRewards.Label and mapRewards.Label.SetFont) then return end
+                  local _, curSize, flags = mapRewards.Label:GetFont()
+                  mapRewards.Label:SetFont(rewardUIFont, curSize or 13, flags)
+                  if mapRewards.Label.SetJustifyH then mapRewards.Label:SetJustifyH("RIGHT") end
+                end
+
                 if isArabic then
                   -- Prefer computed per-quest variants (itemchoose/itemreceive) when available
                   setLabel(mapRewards.ItemChooseText, itemChooseText, 14)
@@ -2327,6 +2335,7 @@ function Quests.Details.DisplayConstants(lg)
                   if mapRewards.XPFrame and mapRewards.XPFrame.ReceiveText then
                     setLabel(mapRewards.XPFrame.ReceiveText, QTR_Messages.experience, 13)
                   end
+                  applyRewardLabelFont()
                 end
 
                 -- Walk the full rewards frame tree to:
@@ -2377,7 +2386,7 @@ function Quests.Details.DisplayConstants(lg)
                         if node.SetJustifyH then node:SetJustifyH("RIGHT") end
                       elseif _G.ST_CheckAndReplaceTranslationTextUI then
                         -- Best-effort translation for other UI strings (e.g., questline reward label)
-                        ST_CheckAndReplaceTranslationTextUI(node, false, "QuestMapRewards")
+                        ST_CheckAndReplaceTranslationTextUI(node, false, "QuestMapRewards", rewardUIFont)
                       end
                     end
                   end
@@ -2399,6 +2408,7 @@ function Quests.Details.DisplayConstants(lg)
                 if isArabic and WOWTR and WOWTR.Fonts and WOWTR.Fonts.Apply then
                   WOWTR.Fonts.Apply(mapRewards)
                 end
+                applyRewardLabelFont()
               end
             end
         end
@@ -2471,4 +2481,3 @@ function Quests.Details.DisplayConstants(lg)
         end
    end
 end
-

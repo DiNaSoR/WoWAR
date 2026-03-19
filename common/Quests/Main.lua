@@ -74,6 +74,21 @@ function Quests.GetQuestID()
         or (QuestMapFrame.DetailsFrame and QuestMapFrame.DetailsFrame.questID)
    end
 
+   -- Tracker clicks can race QuestMapFrame population. Prefer the most recent questID
+   -- captured from QuestMapFrame_ShowQuestDetails for a short window while the map details
+   -- panel is still settling.
+   if (((quest_ID==nil) or (quest_ID==0))
+       and S
+       and type(S.pendingMapQuestID) == "number"
+       and S.pendingMapQuestID > 0
+       and S.pendingMapQuestAt
+       and GetTime
+       and ((GetTime() - S.pendingMapQuestAt) < 1.0)
+       and QuestMapFrame
+       and QuestMapFrame:IsVisible()) then
+      quest_ID = S.pendingMapQuestID
+   end
+
    if (((quest_ID==nil) or (quest_ID==0)) and QuestLogPopupDetailFrame:IsVisible()) then
       quest_ID = QuestLogPopupDetailFrame.questID
    end
@@ -161,10 +176,14 @@ function Quests.Start()
      -- Coalesce rapid hook bursts and ignore re-entrant hooks for a short window
      local coalesceHandle = nil
      local suppressUntil = 0.0
-     hooksecurefunc("QuestMapFrame_ShowQuestDetails", function()
+     hooksecurefunc("QuestMapFrame_ShowQuestDetails", function(questID)
         local now = GetTime()
         if now < suppressUntil then
            return
+        end
+        if type(questID) == "number" and questID > 0 then
+           S.pendingMapQuestID = questID
+           S.pendingMapQuestAt = now
         end
         if coalesceHandle then coalesceHandle:Cancel(); coalesceHandle = nil end
         -- Delay slightly so Blizzard finishes its late QuestMapFrame UI updates before we translate.
@@ -172,7 +191,10 @@ function Quests.Start()
                      if QuestMapFrame and QuestMapFrame:IsVisible() then
                         suppressUntil = GetTime() + 0.10
                         if Quests and Quests.Details and Quests.Details.QuestPrepare then
-                           Quests.Details.QuestPrepare("__force__")
+                           Quests.Details.QuestPrepare("__force__", questID)
+                           if Quests.Details.SchedulePostLayoutRefresh then
+                              Quests.Details.SchedulePostLayoutRefresh({ force = true, delay = 0.30 })
+                           end
                         elseif QTR_PrepareReload then
                            QTR_PrepareReload()
                         end
@@ -187,7 +209,13 @@ function Quests.Start()
   if QuestMapDetailsScrollFrame and QuestMapDetailsScrollFrame.HookScript then
      QuestMapDetailsScrollFrame:HookScript("OnShow", function()
         if Quests and Quests.Details and Quests.Details.QuestPrepare then
-           Quests.Details.QuestPrepare("__force__")
+           Quests.Details.QuestPrepare("__force__", S and S.pendingMapQuestID or nil)
+        end
+     end)
+     QuestMapDetailsScrollFrame:HookScript("OnHide", function()
+        if S then
+           S.pendingMapQuestID = nil
+           S.pendingMapQuestAt = nil
         end
      end)
   end
