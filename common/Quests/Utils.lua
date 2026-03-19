@@ -272,14 +272,12 @@ function ToggleButtons.GetPlaceholderText(key)
 end
 
 function ToggleButtons.BuildQuestText(key, questID, modeTag)
-  local spec = ToggleButtonsGetSpec(key)
-  local prefix = (spec and spec.prefix) or "QID"
   local qid = tonumber(questID) or 0
   if qid > 0 and modeTag and modeTag ~= "" then
-    return prefix .. "=" .. qid .. " (" .. tostring(modeTag) .. ")"
+    return tostring(qid) .. " (" .. tostring(modeTag) .. ")"
   end
   if qid > 0 then
-    return prefix .. "=" .. qid
+    return tostring(qid)
   end
   return ToggleButtons.GetPlaceholderText(key)
 end
