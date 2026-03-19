@@ -3,6 +3,11 @@
 
 -- luacheck: globals Storyline_NPCFrame Storyline_NPCFrameChat Storyline_NPCFrameObjectivesContent Storyline_NPCFrameRewards Storyline_NPCFrameChatText Storyline_API Storyline_NPCFrameModelsYou
 ---@diagnostic disable: undefined-global
+local addonName, ns = ...
+ns = ns or {}
+ns.Quests = ns.Quests or {}
+local ToggleButtons = ns.Quests and ns.Quests.Utils and ns.Quests.Utils.ToggleButtons
+
 StorylinePlugin = {}
 
 local function IsArabicUI()
@@ -64,18 +69,11 @@ end
 function StorylinePlugin.isStoryline()
    if (Storyline_NPCFrame ~= nil ) then         -- StoryLine addon is running
       if (QTR_ToggleButton5==nil) then
-         -- button with quest ID
-         QTR_ToggleButton5 = CreateFrame("Button",nil, Storyline_NPCFrameChat, "UIPanelButtonTemplate")
-         QTR_ToggleButton5:SetWidth(150)
-         QTR_ToggleButton5:SetHeight(20)
-         QTR_ToggleButton5:SetText(QTR_ReverseIfAR(WOWTR_Localization.choiceQuestFirst))
-         QTR_ToggleButton5:ClearAllPoints()
-         QTR_ToggleButton5:SetPoint("BOTTOMLEFT", Storyline_NPCFrameChat, "BOTTOMLEFT", 244, -16)
-         QTR_ToggleButton5:SetScript("OnClick", QTR_ON_OFF)
+         QTR_ToggleButton5 = ToggleButtons.Ensure("storyline")
          Storyline_NPCFrameObjectivesContent:HookScript("OnShow", function() StorylinePlugin.QTR_Storyline_Objectives() end)
          Storyline_NPCFrameRewards:HookScript("OnShow", function() StorylinePlugin.QTR_Storyline_Rewards() end)
          Storyline_NPCFrameChat:HookScript("OnHide", function() StorylinePlugin.QTR_Storyline_Hide() end)
-         QTR_ToggleButton5:Disable()
+         ToggleButtons.SetEnabled("storyline", false)
 
          -- Apply AR-only font + RTL animation tweaks whenever Storyline shows.
          if Storyline_NPCFrameChat and Storyline_NPCFrameChat.HookScript then

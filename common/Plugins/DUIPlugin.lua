@@ -1,6 +1,11 @@
 -- DUIPlugin.lua
 -- Plugin for handling Dialog UI functions
 
+local addonName, ns = ...
+ns = ns or {}
+ns.Quests = ns.Quests or {}
+local ToggleButtons = ns.Quests and ns.Quests.Utils and ns.Quests.Utils.ToggleButtons
+
 -- Global variables and functions
 DUIPlugin = {}
 --print("DUIPlugin loaded")
@@ -193,21 +198,15 @@ function DUIPlugin.IsDUIQuestFrame()
       end
 
       if (QTR_ToggleButton7 == nil) then    -- przycisk w oknie zadania
-         -- przycisk z nr ID questu
-         QTR_ToggleButton7 = CreateFrame("Button", nil, DUIQuestFrame, "UIPanelButtonTemplate")
-         QTR_ToggleButton7:SetWidth(120)
-         QTR_ToggleButton7:SetHeight(20)
-         QTR_ToggleButton7:SetText("Quest ID=?")
-         QTR_ToggleButton7:ClearAllPoints()
-         QTR_ToggleButton7:SetPoint("TOPLEFT", DUIQuestFrame, "TOPLEFT", 295, -16)
-         QTR_ToggleButton7:SetScript("OnClick", DUI_ON_OFF)
-         QTR_ToggleButton7:Disable()          -- nie można na razie przyciskać przycisku
+         QTR_ToggleButton7 = ToggleButtons.Ensure("dui", {
+            onClick = function(...)
+               if DUIPlugin and DUIPlugin.DUI_ON_OFF then
+                  return DUIPlugin.DUI_ON_OFF(...)
+               end
+            end
+         })
+         ToggleButtons.SetEnabled("dui", false)
          QTR_ToggleButton7:Hide()
-
-         -- Set smaller font size by modifying the FontString
-         local font = QTR_ToggleButton7:GetFontString()
-         font:SetFont("Fonts\\FRIZQT__.TTF", 8, "OUTLINE")
-         
       end
       
       DUIQuestFrame:HookScript("OnHide", function() QTR_ToggleButton6:Hide(); QTR_ToggleButton7:Hide(); end)
@@ -239,7 +238,7 @@ function DUIPlugin.DUI_ON_OFF()
    local DUIQuestFrame = rawget(_G, "DUIQuestFrame")
    if (QTR_curr_dialog == "1") then      -- Turn off translation - show original text
       QTR_curr_dialog = "0"
-      QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." (EN)")
+      ToggleButtons.SetLabel("dui", QTR_quest_ID, "EN")
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(Original_Font1, 18)
          if (WOWTR_Localization.lang == 'AR') then
@@ -252,7 +251,7 @@ function DUIPlugin.DUI_ON_OFF()
       end
    else                                  -- Show translation
       QTR_curr_dialog = "1"
-      QTR_ToggleButton7:SetText("Quest ID="..QTR_quest_ID.." ("..WOWTR_Localization.lang..")")
+      ToggleButtons.SetLabel("dui", QTR_quest_ID, WOWTR_Localization.lang)
       if (QTR_PS["transtitle"] == "1") then
          DUIQuestFrame.FrontFrame.Header.Title:SetFont(WOWTR_Font1, 18)
          if (WOWTR_Localization.lang == 'AR') then

@@ -5,6 +5,7 @@ local addonName, ns = ...
 ns = ns or {}
 ns.Quests = ns.Quests or {}
 local Quests = ns.Quests
+local ToggleButtons = Quests.Utils and Quests.Utils.ToggleButtons
 
 Quests.Details = Quests.Details or {}
 -- Debounce state for rapid QuestPrepare calls from QuestMapFrame_ShowQuestDetails
@@ -15,6 +16,14 @@ local _postLayoutLastQuestID = 0
 local _postLayoutLastAt = 0
 local _lastForceQuestID = 0
 local _lastForceAt = 0
+
+local function SyncQuestToggleLabels(modeTag)
+  ToggleButtons.SyncLabels(QTR_quest_ID, modeTag)
+end
+
+local function SyncQuestToggleEnabled(enabled)
+  ToggleButtons.SyncEnabled(enabled)
+end
 
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Kept local to this file because `common/Text.lua` is loaded later in the TOC.
@@ -152,24 +161,13 @@ function Quests.Details.TranslateOn(typ,event)
         if WOWTR and WOWTR.Debug then
           WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "TranslateOn: Quest data found, setting button text...")
         end
-         QTR_ToggleButton0:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
-         QTR_ToggleButton1:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
-         QTR_ToggleButton2:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
-         if (isClassicQuestLog()) then
-            QTR_ToggleButton3:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
-         end
+         SyncQuestToggleLabels(QTR_lang)
          if (isImmersion()) then
-            QTR_ToggleButton4:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
             if (not WOWTR_wait(0.2,QTR_Immersion)) then end
          end
          local storylineFrame = GetStorylineFrame()
          if (isStoryline() and storylineFrame and storylineFrame:IsVisible()) then
-            QTR_ToggleButton5:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
             QTR_Storyline(1)
-         end
-         if (IsDUIQuestFrame()) then
-            QTR_ToggleButton7:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")")
-            QTR_ToggleButton7:Enable()
          end
 
          local WOW_width = 280
@@ -1173,12 +1171,8 @@ function Quests.Details.TranslateOff(typ,event)
       end
 
       if (numer_ID>0 and QTR_QuestData[str_ID]) then
-         QTR_ToggleButton0:SetText("QID="..QTR_quest_ID.." (EN)")
-         QTR_ToggleButton1:SetText("QID="..QTR_quest_ID.." (EN)")
-         QTR_ToggleButton2:SetText("QID="..QTR_quest_ID.." (EN)")
-         if (isClassicQuestLog()) then QTR_ToggleButton3:SetText("QID="..QTR_quest_ID.." (EN)") end
+         SyncQuestToggleLabels("EN")
          if (isImmersion()) then
-            QTR_ToggleButton4:SetText("QID="..QTR_quest_ID.." (EN)")
             QTR_Immersion_OFF()
             local immersionFrame = GetImmersionFrame()
             if immersionFrame and immersionFrame.TalkBox and immersionFrame.TalkBox.TextFrame and immersionFrame.TalkBox.TextFrame.Text and immersionFrame.TalkBox.TextFrame.Text.RepeatTexts then
@@ -1187,7 +1181,6 @@ function Quests.Details.TranslateOff(typ,event)
          end
          local storylineFrame = GetStorylineFrame()
          if (isStoryline() and storylineFrame and storylineFrame:IsVisible()) then
-            QTR_ToggleButton5:SetText("QID="..QTR_quest_ID.." (EN)")
             QTR_Storyline_OFF(1)
          end
          local WOW_width = 280
@@ -1572,7 +1565,7 @@ function Quests.Details.QuestPrepare(event, questID)
   QTR_quest_EN[QTR_quest_ID] = QTR_quest_EN[QTR_quest_ID] or {}
   QTR_quest_LG[QTR_quest_ID] = QTR_quest_LG[QTR_quest_ID] or {}
 
-  if QTR_ToggleButton0 then QTR_ToggleButton0:SetWidth(150); QTR_ToggleButton0:SetScript("OnClick", QTR_ON_OFF) end
+  ToggleButtons.BindOnClick("quest", QTR_ON_OFF)
 
   if WOWTR and WOWTR.Debug then
     WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Config | QTR_PS active:", QTR_PS and QTR_PS["active"], "| QTR_curr_trans:", QTR_curr_trans)
@@ -1799,14 +1792,7 @@ function Quests.Details.QuestPrepare(event, questID)
         end
       end
 
-      if QTR_ToggleButton0 then QTR_ToggleButton0:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")") end
-      if QTR_ToggleButton1 then QTR_ToggleButton1:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")") end
-      if QTR_ToggleButton2 then QTR_ToggleButton2:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")") end
-      if (isImmersion and isImmersion() and QTR_ToggleButton4) then QTR_ToggleButton4:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")") end
-      do
-        local storylineFrame = GetStorylineFrame()
-        if (isStoryline and isStoryline() and storylineFrame and storylineFrame:IsVisible() and QTR_ToggleButton5) then QTR_ToggleButton5:SetText("QID="..QTR_quest_ID.." ("..QTR_lang..")") end
-      end
+      SyncQuestToggleLabels(QTR_lang)
 
       -- Determine if we actually have localized (Arabic) quest text; if not, keep EN view.
       local hasTrans = hasRealTrans
@@ -1819,20 +1805,10 @@ function Quests.Details.QuestPrepare(event, questID)
       
       -- Enable toggle buttons only if we have translation data
       if hasTrans then
-        if QTR_ToggleButton0 then QTR_ToggleButton0:Enable() end
-        if QTR_ToggleButton1 then QTR_ToggleButton1:Enable() end
-        if QTR_ToggleButton2 then QTR_ToggleButton2:Enable() end
-        if isImmersion and isImmersion() and QTR_ToggleButton4 then QTR_ToggleButton4:Enable() end
-        if isStoryline and isStoryline() and QTR_ToggleButton5 then QTR_ToggleButton5:Enable() end
-        if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Enable() end
+        SyncQuestToggleEnabled(true)
       else
         -- No translation available, disable buttons
-        if QTR_ToggleButton0 then QTR_ToggleButton0:Disable() end
-        if QTR_ToggleButton1 then QTR_ToggleButton1:Disable() end
-        if QTR_ToggleButton2 then QTR_ToggleButton2:Disable() end
-        if isImmersion and isImmersion() and QTR_ToggleButton4 then QTR_ToggleButton4:Disable() end
-        if isStoryline and isStoryline() and QTR_ToggleButton5 then QTR_ToggleButton5:Disable() end
-        if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Disable() end
+        SyncQuestToggleEnabled(false)
       end
       
       if not hasTrans then
@@ -1871,12 +1847,7 @@ function Quests.Details.QuestPrepare(event, questID)
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "|cFFFF0000[X] No translation data found|r | Quest:", str_ID, "| Displaying English | Saving quest data...")
       end
       -- Disable all toggle buttons since there's no translation available
-      if QTR_ToggleButton0 then QTR_ToggleButton0:Disable() end
-      if QTR_ToggleButton1 then QTR_ToggleButton1:Disable() end
-      if QTR_ToggleButton2 then QTR_ToggleButton2:Disable() end
-      if isImmersion and isImmersion() and QTR_ToggleButton4 then QTR_ToggleButton4:Disable() end
-      if isStoryline and isStoryline() and QTR_ToggleButton5 then QTR_ToggleButton5:Disable() end
-      if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Disable() end
+      SyncQuestToggleEnabled(false)
       
       if WOWTR and WOWTR.Debug then
         WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Calling QTR_Translate_Off (no data)...")
@@ -1901,12 +1872,7 @@ function Quests.Details.QuestPrepare(event, questID)
       WOWTR.Debug.Verbose(WOWTR.Debug.Categories.QUESTS, "Active is OFF | Processing English display | Quest:", q_ID)
     end
     -- Disable all toggle buttons
-    if QTR_ToggleButton0 then QTR_ToggleButton0:Disable() end
-    if QTR_ToggleButton1 then QTR_ToggleButton1:Disable() end
-    if QTR_ToggleButton2 then QTR_ToggleButton2:Disable() end
-    if isImmersion and isImmersion() and QTR_ToggleButton4 then QTR_ToggleButton4:Disable() end
-    if isStoryline and isStoryline() and QTR_ToggleButton5 then QTR_ToggleButton5:Disable() end
-    if IsDUIQuestFrame and IsDUIQuestFrame() and QTR_ToggleButton7 then QTR_ToggleButton7:Disable() end
+    SyncQuestToggleEnabled(false)
     
     -- Capture quest text data even when active is off (needed for display)
     if WOWTR and WOWTR.Debug then WOWTR.Debug.Normal(WOWTR.Debug.Categories.QUESTS, "QuestPrepare: Capturing quest text...") end

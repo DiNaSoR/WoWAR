@@ -122,6 +122,393 @@ function Quests.Utils.CreateButton(parent, width, height, text, point, relativeT
   return btn
 end
 
+Quests.Utils.ToggleButtons = Quests.Utils.ToggleButtons or {}
+local ToggleButtons = Quests.Utils.ToggleButtons
+
+local function ToggleQuestTranslation(...)
+  if Quests and Quests.ToggleTranslation then
+    return Quests.ToggleTranslation(...)
+  end
+end
+
+ToggleButtons.registry = ToggleButtons.registry or {}
+ToggleButtons.order = ToggleButtons.order or {
+  "quest",
+  "popup",
+  "map",
+  "classic",
+  "immersion",
+  "storyline",
+  "dui",
+}
+
+ToggleButtons.specs = ToggleButtons.specs or {
+  quest = {
+    globalName = "QTR_ToggleButton0",
+    width = 150,
+    height = 20,
+    placeholderText = "QID?",
+    parent = function() return _G.QuestFrame end,
+    relativeTo = function() return _G.QuestFrame end,
+    point = { "TOPLEFT", "TOPLEFT", 55, -20 },
+    onClick = ToggleQuestTranslation,
+  },
+  popup = {
+    globalName = "QTR_ToggleButton1",
+    width = 150,
+    height = 20,
+    placeholderText = "QID?",
+    parent = function() return _G.QuestLogPopupDetailFrame end,
+    relativeTo = function() return _G.QuestLogPopupDetailFrame end,
+    point = { "TOPLEFT", "TOPLEFT", 45, -31 },
+    onClick = ToggleQuestTranslation,
+  },
+  map = {
+    globalName = "QTR_ToggleButton2",
+    width = 110,
+    height = 22,
+    placeholderText = "QID?",
+    parent = function() return _G.QuestMapDetailsScrollFrame end,
+    relativeTo = function() return _G.QuestMapDetailsScrollFrame end,
+    point = { "TOPLEFT", "TOPLEFT", 96, 32 },
+    onClick = ToggleQuestTranslation,
+  },
+  classic = {
+    globalName = "QTR_ToggleButton3",
+    width = 150,
+    height = 20,
+    placeholderText = "QID?",
+    parent = function() return _G.ClassicQuestLog end,
+    relativeTo = function() return _G.ClassicQuestLog end,
+    point = { "TOPLEFT", "TOPLEFT", 330, -33 },
+    onClick = ToggleQuestTranslation,
+  },
+  immersion = {
+    globalName = "QTR_ToggleButton4",
+    width = 150,
+    height = 20,
+    placeholderText = function()
+      if _G.WOWTR_Localization and _G.WOWTR_Localization.choiceQuestFirst and _G.QTR_ReverseIfAR then
+        return _G.QTR_ReverseIfAR(_G.WOWTR_Localization.choiceQuestFirst)
+      end
+      return "QID?"
+    end,
+    parent = function() return _G.ImmersionFrame and _G.ImmersionFrame.TalkBox end,
+    relativeTo = function() return _G.ImmersionFrame and _G.ImmersionFrame.TalkBox end,
+    point = { "TOPLEFT", "TOPRIGHT", -200, -116 },
+    onClick = ToggleQuestTranslation,
+  },
+  storyline = {
+    globalName = "QTR_ToggleButton5",
+    width = 150,
+    height = 20,
+    placeholderText = function()
+      if _G.WOWTR_Localization and _G.WOWTR_Localization.choiceQuestFirst and _G.QTR_ReverseIfAR then
+        return _G.QTR_ReverseIfAR(_G.WOWTR_Localization.choiceQuestFirst)
+      end
+      return "QID?"
+    end,
+    parent = function() return _G.Storyline_NPCFrameChat end,
+    relativeTo = function() return _G.Storyline_NPCFrameChat end,
+    point = { "BOTTOMLEFT", "BOTTOMLEFT", 244, -16 },
+    onClick = ToggleQuestTranslation,
+  },
+  dui = {
+    globalName = "QTR_ToggleButton7",
+    width = 120,
+    height = 20,
+    placeholderText = "QID?",
+    parent = function() return rawget(_G, "DUIQuestFrame") end,
+    relativeTo = function() return rawget(_G, "DUIQuestFrame") end,
+    point = { "TOPLEFT", "TOPLEFT", 295, -16 },
+    fontPath = "Fonts\\FRIZQT__.TTF",
+    fontSize = 8,
+    fontFlags = "OUTLINE",
+  },
+}
+
+local function ToggleButtonsGetSpec(key)
+  return key and ToggleButtons.specs and ToggleButtons.specs[key] or nil
+end
+
+local function ToggleButtonsResolveFrame(frameOrGetter)
+  if type(frameOrGetter) == "function" then
+    local ok, value = pcall(frameOrGetter)
+    if ok then return value end
+    return nil
+  end
+  return frameOrGetter
+end
+
+local function ToggleButtonsResolveText(value)
+  if type(value) == "function" then
+    local ok, text = pcall(value)
+    if ok then return text end
+    return nil
+  end
+  return value
+end
+
+function ToggleButtons.GetButton(key)
+  local spec = ToggleButtonsGetSpec(key)
+  if not spec then return nil end
+  local button = ToggleButtons.registry[key]
+  if not button and spec.globalName then
+    button = rawget(_G, spec.globalName)
+    if button then
+      ToggleButtons.registry[key] = button
+    end
+  end
+  return button
+end
+
+function ToggleButtons.GetSpec(key)
+  return ToggleButtonsGetSpec(key)
+end
+
+function ToggleButtons.GetPlaceholderText(key)
+  local spec = ToggleButtonsGetSpec(key)
+  return ToggleButtonsResolveText(spec and spec.placeholderText) or "QID?"
+end
+
+function ToggleButtons.BuildQuestText(key, questID, modeTag)
+  local spec = ToggleButtonsGetSpec(key)
+  local prefix = (spec and spec.prefix) or "QID"
+  local qid = tonumber(questID) or 0
+  if qid > 0 and modeTag and modeTag ~= "" then
+    return prefix .. "=" .. qid .. " (" .. tostring(modeTag) .. ")"
+  end
+  if qid > 0 then
+    return prefix .. "=" .. qid
+  end
+  return ToggleButtons.GetPlaceholderText(key)
+end
+
+function ToggleButtons.ApplyStyle(key, button)
+  local spec = ToggleButtonsGetSpec(key)
+  if not (spec and button) then return end
+
+  if spec.width then button:SetWidth(spec.width) end
+  if spec.height then button:SetHeight(spec.height) end
+
+  local fontString = button.GetFontString and button:GetFontString() or nil
+  if fontString and (spec.fontPath or spec.fontSize or spec.fontFlags) then
+    local currentFont, currentSize, currentFlags = fontString:GetFont()
+    fontString:SetFont(
+      spec.fontPath or currentFont,
+      spec.fontSize or currentSize or 12,
+      spec.fontFlags or currentFlags or ""
+    )
+  end
+end
+
+function ToggleButtons.ApplyAnchor(key, button)
+  local spec = ToggleButtonsGetSpec(key)
+  if not (spec and button and spec.point) then return end
+
+  local parent = ToggleButtonsResolveFrame(spec.parent)
+  local relativeTo = ToggleButtonsResolveFrame(spec.relativeTo) or parent
+  if not (parent and relativeTo) then return end
+
+  button:ClearAllPoints()
+  button:SetPoint(spec.point[1], relativeTo, spec.point[2], spec.point[3] or 0, spec.point[4] or 0)
+end
+
+function ToggleButtons.ApplyOnClick(key, button)
+  local spec = ToggleButtonsGetSpec(key)
+  if not (spec and button and type(spec.onClick) == "function") then return end
+  button:SetScript("OnClick", spec.onClick)
+end
+
+function ToggleButtons.Refresh(key)
+  local button = ToggleButtons.GetButton(key)
+  if not button then return nil end
+  ToggleButtons.ApplyStyle(key, button)
+  ToggleButtons.ApplyAnchor(key, button)
+  ToggleButtons.ApplyOnClick(key, button)
+  return button
+end
+
+function ToggleButtons.Ensure(key, overrides)
+  local spec = ToggleButtonsGetSpec(key)
+  if not spec then return nil end
+
+  if type(overrides) == "table" then
+    ToggleButtons.Configure(key, overrides)
+  end
+
+  local parent = ToggleButtonsResolveFrame(spec.parent)
+  if not parent then return nil end
+
+  local button = ToggleButtons.GetButton(key)
+  local isNew = false
+  if not button then
+    button = CreateFrame("Button", nil, parent, spec.template or "UIPanelButtonTemplate")
+    isNew = true
+  end
+
+  ToggleButtons.registry[key] = button
+  if spec.globalName then
+    rawset(_G, spec.globalName, button)
+  end
+
+  ToggleButtons.Refresh(key)
+  if isNew then
+    button:SetText(ToggleButtons.GetPlaceholderText(key))
+  end
+
+  return button
+end
+
+function ToggleButtons.Configure(key, overrides)
+  local spec = ToggleButtonsGetSpec(key)
+  if not (spec and type(overrides) == "table") then return nil end
+
+  for name, value in pairs(overrides) do
+    spec[name] = value
+  end
+
+  return ToggleButtons.Refresh(key)
+end
+
+function ToggleButtons.SetWidth(key, width)
+  local spec = ToggleButtonsGetSpec(key)
+  width = tonumber(width)
+  if not (spec and width and width > 0) then return nil end
+
+  spec.width = width
+  local button = ToggleButtons.GetButton(key)
+  if button then
+    button:SetWidth(width)
+  end
+  return width
+end
+
+function ToggleButtons.SetHeight(key, height)
+  local spec = ToggleButtonsGetSpec(key)
+  height = tonumber(height)
+  if not (spec and height and height > 0) then return nil end
+
+  spec.height = height
+  local button = ToggleButtons.GetButton(key)
+  if button then
+    button:SetHeight(height)
+  end
+  return height
+end
+
+function ToggleButtons.SetSize(key, width, height)
+  if width ~= nil then
+    ToggleButtons.SetWidth(key, width)
+  end
+  if height ~= nil then
+    ToggleButtons.SetHeight(key, height)
+  end
+  return ToggleButtons.GetButton(key)
+end
+
+function ToggleButtons.SetWidths(widths)
+  if type(widths) ~= "table" then return end
+  for key, width in pairs(widths) do
+    ToggleButtons.SetWidth(key, width)
+  end
+end
+
+function ToggleButtons.SetSizes(sizes)
+  if type(sizes) ~= "table" then return end
+  for key, value in pairs(sizes) do
+    if type(value) == "table" then
+      ToggleButtons.SetSize(key, value.width, value.height)
+    end
+  end
+end
+
+function ToggleButtons.SetPosition(key, point, relativePoint, x, y, relativeTo)
+  local spec = ToggleButtonsGetSpec(key)
+  if not spec then return nil end
+
+  if type(point) == "table" then
+    spec.point = {
+      point[1],
+      point[2],
+      point[3] or 0,
+      point[4] or 0,
+    }
+    if point[5] ~= nil then
+      spec.relativeTo = point[5]
+    elseif relativeTo ~= nil then
+      spec.relativeTo = relativeTo
+    end
+  else
+    spec.point = {
+      point,
+      relativePoint,
+      x or 0,
+      y or 0,
+    }
+    if relativeTo ~= nil then
+      spec.relativeTo = relativeTo
+    end
+  end
+
+  local button = ToggleButtons.GetButton(key)
+  if button then
+    ToggleButtons.ApplyAnchor(key, button)
+  end
+  return spec.point
+end
+
+function ToggleButtons.SetPositions(positions)
+  if type(positions) ~= "table" then return end
+  for key, value in pairs(positions) do
+    if type(value) == "table" then
+      ToggleButtons.SetPosition(key, value)
+    end
+  end
+end
+
+function ToggleButtons.SetLabel(key, questID, modeTag)
+  local button = ToggleButtons.GetButton(key)
+  if not button then return nil end
+  local text = ToggleButtons.BuildQuestText(key, questID, modeTag)
+  button:SetText(text)
+  return text
+end
+
+function ToggleButtons.SyncLabels(questID, modeTag, keys)
+  local list = keys or ToggleButtons.order
+  for _, key in ipairs(list) do
+    ToggleButtons.SetLabel(key, questID, modeTag)
+  end
+end
+
+function ToggleButtons.SetEnabled(key, enabled)
+  local button = ToggleButtons.GetButton(key)
+  if not button then return end
+  if enabled then
+    button:Enable()
+  else
+    button:Disable()
+  end
+end
+
+function ToggleButtons.SyncEnabled(enabled, keys)
+  local list = keys or ToggleButtons.order
+  for _, key in ipairs(list) do
+    ToggleButtons.SetEnabled(key, enabled)
+  end
+end
+
+function ToggleButtons.BindOnClick(key, onClick)
+  local spec = ToggleButtonsGetSpec(key)
+  if not (spec and type(onClick) == "function") then return end
+  spec.onClick = onClick
+  local button = ToggleButtons.GetButton(key)
+  if button then
+    button:SetScript("OnClick", onClick)
+  end
+end
+
 -- Bronze Timekeeper number formatting and placeholder substitution ($1..$6)
 function Quests.Utils.FormatBronzeTimekeeper(sourceText, messageText)
    local src = strtrim(sourceText or "")

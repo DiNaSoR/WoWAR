@@ -6,6 +6,7 @@ ns = ns or {}
 ns.Quests = ns.Quests or {}
 local Quests = ns.Quests
 local S = ns.Quests.State or {}
+local ToggleButtons = Quests.Utils and Quests.Utils.ToggleButtons
 
 -- Track last processed quest to avoid double processing
 _G._lastProcessedQuestID = _G._lastProcessedQuestID or 0
@@ -107,15 +108,15 @@ end
 -- Initialize buttons, hooks, and tracker headers
 function Quests.Start()
    -- Button in QuestFrame (NPC)
-   QTR_ToggleButton0 = Quests.Utils.CreateButton(QuestFrame, 150, 20, "QID?", "TOPLEFT", QuestFrame, "TOPLEFT", 55, -20, Quests.ToggleTranslation)
+   QTR_ToggleButton0 = ToggleButtons.Ensure("quest")
    if QTR_ToggleButton0 then QTR_ToggleButton0:Show(); if S and S.ui and S.ui.quest then S.ui.quest.toggleEN = QTR_ToggleButton0 end end
 
    -- Button in QuestLogPopupDetailFrame
-   QTR_ToggleButton1 = Quests.Utils.CreateButton(QuestLogPopupDetailFrame, 150, 20, "QID?", "TOPLEFT", QuestLogPopupDetailFrame, "TOPLEFT", 45, -31, Quests.ToggleTranslation)
+   QTR_ToggleButton1 = ToggleButtons.Ensure("popup")
    if QTR_ToggleButton1 then QTR_ToggleButton1:Show() end
 
    -- Button in QuestMapDetailsScrollFrame
-   QTR_ToggleButton2 = Quests.Utils.CreateButton(QuestMapDetailsScrollFrame, 110, 21, "QID?", "TOPLEFT", QuestMapDetailsScrollFrame, "TOPLEFT", 96, 32, Quests.ToggleTranslation)
+   QTR_ToggleButton2 = ToggleButtons.Ensure("map")
    if QTR_ToggleButton2 then QTR_ToggleButton2:Show() end
 
    -- Button in GossipFrame
@@ -349,4 +350,28 @@ function QTR_ON_OFF() return Quests.ToggleTranslation() end
 function QTR_SaveQuest(event) return Quests.SaveQuest(event) end
 function QTR_GetQuestID() return Quests.GetQuestID() end
 function QTR_START() return Quests.Start() end
+function QTR_SetQuestToggleButtonWidth(context, width)
+   return ToggleButtons.SetWidth(context, width)
+end
+function QTR_SetQuestToggleButtonWidths(widths)
+   ToggleButtons.SetWidths(widths)
+end
+function QTR_SetQuestToggleButtonHeight(context, height)
+   return ToggleButtons.SetHeight(context, height)
+end
+function QTR_SetQuestToggleButtonSize(context, width, height)
+   return ToggleButtons.SetSize(context, width, height)
+end
+function QTR_SetQuestToggleButtonSizes(sizes)
+   ToggleButtons.SetSizes(sizes)
+end
+function QTR_SetQuestToggleButtonPosition(context, point, relativePoint, x, y, relativeTo)
+   return ToggleButtons.SetPosition(context, point, relativePoint, x, y, relativeTo)
+end
+function QTR_SetQuestToggleButtonPositions(positions)
+   ToggleButtons.SetPositions(positions)
+end
+function QTR_ConfigureQuestToggleButton(context, overrides)
+   return ToggleButtons.Configure(context, overrides)
+end
 

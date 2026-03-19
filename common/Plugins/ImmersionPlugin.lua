@@ -3,21 +3,19 @@
 
 -- luacheck: globals ImmersionFrame ImmersionContentFrame
 ---@diagnostic disable: undefined-global
+local addonName, ns = ...
+ns = ns or {}
+ns.Quests = ns.Quests or {}
+local ToggleButtons = ns.Quests and ns.Quests.Utils and ns.Quests.Utils.ToggleButtons
+
 ImmersionPlugin = {}
 
 function ImmersionPlugin.isImmersion()
    if (ImmersionFrame ~= nil ) then            -- Immersion addon is running
       if (QTR_ToggleButton4==nil) then
-         -- button with quest ID
-         QTR_ToggleButton4 = CreateFrame("Button",nil, ImmersionFrame.TalkBox, "UIPanelButtonTemplate")
-         QTR_ToggleButton4:SetWidth(150)
-         QTR_ToggleButton4:SetHeight(20)
-         QTR_ToggleButton4:SetText(QTR_ReverseIfAR(WOWTR_Localization.choiceQuestFirst))
-         QTR_ToggleButton4:ClearAllPoints()
-         QTR_ToggleButton4:SetPoint("TOPLEFT", ImmersionFrame.TalkBox, "TOPRIGHT", -200, -116)
-         QTR_ToggleButton4:SetScript("OnClick", QTR_ON_OFF)
+         QTR_ToggleButton4 = ToggleButtons.Ensure("immersion")
          ImmersionFrame.TalkBox:HookScript("OnHide",function() QTR_ToggleButton4:Hide() end)
-         QTR_ToggleButton4:Disable()          -- disable button initially
+         ToggleButtons.SetEnabled("immersion", false)
       end
       if (QTR_PS["immersion"]=="0") then       -- Immersion active but translations disabled
          QTR_ToggleButton4:Hide()
