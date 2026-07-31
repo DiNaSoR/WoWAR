@@ -1,0 +1,1314 @@
+:root {
+  /* Exact sizing from common/Config/ControlCenter/SettingsPanel.lua */
+  /* PageHeight=576, TabButtonHeight=40 */
+  --cc-w: 937px;
+  --cc-content-h: 576px;
+  --cc-tab-h: 40px;
+  /* In-game: MainFrame height is PageHeight (576). Tabs are anchored to MainFrame BOTTOM (outside the frame). */
+  --cc-h: var(--cc-content-h);
+
+  --cc-side: 259px;
+  --cc-center: 419px;
+  --cc-gap: 14px;
+  --cc-btn: 28px;
+
+  /* Fonts */
+  --cc-font-body: WOWTRFont2, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --cc-font-header: WOWTRFont1, WOWTRFont2, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* SideTab background overlaps into center by 20px in SettingsPanel.lua. */
+  --cc-side-overlap: 20px;
+  --cc-side-lw: calc(var(--cc-side) - var(--cc-side-overlap)); /* 239px */
+  --cc-side-rw: 40px;
+
+  /* Colors from Def in SettingsPanel.lua */
+  --cc-text-normal: rgb(215 192 163); /* TextColorNormal */
+  --cc-text-hi: rgb(255 255 255); /* TextColorHighlight */
+  --cc-text-dim: rgb(148 124 102); /* TextColorNonInteractable */
+  --cc-text-readable: rgb(163 157 147); /* TextColorReadable */
+  --cc-text-disabled: rgb(128 128 128); /* TextColorDisabled (approx) */
+
+  /* Sliced textures injected by app.js */
+  --exp-tl: none;
+  --exp-t: none;
+  --exp-tr: none;
+  --exp-l: none;
+  --exp-c: none;
+  --exp-r: none;
+  --exp-bl: none;
+  --exp-b: none;
+  --exp-br: none;
+  --exp-close: none;
+
+  --tab-n-left: none;
+  --tab-n-center: none;
+  --tab-n-right: none;
+  --tab-s-left: none;
+  --tab-s-center: none;
+  --tab-s-right: none;
+
+  --square-bg: none;
+  --icon-search: none;
+  --icon-filter: none;
+  --icon-menu: none;
+  --icon-reset: none;
+  --divider: none;
+  --hline: none;
+
+  --search-l: none;
+  --search-c: none;
+  --search-r: none;
+
+  --sel-l: none;
+  --sel-c: none;
+  --sel-r: none;
+
+  --header-l: none;
+  --header-r: none;
+
+  --cb-off: none;
+  --cb-on: none;
+  --opt-normal: none;
+
+  --bullet: none;
+
+  --side-l1: none;
+  --side-l2: none;
+  --side-l3: none;
+  --side-r1: none;
+  --side-r2: none;
+  --side-r3: none;
+
+  --sb-rail-top: none;
+  --sb-rail-mid: none;
+  --sb-rail-bot: none;
+  --sb-thumb-top: none;
+  --sb-thumb-mid: none;
+  --sb-thumb-bot: none;
+  --sb-up: none;
+  --sb-down: none;
+
+  /* Dropdown menu (Plumber-style) */
+  --menu-tl: none;
+  --menu-t: none;
+  --menu-tr: none;
+  --menu-l: none;
+  --menu-c: none;
+  --menu-r: none;
+  --menu-bl: none;
+  --menu-b: none;
+  --menu-br: none;
+  --menu-radio-off: none;
+  --menu-radio-on: none;
+  --menu-highlight: none;
+
+  /* Changelog font size menu controls this */
+  --cc-changelog-font: 12px;
+}
+
+@font-face {
+  font-family: "WOWTRFont1";
+  src: url("./assets/font1.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "WOWTRFont2";
+  src: url("./assets/font2.ttf") format("truetype");
+  font-display: swap;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(1200px 700px at 50% 40%, #2a2f3a, #0b0b0b);
+  color: var(--cc-text-readable);
+  font-family: var(--cc-font-body);
+}
+
+.cc-frame,
+.cc-frame * {
+  box-sizing: border-box;
+}
+
+.sprite {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stage {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Frame + border                                                             */
+/* -------------------------------------------------------------------------- */
+
+.cc-frame {
+  width: var(--cc-w);
+  height: var(--cc-h);
+  position: relative;
+  user-select: none;
+}
+
+.cc-border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.cc-border__piece {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.cc-border__piece.tl {
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  background-image: var(--exp-tl);
+}
+.cc-border__piece.t {
+  left: 64px;
+  right: 64px;
+  top: 0;
+  height: 64px;
+  background-image: var(--exp-t);
+}
+.cc-border__piece.tr {
+  right: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  background-image: var(--exp-tr);
+}
+.cc-border__piece.l {
+  left: 0;
+  top: 64px;
+  bottom: 64px;
+  width: 64px;
+  background-image: var(--exp-l);
+}
+.cc-border__piece.c {
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  background-image: var(--exp-c);
+  opacity: 0.0001;
+}
+.cc-border__piece.r {
+  right: 0;
+  top: 64px;
+  bottom: 64px;
+  width: 64px;
+  background-image: var(--exp-r);
+}
+.cc-border__piece.bl {
+  left: 0;
+  bottom: 0;
+  width: 64px;
+  height: 64px;
+  background-image: var(--exp-bl);
+}
+.cc-border__piece.b {
+  left: 64px;
+  right: 64px;
+  bottom: 0;
+  height: 64px;
+  background-image: var(--exp-b);
+}
+.cc-border__piece.br {
+  right: 0;
+  bottom: 0;
+  width: 64px;
+  height: 64px;
+  background-image: var(--exp-br);
+}
+
+.cc-close {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  top: 4.5px; /* matches -20.5 center offset in Util.lua */
+  right: 4.5px;
+  z-index: 40;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cc-close__icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: 4px;
+  background-image: var(--exp-close);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 2px rgb(0 0 0 / 60%));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Content area (FrameContainer)                                               */
+/* -------------------------------------------------------------------------- */
+
+.cc-framecontainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--cc-w);
+  height: var(--cc-content-h);
+  z-index: 10;
+}
+
+.cc-central-bg {
+  position: absolute;
+  left: calc(var(--cc-side) - 8px); /* CentralSection TOPLEFT offset -8 */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    linear-gradient(rgb(0 0 0 / 18%), rgb(0 0 0 / 18%)),
+    url("./assets/SettingsPanelBackground.jpg");
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.cc-sidetab-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--cc-side) + var(--cc-side-overlap));
+  height: var(--cc-content-h);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cc-sidetab-bg > div {
+  position: absolute;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.cc-sidetab-bg__l1 {
+  left: 0;
+  top: 0;
+  width: var(--cc-side-lw);
+  height: 32px;
+  background-image: var(--side-l1);
+}
+.cc-sidetab-bg__l2 {
+  left: 0;
+  top: 32px;
+  width: var(--cc-side-lw);
+  height: calc(var(--cc-content-h) - 64px);
+  background-image: var(--side-l2);
+}
+.cc-sidetab-bg__l3 {
+  left: 0;
+  bottom: 0;
+  width: var(--cc-side-lw);
+  height: 32px;
+  background-image: var(--side-l3);
+}
+.cc-sidetab-bg__r1 {
+  left: var(--cc-side-lw);
+  top: 0;
+  width: var(--cc-side-rw);
+  height: 32px;
+  background-image: var(--side-r1);
+}
+.cc-sidetab-bg__r2 {
+  left: var(--cc-side-lw);
+  top: 32px;
+  width: var(--cc-side-rw);
+  height: calc(var(--cc-content-h) - 64px);
+  background-image: var(--side-r2);
+}
+.cc-sidetab-bg__r3 {
+  left: var(--cc-side-lw);
+  bottom: 0;
+  width: var(--cc-side-rw);
+  height: 32px;
+  background-image: var(--side-r3);
+}
+
+/* Sections */
+.cc-left,
+.cc-center,
+.cc-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.cc-left {
+  left: 0;
+  width: var(--cc-side);
+}
+
+.cc-center {
+  left: var(--cc-side);
+  width: var(--cc-center);
+  z-index: 4; /* ensure central scrollbar renders above the right pane edge */
+}
+
+.cc-right {
+  right: 0;
+  width: var(--cc-side);
+}
+
+/* Tab visibility */
+.cc-leftview--changelog,
+.cc-changelogview {
+  display: none;
+}
+
+.cc-frame[data-tab="changelog"] .cc-leftview--modules,
+.cc-frame[data-tab="changelog"] .cc-modulesview,
+.cc-frame[data-tab="changelog"] .cc-previewview,
+.cc-frame[data-tab="changelog"] .cc-right {
+  display: none;
+}
+
+.cc-frame[data-tab="changelog"] .cc-leftview--changelog,
+.cc-frame[data-tab="changelog"] .cc-changelogview {
+  display: block;
+}
+
+/* -------------------------------------------------------------------------- */
+/* LeftSection (Modules)                                                      */
+/* -------------------------------------------------------------------------- */
+
+.cc-leftview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cc-searchrow {
+  position: absolute;
+  left: var(--cc-gap);
+  top: var(--cc-gap);
+  width: calc(var(--cc-side) - var(--cc-gap) * 2);
+  height: var(--cc-btn);
+  display: flex;
+  gap: var(--cc-gap);
+  align-items: center;
+}
+
+.cc-searchbox {
+  position: relative;
+  width: 189px; /* 259 - 28 - (3*14) from SettingsPanel.lua */
+  height: var(--cc-btn);
+  color: rgb(255 255 255 / 60%);
+  font-size: 13px;
+  line-height: var(--cc-btn);
+}
+
+.cc-searchbox__bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px; /* textures are 40px high; box is 28px */
+  height: 40px;
+  display: grid;
+  grid-template-columns: 16px 1fr 16px;
+}
+.cc-searchbox__bg-left {
+  background-image: var(--search-l);
+  background-size: 100% 100%;
+}
+.cc-searchbox__bg-center {
+  background-image: var(--search-c);
+  background-size: 100% 100%;
+}
+.cc-searchbox__bg-right {
+  background-image: var(--search-r);
+  background-size: 100% 100%;
+}
+
+.cc-searchbox__icon {
+  position: absolute;
+  left: 4px; /* Magnifier centered at x=14 in template; 20px icon => 14-10=4 */
+  top: 4px; /* center in 28px */
+  width: 20px;
+  height: 20px;
+  background-image: var(--icon-search);
+  background-size: 100% 100%;
+  opacity: 0.65;
+}
+
+.cc-searchbox__placeholder {
+  position: absolute;
+  left: 26px; /* matches TextInsets/Instruction anchor */
+  right: 10px;
+  top: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgb(255 255 255 / 55%);
+}
+
+.cc-searchbox__input {
+  position: absolute;
+  left: 26px; /* matches TextInsets */
+  right: 22px; /* space for clear button */
+  top: 0;
+  height: var(--cc-btn);
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  line-height: var(--cc-btn);
+  font-family: inherit;
+}
+
+.cc-searchbox__input::placeholder {
+  color: rgb(255 255 255 / 55%);
+}
+
+.cc-searchbox__clear {
+  position: absolute;
+  right: 2px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: none; /* JS toggles */
+}
+
+.cc-searchbox__clear-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-image: var(--icon-reset);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.65;
+}
+
+.cc-squarebtn {
+  position: relative;
+  width: var(--cc-btn);
+  height: var(--cc-btn);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cc-squarebtn__bg {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  width: 40px;
+  height: 40px;
+  background-image: var(--square-bg);
+  background-size: 100% 100%;
+}
+
+.cc-squarebtn__icon {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.cc-squarebtn--filter .cc-squarebtn__icon {
+  background-image: var(--icon-filter);
+}
+
+.cc-squarebtn--menu {
+  position: absolute;
+  right: var(--cc-gap);
+  top: var(--cc-gap);
+}
+.cc-squarebtn--menu .cc-squarebtn__icon {
+  background-image: var(--icon-menu);
+}
+
+.cc-divider {
+  position: absolute;
+  height: 24px;
+  background-image: var(--divider);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+}
+
+.cc-divider--left {
+  left: 3.5px; /* center align like WoW (width is 252) */
+  top: 56px; /* 2*gap + btn */
+  width: 252px; /* 259 - 7 */
+}
+
+.cc-categorylist {
+  position: absolute;
+  left: var(--cc-gap);
+  top: 70px; /* leftListFromY = 56 + gap */
+  width: 231px; /* 259 - 2*gap */
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-cat {
+  height: var(--cc-btn);
+  width: 231px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  line-height: var(--cc-btn);
+  padding-left: 9px; /* labelOffset */
+}
+
+.cc-cat:hover {
+  color: var(--cc-text-hi);
+}
+
+/* -------------------------------------------------------------------------- */
+/* LeftSection (Changelog)                                                    */
+/* -------------------------------------------------------------------------- */
+
+.cc-versiontitle {
+  position: absolute;
+  left: 25px; /* gap + 9 + 2 */
+  top: 28px; /* gap + 0.5*btn */
+  color: var(--cc-text-dim);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.cc-divider--changelog-top {
+  left: 3.5px;
+  top: 56px;
+  width: 252px;
+}
+
+.cc-versionlist {
+  position: absolute;
+  left: var(--cc-gap);
+  top: 70px; /* btn + 3*gap */
+  width: 231px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-version {
+  height: var(--cc-btn);
+  width: 231px;
+  padding: 0 0 0 9px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  line-height: var(--cc-btn);
+}
+
+.cc-version[aria-selected="true"] {
+  color: var(--cc-text-hi);
+}
+
+.cc-divider--changelog-bottom {
+  left: 3.5px;
+  top: 520px; /* bottom - (2*gap + btn) = 576 - 56 */
+  width: 252px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* CentralSection (Modules)                                                   */
+/* -------------------------------------------------------------------------- */
+
+.cc-modulesview {
+  position: absolute;
+  inset: 0;
+}
+
+.cc-scrollview {
+  position: absolute;
+  inset: 0;
+}
+
+.cc-scrollview__viewport {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  bottom: 2px;
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  outline: none;
+}
+.cc-scrollview__viewport::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.cc-scrollview__content {
+  width: 363px; /* centerButtonWidth = centralSectionWidth - 2*ButtonSize (419-56) */
+  padding-top: var(--cc-btn); /* fromOffsetY = ButtonSize */
+}
+
+.cc-row {
+  height: var(--cc-btn);
+  position: relative;
+}
+
+.cc-row--header {
+  color: var(--cc-text-dim);
+  font-size: 13px;
+  font-family: var(--cc-font-header);
+}
+
+.cc-header__left {
+  position: absolute;
+  left: -8px;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  background-image: var(--header-l);
+  background-size: 100% 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cc-header__right {
+  position: absolute;
+  left: 12px;
+  right: 0;
+  top: 3px;
+  height: 20px;
+  background-image: var(--header-r);
+  background-size: 100% 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cc-header__label {
+  position: absolute;
+  left: 8px;
+  bottom: 5px; /* matches XML anchor y=5 */
+  z-index: 1; /* keep header text above the decorative bar */
+}
+
+.cc-row--entry {
+  width: 363px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: block;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  line-height: var(--cc-btn);
+  text-align: left;
+}
+
+.cc-row--entry:hover {
+  color: var(--cc-text-hi);
+}
+
+.cc-row--indent {
+  padding-left: 14px; /* 0.5 * ButtonSize */
+}
+
+.cc-entry__box {
+  position: absolute;
+  left: 2px; /* center at x=14 (24px box) => 14-12 */
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  background-size: 100% 100%;
+}
+
+.cc-entry__box--on {
+  background-image: var(--cb-on);
+}
+.cc-entry__box--off {
+  background-image: var(--cb-off);
+}
+
+.cc-entry__label {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-entry__opt {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  background-image: var(--opt-normal);
+  background-size: 100% 100%;
+  opacity: 0.8;
+}
+
+.cc-row--spacer {
+  height: 28px;
+}
+
+.cc-row--gap {
+  height: 40px; /* Def.CategoryGap */
+}
+
+.cc-noresults {
+  height: 40px;
+  line-height: 40px;
+  margin-top: 14px;
+  color: var(--cc-text-dim);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* -------------------------------------------------------------------------- */
+/* RightSection (Preview)                                                     */
+/* -------------------------------------------------------------------------- */
+
+.cc-previewview {
+  position: absolute;
+  inset: 0;
+}
+
+.cc-previewbox {
+  width: 231px; /* sideSectionWidth - 2*gap */
+  height: 231px;
+  margin: 14px auto 0 auto; /* TOP at -gap */
+  position: relative;
+}
+
+.cc-previewbox__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* PreviewMask in WoW is a MaskTexture; mirror with CSS mask */
+  -webkit-mask-image: url("./assets/PreviewMask.png");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("./assets/PreviewMask.png");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.cc-previewdesc {
+  position: absolute;
+  left: 16px; /* visualOffset(2) + gap */
+  right: 16px;
+  top: calc(14px + 231px + 16px); /* preview top + size + (gap+visualOffset) */
+  bottom: 14px;
+  color: var(--cc-text-readable);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow: hidden;
+  text-shadow: 1px -1px 0 rgb(0 0 0 / 70%);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Changelog view (covers Center + Right)                                      */
+/* -------------------------------------------------------------------------- */
+
+.cc-changelogview {
+  position: absolute;
+  left: var(--cc-side);
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+}
+
+.cc-scrollview--changelog .cc-scrollview__viewport {
+  top: 2px;
+  bottom: 2px;
+  padding-right: 40px; /* room for custom scrollbar */
+}
+
+.cc-changelogcontent {
+  padding-top: 42px; /* fromOffsetY = 1.5*btn */
+  padding-left: 42px; /* leftOffset = 1.5*btn */
+  padding-bottom: 60px;
+  max-width: 363px; /* Formatter.ChangelogTextWidth default */
+}
+
+.cc-changelogcontent__meta {
+  color: var(--cc-text-dim);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.cc-changelogcontent__line {
+  width: 395px; /* objectWidth + 32 (363 + 32) */
+  height: 8px;
+  background-image: var(--hline);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.75;
+  margin-bottom: 18px;
+}
+
+.cc-changelogcontent__h1 {
+  font-size: 16px;
+  color: var(--cc-text-normal);
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.cc-changelogcontent__p {
+  font-size: var(--cc-changelog-font);
+  color: var(--cc-text-readable);
+  line-height: 1.55;
+  margin: 0 0 14px 0;
+}
+
+.cc-changelogcontent__ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cc-changelogcontent__ul li {
+  position: relative;
+  padding-left: 36px; /* bullet + gap */
+  margin: 6px 0;
+  color: var(--cc-text-readable);
+  font-size: var(--cc-changelog-font);
+  line-height: 1.55;
+}
+
+.cc-changelogcontent__ul li::before {
+  content: "";
+  position: absolute;
+  left: 16px; /* leftOffset-6 from Lua bullet setup is approximate here */
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  background-image: var(--bullet);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.9;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tabs                                                                       */
+/* -------------------------------------------------------------------------- */
+
+.cc-tabbar-bg {
+  position: absolute;
+  left: 0;
+  /* In-game the tabs are anchored to MainFrame BOTTOM, so they sit slightly below the content area.
+     Also, the tab textures are 48px tall and extend beyond the 40px tab button. */
+  top: var(--cc-h);
+  width: var(--cc-w);
+  height: var(--cc-tab-h);
+  z-index: 9;
+  background: transparent; /* no background bar behind tabs */
+}
+
+.cc-tabs {
+  position: absolute;
+  left: 0;
+  top: var(--cc-h);
+  height: var(--cc-tab-h);
+  display: flex;
+  gap: 7px; /* gap = WidgetGap/2 */
+  padding-left: var(--cc-gap);
+  align-items: flex-start;
+  z-index: 20;
+  overflow: visible; /* tab textures are 48px tall in-game and extend past the 40px button */
+}
+
+.cc-tab {
+  position: relative;
+  height: var(--cc-tab-h);
+  min-width: 100px;
+  padding: 0 18px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cc-tab__bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -3px; /* matches WOWTR_TabButtonTemplate textures (48px high) anchored at y=-1 */
+  height: 48px;
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  pointer-events: none;
+}
+
+.cc-tab__bg-left,
+.cc-tab__bg-center,
+.cc-tab__bg-right {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.cc-tab__label {
+  position: relative;
+  z-index: 1;
+  height: var(--cc-tab-h);
+  display: grid;
+  place-items: center;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  line-height: 1;
+  top: 0;
+}
+
+.cc-tab.is-selected .cc-tab__label {
+  color: var(--cc-text-hi);
+}
+
+.cc-tab:not(.is-selected) .cc-tab__bg-left {
+  background-image: var(--tab-n-left);
+}
+.cc-tab:not(.is-selected) .cc-tab__bg-center {
+  background-image: var(--tab-n-center);
+}
+.cc-tab:not(.is-selected) .cc-tab__bg-right {
+  background-image: var(--tab-n-right);
+}
+
+.cc-tab.is-selected .cc-tab__bg-left {
+  background-image: var(--tab-s-left);
+}
+.cc-tab.is-selected .cc-tab__bg-center {
+  background-image: var(--tab-s-center);
+}
+.cc-tab.is-selected .cc-tab__bg-right {
+  background-image: var(--tab-s-right);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Selection highlight (WOWTR_SettingsAnimSelectionTemplate)                   */
+/* -------------------------------------------------------------------------- */
+
+.cc-highlight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: var(--cc-btn);
+  width: 231px;
+  display: grid;
+  grid-template-columns: 16px 1fr 16px;
+  pointer-events: none;
+  z-index: 2; /* below content, above backgrounds */
+  opacity: 0;
+  transition: opacity 80ms linear;
+}
+
+.cc-highlight.is-visible {
+  opacity: 1;
+}
+
+.cc-highlight__left,
+.cc-highlight__center,
+.cc-highlight__right {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.cc-highlight__left {
+  background-image: var(--sel-l);
+}
+.cc-highlight__center {
+  background-image: var(--sel-c);
+}
+.cc-highlight__right {
+  background-image: var(--sel-r);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scrollbar (WOWTR_ScrollBarWithDynamicSizeTemplate)                          */
+/* -------------------------------------------------------------------------- */
+
+.cc-scrollbar {
+  position: absolute;
+  width: 20px;
+  right: 0;
+  top: 7px; /* 0.5*WidgetGap */
+  bottom: 7px;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.cc-scrollbar--changelog {
+  right: 12px;
+  top: 32px;
+  bottom: 7px;
+}
+
+.cc-scrollbar__up,
+.cc-scrollbar__down {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 16px;
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+}
+
+.cc-scrollbar__up {
+  top: 0;
+  background-image: var(--sb-up);
+}
+.cc-scrollbar__down {
+  bottom: 0;
+  background-image: var(--sb-down);
+}
+
+.cc-scrollbar__rail {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.cc-scrollbar__rail-top,
+.cc-scrollbar__rail-mid,
+.cc-scrollbar__rail-bot {
+  position: absolute;
+  left: 2px;
+  width: 16px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.95;
+}
+
+.cc-scrollbar__rail-top {
+  top: 0;
+  height: 16px;
+  background-image: var(--sb-rail-top);
+}
+.cc-scrollbar__rail-mid {
+  top: 16px;
+  bottom: 16px;
+  background-image: var(--sb-rail-mid);
+}
+.cc-scrollbar__rail-bot {
+  bottom: 0;
+  height: 16px;
+  background-image: var(--sb-rail-bot);
+}
+
+.cc-scrollbar__thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 16px;
+  height: 64px;
+  cursor: grab;
+}
+
+.cc-scrollbar__thumb-top,
+.cc-scrollbar__thumb-mid,
+.cc-scrollbar__thumb-bot {
+  position: absolute;
+  left: 2px;
+  width: 16px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.cc-scrollbar__thumb-top {
+  top: 0;
+  height: 16px;
+  background-image: var(--sb-thumb-top);
+}
+.cc-scrollbar__thumb-mid {
+  top: 16px;
+  bottom: 16px;
+  background-image: var(--sb-thumb-mid);
+}
+.cc-scrollbar__thumb-bot {
+  bottom: 0;
+  height: 16px;
+  background-image: var(--sb-thumb-bot);
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Dropdown Menu (Plumber-style)                                              */
+/* -------------------------------------------------------------------------- */
+
+.cc-menu {
+  position: fixed; /* anchor to viewport like WoW's UIParent */
+  z-index: 2000;
+  min-width: 96px; /* matches Plumber min width */
+  padding: 6px 0; /* paddingV in Basic.lua */
+  display: none;
+  color: var(--cc-text-normal);
+  font-size: 13px;
+  background: rgb(0 0 0 / 65%); /* fallback if slice textures are missing */
+  box-shadow: 0 6px 20px rgb(0 0 0 / 45%);
+}
+
+.cc-menu.is-open {
+  display: block;
+}
+
+.cc-menu__border {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cc-menu__piece {
+  position: absolute;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.cc-menu__piece.tl {
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background-image: var(--menu-tl);
+}
+.cc-menu__piece.t {
+  left: 16px;
+  right: 16px;
+  top: 0;
+  height: 16px;
+  background-image: var(--menu-t);
+}
+.cc-menu__piece.tr {
+  right: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background-image: var(--menu-tr);
+}
+.cc-menu__piece.l {
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 16px;
+  background-image: var(--menu-l);
+}
+.cc-menu__piece.c {
+  left: 16px;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
+  background-image: var(--menu-c);
+  opacity: 0.92;
+}
+.cc-menu__piece.r {
+  right: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 16px;
+  background-image: var(--menu-r);
+}
+.cc-menu__piece.bl {
+  left: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  background-image: var(--menu-bl);
+}
+.cc-menu__piece.b {
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 16px;
+  background-image: var(--menu-b);
+}
+.cc-menu__piece.br {
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  background-image: var(--menu-br);
+}
+
+.cc-menu__content {
+  position: relative;
+  padding: 0 0;
+}
+
+.cc-menu__item {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(235 222 194);
+  font: inherit;
+  text-align: left;
+}
+
+.cc-menu__item:hover {
+  color: var(--cc-text-hi);
+  background-image: var(--menu-highlight);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 1;
+}
+
+.cc-menu__item.is-header {
+  cursor: default;
+  color: var(--cc-text-dim);
+  background: transparent !important;
+}
+
+.cc-menu__icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.95;
+}
+
+.cc-menu__item.is-header .cc-menu__icon {
+  opacity: 0;
+}
+

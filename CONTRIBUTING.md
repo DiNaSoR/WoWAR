@@ -32,18 +32,23 @@ If you prefer not to duplicate files, create a directory junction or symlink fro
 - [`common/Books/`](common/Books): readable books
 - [`common/UI/`](common/UI): Blizzard UI translation hooks
 - [`Translations/`](Translations): shipped Arabic data
+- [`Docs/README.md`](Docs/README.md): maintained technical documentation and contributor references
 
 ## Project Conventions
 
+- Read the relevant document under [`Docs/`](Docs) before changing architecture, configuration, Arabic rendering, or shared UI behavior.
 - Prefer targeted changes inside the feature module you are touching instead of adding cross-cutting globals.
 - Keep backward compatibility in mind. Many runtime modules still read legacy globals like `QTR_PS`, `TT_PS`, `BB_PM`, and `MF_PM`.
 - If you change config behavior, verify the AceDB profile values still sync through [`common/Config/Core.lua`](common/Config/Core.lua) and [`common/Core/LegacyBridge.lua`](common/Core/LegacyBridge.lua).
 - Avoid editing vendored libraries under [`common/Libs/`](common/Libs) unless the change is necessary and isolated.
 - Keep Arabic text rendering fixes aware of RTL helpers in [`common/RTL.lua`](common/RTL.lua) and reshaping helpers in [`common/Text/Reshaper.lua`](common/Text/Reshaper.lua).
+- Follow the durable project rules in [`Docs/EngineeringGuidelines.md`](Docs/EngineeringGuidelines.md), and update the relevant documentation when a contract or mapping changes.
 
 ## Testing Checklist
 
 There is no automated test suite yet, so use a manual checklist appropriate to your change:
+
+The full scenario matrix and test-record template live in [`Docs/RegressionTesting.md`](Docs/RegressionTesting.md).
 
 - Load the addon without Lua errors.
 - Open `/wowtr` and confirm the settings UI still opens.

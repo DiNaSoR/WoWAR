@@ -1,0 +1,16 @@
+---
+description: WoWAR codebase-first workflow and maintained documentation
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# WoWAR Project Guidance
+
+- Treat the current code and `WoWAR.toc` as runtime authority.
+- Start at `Docs/README.md` and read the maintained document for the subsystem being changed.
+- Preserve module ownership and reuse existing helpers, hooks, state, and compatibility bridges.
+- Verify patch-dependent Blizzard UI behavior against current documentation or the live client when it is material to the change.
+- Run the relevant scenarios in `Docs/RegressionTesting.md`.
+- Update maintained Markdown when architecture, ownership, settings, rendering contracts, or required tests change.
+- Keep session scratchpads, journals, generated indexes, and local vector databases out of the project documentation.

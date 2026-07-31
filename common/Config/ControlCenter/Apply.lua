@@ -1,6 +1,6 @@
 -- common/Config/ControlCenter/Apply.lua
 -- Safe runtime apply hooks for ControlCenter settings changes.
--- IMPORTANT: Must avoid forbidden Blizzard "force refresh" calls (see lessons.md).
+-- IMPORTANT: Must avoid forbidden Blizzard "force refresh" calls (see Docs/EngineeringGuidelines.md).
 
 local addonName, ns = ...
 

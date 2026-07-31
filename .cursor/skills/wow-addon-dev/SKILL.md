@@ -7,14 +7,14 @@ description: Best practices for World of Warcraft AddOn development in Lua (fram
 
 ## Quick Start (use this checklist)
 
-- Read the repo’s memory first: `.cursor/memory/hot-rules.md`, `active-context.md`, `memo.md`.
+- Read `Docs/README.md`, then the maintained document for the affected subsystem.
 - Identify the correct entrypoint(s): `.toc`, main init file(s), and SavedVariables.
 - Confirm load order constraints (what must exist before what).
 - Implement changes with:
   - defensive nil checks (frames may not exist yet)
   - idempotent hooks (never double-hook)
   - no forbidden “force refresh” APIs unless explicitly proven safe for this project
-- After changes: update journal + run relevant regression checklist.
+- After changes: run the relevant scenarios in `Docs/RegressionTesting.md` and update maintained docs when a contract changed.
 
 ## Core patterns
 
@@ -76,6 +76,7 @@ ns.Feature = ns.Feature or {}
 - Don’t scatter raw locale checks (e.g. `lang == "AR"`). Centralize directionality.
 - Protect WoW markup (`|c`, `|T`, `|A`, `|H...|h...|h`) through any text transformations.
 - Do not inject hyperlinks/markup into already-shaped RTL text; render decorations separately.
+- Follow `Docs/QTR_ExpandUnitInfo_RTL_Bidi_Implementation_Prompt.md` for the current text-rendering and width contract.
 
 ## Performance rules
 
@@ -84,11 +85,11 @@ ns.Feature = ns.Feature or {}
 - Prefer caching and reusing frames/FontStrings.
 - Clamp “zero interval” tickers; never run per-frame churn unless strictly necessary.
 
-## What to write into memory after work
+## Documentation after work
 
-- Journal: `.cursor/memory/journal/YYYY-MM.md` (what changed, why, key files).
-- Memo: `.cursor/memory/memo.md` only when “project truth” changes.
-- Lessons: create a new `lessons/L-XXX-*.md` when you discover a pitfall that must never repeat.
+- Update maintained documentation only when architecture, ownership, a public contract, a setting mapping, or required validation changes.
+- Keep temporary investigation notes out of the repository.
+- Use Git history, pull requests, and issues for chronology; do not create a parallel session journal or generated memory database.
 
 ## Minimal test plan template (edit per repo)
 
@@ -96,4 +97,5 @@ ns.Feature = ns.Feature or {}
 - Toggle the affected feature(s) on/off.
 - Verify hooks are not duplicated (no double output, no repeated handlers).
 - If combat-sensitive: verify behavior with `InCombatLockdown()` constraints.
+- Expand this with the applicable matrix in `Docs/RegressionTesting.md`.
 

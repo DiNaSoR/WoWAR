@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WoWLang ControlCenter (HTML Mock)</title>
+    <link rel="stylesheet" href="./styles.css?v=2025-12-31-05" />
+  </head>
+  <body>
+    <!-- Sprite sources (hidden). JS slices these into CSS variables so we can stretch UI pieces like WoW. -->
+    <img
+      id="sprite-expansion-border"
+      class="sprite"
+      src="./assets/ExpansionBorder_TWW.png"
+      alt=""
+    />
+    <img
+      id="sprite-controlcenter"
+      class="sprite"
+      src="./assets/SettingsPanel.png"
+      alt=""
+    />
+    <img
+      id="sprite-widget"
+      class="sprite"
+      src="./assets/SettingsPanelWidget.png"
+      alt=""
+    />
+    <img
+      id="sprite-dropdownmenu"
+      class="sprite"
+      src="./assets/DropdownMenu.png"
+      alt=""
+    />
+
+    <div class="stage">
+      <div id="cc" class="cc-frame" data-tab="modules" data-slices="canvas">
+        <!-- Border (ExpansionThemeFrame nine-slice) -->
+        <div class="cc-border" aria-hidden="true">
+          <div class="cc-border__piece tl"></div>
+          <div class="cc-border__piece t"></div>
+          <div class="cc-border__piece tr"></div>
+          <div class="cc-border__piece l"></div>
+          <div class="cc-border__piece c"></div>
+          <div class="cc-border__piece r"></div>
+          <div class="cc-border__piece bl"></div>
+          <div class="cc-border__piece b"></div>
+          <div class="cc-border__piece br"></div>
+        </div>
+
+        <!-- Close -->
+        <button class="cc-close" type="button" aria-label="Close">
+          <span class="cc-close__icon" aria-hidden="true"></span>
+        </button>
+
+        <!-- Content (matches common/Config/ControlCenter/Templates.xml + SettingsPanel.lua layout) -->
+        <div class="cc-framecontainer">
+          <!-- Central background (TOPLEFT CentralSection -8,0; BOTTOMRIGHT MainFrame 0,0) -->
+          <div class="cc-central-bg" aria-hidden="true"></div>
+
+          <!-- SideTab 6-piece background (drawn on SideTab, anchored to LeftSection; overlaps into center by 20px) -->
+          <div class="cc-sidetab-bg" aria-hidden="true">
+            <div class="cc-sidetab-bg__l1"></div>
+            <div class="cc-sidetab-bg__l2"></div>
+            <div class="cc-sidetab-bg__l3"></div>
+            <div class="cc-sidetab-bg__r1"></div>
+            <div class="cc-sidetab-bg__r2"></div>
+            <div class="cc-sidetab-bg__r3"></div>
+          </div>
+
+          <!-- LEFT SECTION (259px) -->
+          <aside class="cc-left">
+            <!-- Modules left -->
+            <section class="cc-leftview cc-leftview--modules" aria-label="Categories">
+              <div class="cc-searchrow">
+                <div class="cc-searchbox">
+                  <span class="cc-searchbox__bg" aria-hidden="true">
+                    <span class="cc-searchbox__bg-left"></span>
+                    <span class="cc-searchbox__bg-center"></span>
+                    <span class="cc-searchbox__bg-right"></span>
+                  </span>
+                  <span class="cc-searchbox__icon" aria-hidden="true"></span>
+                  <input
+                    id="cc-search"
+                    class="cc-searchbox__input"
+                    type="text"
+                    inputmode="search"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Search"
+                    aria-label="Search"
+                  />
+                  <button id="cc-search-clear" class="cc-searchbox__clear" type="button" aria-label="Clear">
+                    <span class="cc-searchbox__clear-icon" aria-hidden="true"></span>
+                  </button>
+                </div>
+
+                <button id="cc-filter-btn" class="cc-squarebtn cc-squarebtn--filter" type="button" aria-label="Filter">
+                  <span class="cc-squarebtn__bg" aria-hidden="true"></span>
+                  <span class="cc-squarebtn__icon" aria-hidden="true"></span>
+                </button>
+              </div>
+
+              <div class="cc-divider cc-divider--left" aria-hidden="true"></div>
+
+              <div class="cc-categorylist" role="listbox" aria-label="Categories">
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="General">ﻋﺎم</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="Tooltips">ﺗﻠﻤﻴﺤﺎت</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="Bubbles">ﻓﻘﺎﻋﺎت</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="Movies">ﻣﻘﺎﻃﻊ</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="Books">ﻛﺘﺐ</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="Chat">اﻟﺪﺭﺩﺷﺔ</button>
+                <button class="cc-cat" type="button" role="option" data-highlight="true" data-category="About">ﺣﻮل</button>
+              </div>
+            </section>
+
+            <!-- Changelog left -->
+            <section class="cc-leftview cc-leftview--changelog" aria-label="Versions">
+              <button id="cc-changelog-menu-btn" class="cc-squarebtn cc-squarebtn--menu" type="button" aria-label="Menu">
+                <span class="cc-squarebtn__bg" aria-hidden="true"></span>
+                <span class="cc-squarebtn__icon" aria-hidden="true"></span>
+              </button>
+
+              <div class="cc-versiontitle">
+                <span dir="rtl">اﻹﺻﺪار</span>
+                <span dir="ltr">12.00</span>
+              </div>
+              <div class="cc-divider cc-divider--changelog-top" aria-hidden="true"></div>
+
+              <div id="cc-version-list" class="cc-versionlist" role="listbox" aria-label="Versions">
+              </div>
+
+              <div class="cc-divider cc-divider--changelog-bottom" aria-hidden="true"></div>
+            </section>
+          </aside>
+
+          <!-- CENTRAL SECTION (419px) -->
+          <main class="cc-center" aria-label="Settings">
+            <section class="cc-modulesview" aria-label="Modules list">
+              <div class="cc-scrollview" data-scroll="modules">
+                <div class="cc-scrollview__viewport" data-scroll-viewport="modules" tabindex="0">
+                  <div id="cc-modules-content" class="cc-scrollview__content"></div>
+                </div>
+
+                <div class="cc-scrollbar" data-scrollbar="modules" aria-hidden="true">
+                  <div class="cc-scrollbar__up"></div>
+                  <div class="cc-scrollbar__rail">
+                    <div class="cc-scrollbar__rail-top"></div>
+                    <div class="cc-scrollbar__rail-mid"></div>
+                    <div class="cc-scrollbar__rail-bot"></div>
+                  </div>
+                  <div class="cc-scrollbar__thumb">
+                    <div class="cc-scrollbar__thumb-top"></div>
+                    <div class="cc-scrollbar__thumb-mid"></div>
+                    <div class="cc-scrollbar__thumb-bot"></div>
+                  </div>
+                  <div class="cc-scrollbar__down"></div>
+                </div>
+              </div>
+            </section>
+          </main>
+
+          <!-- RIGHT SECTION (259px) -->
+          <aside class="cc-right" aria-label="Preview">
+            <section class="cc-previewview" aria-label="Feature preview">
+              <div class="cc-previewbox">
+                <img id="cc-preview-img" class="cc-previewbox__img" src="./assets/Preview_WOWTR_Quests.jpg" alt="Preview" />
+              </div>
+              <div id="cc-preview-desc" class="cc-previewdesc">
+                ﻋﺮض اﻟﻤﻌﺎﻳﻨﺔ ﻭاﻟﻮﺻﻒ ﻳﻈﻬﺮان ﻫﻨﺎ ﻋﻨﺪ اﻟﺘﺤﺮﻳﻚ ﻋﻠﻰ اﻟﻮﺣﺪات.
+              </div>
+            </section>
+          </aside>
+
+          <!-- CHANGELOG PANEL (covers Central + Right) -->
+          <section class="cc-changelogview" aria-label="Release Notes">
+            <div class="cc-scrollview cc-scrollview--changelog" data-scroll="changelog">
+              <div class="cc-scrollview__viewport" data-scroll-viewport="changelog" tabindex="0">
+                <div id="cc-changelog-content" class="cc-changelogcontent"></div>
+              </div>
+
+              <div class="cc-scrollbar cc-scrollbar--changelog" data-scrollbar="changelog" aria-hidden="true">
+                <div class="cc-scrollbar__up"></div>
+                <div class="cc-scrollbar__rail">
+                  <div class="cc-scrollbar__rail-top"></div>
+                  <div class="cc-scrollbar__rail-mid"></div>
+                  <div class="cc-scrollbar__rail-bot"></div>
+                </div>
+                <div class="cc-scrollbar__thumb">
+                  <div class="cc-scrollbar__thumb-top"></div>
+                  <div class="cc-scrollbar__thumb-mid"></div>
+                  <div class="cc-scrollbar__thumb-bot"></div>
+                </div>
+                <div class="cc-scrollbar__down"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Shared selection highlight (follows hovered rows; matches WOWTR_SettingsAnimSelectionTemplate) -->
+          <div class="cc-highlight" aria-hidden="true">
+            <span class="cc-highlight__left"></span>
+            <span class="cc-highlight__center"></span>
+            <span class="cc-highlight__right"></span>
+          </div>
+        </div>
+
+        <!-- Tab bar background (fills behind tabs) -->
+        <div class="cc-tabbar-bg" aria-hidden="true"></div>
+
+        <!-- Tabs -->
+        <div class="cc-tabs" role="tablist" aria-label="ControlCenter Tabs">
+          <button class="cc-tab is-selected" type="button" role="tab" aria-selected="true" data-tab="modules">
+            <span class="cc-tab__bg" aria-hidden="true">
+              <span class="cc-tab__bg-left"></span>
+              <span class="cc-tab__bg-center"></span>
+              <span class="cc-tab__bg-right"></span>
+            </span>
+            <span class="cc-tab__label">اﻟﻮﺣﺪات</span>
+          </button>
+
+          <button class="cc-tab" type="button" role="tab" aria-selected="false" data-tab="changelog">
+            <span class="cc-tab__bg" aria-hidden="true">
+              <span class="cc-tab__bg-left"></span>
+              <span class="cc-tab__bg-center"></span>
+              <span class="cc-tab__bg-right"></span>
+            </span>
+            <span class="cc-tab__label">ﻣﺬﻛﺮات اﻹﺻﺪار</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./app.js?v=2025-12-31-05"></script>
+  </body>
+</html>
+
+

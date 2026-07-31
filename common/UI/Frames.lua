@@ -13,6 +13,7 @@ local T = (ns.UI and ns.UI.Translate) or nil
 
 local isMountButtonCreated = false
 local mountUpdateVisibility
+local isGameMenuInitButtonsHooked = false
 
 -- SpellBook Frame
 function M.UpdateSpellBookFrame()
@@ -107,58 +108,90 @@ function M.MerchantFrame()
 end
 
 -- Game Menu
-function M.GameMenuTranslate()
+local GAME_MENU_FONT_STATES = { "Normal", "Highlight", "Disabled", "Pushed" }
+
+local function ApplyGameMenuFont(fontOwner)
+  if not fontOwner
+      or type(fontOwner.GetFont) ~= "function"
+      or type(fontOwner.SetFont) ~= "function"
+      or not WOWTR_Font2 then
+    return
+  end
+
+  local _, fontSize, fontFlags = fontOwner:GetFont()
+  if fontSize then
+    fontOwner:SetFont(WOWTR_Font2, fontSize, fontFlags)
+  end
+end
+
+local function UpdateGameMenuText(textObject)
+  if not textObject
+      or type(textObject.GetText) ~= "function"
+      or type(textObject.SetText) ~= "function" then
+    return
+  end
+
+  local originalText = textObject:GetText()
+  if not originalText then return end
+
+  local hash = StringHash(ST_UsunZbedneZnaki(originalText))
+  if not ST_TooltipsHS or not ST_TooltipsHS[hash] then return end
+
+  local translatedText = QTR_ReverseIfAR(ST_TooltipsHS[hash]) .. NONBREAKINGSPACE
+  C_Timer.After(0.01, function()
+    if textObject:GetText() == originalText then
+      textObject:SetText(translatedText)
+      ApplyGameMenuFont(textObject)
+    end
+  end)
+end
+
+local function UpdateGameMenuButton(button)
+  if not button then return end
+
+  UpdateGameMenuText(button)
+
+  for _, state in ipairs(GAME_MENU_FONT_STATES) do
+    local getFontObject = button["Get" .. state .. "FontObject"]
+    local setFontObject = button["Set" .. state .. "FontObject"]
+
+    if type(getFontObject) == "function" and type(setFontObject) == "function" then
+      local fontObject = getFontObject(button)
+      if fontObject then
+        ApplyGameMenuFont(fontObject)
+        setFontObject(button, fontObject)
+      end
+    end
+  end
+end
+
+local function UpdateGameMenuTranslations()
   if not TT_PS or TT_PS["ui1"] ~= "1" then return end
 
-  local function SafeUpdateText(textObject)
-    if not textObject or not textObject.GetText then return end
-    local originalText = textObject:GetText()
-    if not originalText then return end
+  local gameMenuFrame = _G.GameMenuFrame
+  if not gameMenuFrame then return end
 
-    local hash = StringHash(ST_UsunZbedneZnaki(originalText))
-    if ST_TooltipsHS and ST_TooltipsHS[hash] then
-      local translatedText = QTR_ReverseIfAR(ST_TooltipsHS[hash]) .. NONBREAKINGSPACE
-      C_Timer.After(0.01, function()
-        if textObject:GetText() == originalText then
-          textObject:SetText(translatedText)
-          if textObject.SetFont then
-            textObject:SetFont(WOWTR_Font2, select(2, textObject:GetFont()))
-          end
-        end
-      end)
+  UpdateGameMenuText(gameMenuFrame.Header and gameMenuFrame.Header.Text)
+
+  if gameMenuFrame.buttonPool then
+    for buttonFrame in gameMenuFrame.buttonPool:EnumerateActive() do
+      UpdateGameMenuButton(buttonFrame)
     end
   end
+end
 
-  local function SafeUpdateButton(button)
-    SafeUpdateText(button)
+function M.GameMenuTranslate()
+  local gameMenuFrame = _G.GameMenuFrame
+  if not gameMenuFrame then return end
 
-    local fontStates = { "Normal", "Highlight", "Disabled", "Pushed" }
-    for _, state in ipairs(fontStates) do
-      local getFontObject = button["Get" .. state .. "FontObject"]
-      local setFontObject = button["Set" .. state .. "FontObject"]
-
-      if getFontObject and setFontObject then
-        local fontObject = getFontObject(button)
-        if fontObject then
-          fontObject:SetFont(WOWTR_Font2, select(2, fontObject:GetFont()))
-          setFontObject(button, fontObject)
-        end
-      end
-    end
+  if not isGameMenuInitButtonsHooked
+      and type(gameMenuFrame.InitButtons) == "function"
+      and type(hooksecurefunc) == "function" then
+    hooksecurefunc(gameMenuFrame, "InitButtons", UpdateGameMenuTranslations)
+    isGameMenuInitButtonsHooked = true
   end
 
-  SafeUpdateText(GameMenuFrame.Header.Text)
-
-  local function SafeInitButtons()
-    if GameMenuFrame.buttonPool then
-      for buttonFrame in GameMenuFrame.buttonPool:EnumerateActive() do
-        SafeUpdateButton(buttonFrame)
-      end
-    end
-  end
-
-  hooksecurefunc(GameMenuFrame, "InitButtons", SafeInitButtons)
-  SafeInitButtons()
+  UpdateGameMenuTranslations()
 end
 
 -- Mount Journal

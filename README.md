@@ -40,7 +40,14 @@ The sync bridge between those systems lives in [`common/Config/Core.lua`](common
 - [`common/Text/`](common/Text) and [`common/RTL.lua`](common/RTL.lua): Arabic shaping and RTL helpers
 - [`Translations/`](Translations): shipped Arabic translation data
 - [`Images/`](Images) and [`Fonts/`](Fonts): bundled assets
+- [`Docs/`](Docs): maintained architecture, configuration, RTL, and testing documentation
 - [`.github/workflows/release.yml`](.github/workflows/release.yml): packaging and GitHub release automation
+
+## Documentation
+
+Start at [`Docs/README.md`](Docs/README.md). It links the maintained architecture, engineering guidelines, configuration mapping, Arabic text-rendering contract, and manual regression plan.
+
+Large ignored subdirectories under `Docs/` are local upstream references for optional integrations. They are not runtime dependencies or substitutes for the maintained Markdown files.
 
 ## Installation
 
@@ -82,7 +89,7 @@ This README and the contributing guide cover the basics, but there are still a f
 - No issue templates or pull request template yet.
 - No `CODE_OF_CONDUCT.md` or `SECURITY.md` yet.
 - No automated regression suite or CI checks for Lua formatting, static analysis, or gameplay smoke tests.
-- Some helper material currently lives only in ignored local folders like `Docs/` and `Tools/`, so outside contributors cannot rely on it from a fresh clone.
+- Some local upstream reference trees and helper tools remain intentionally ignored, so contributor workflows must not depend on them.
 - Most validation is still manual inside the WoW client.
 
 Those are good next additions if you want the project to feel fully contributor-ready.

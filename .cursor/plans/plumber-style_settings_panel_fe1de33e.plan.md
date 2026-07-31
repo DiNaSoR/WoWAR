@@ -257,10 +257,10 @@ We will centralize “apply” so every toggle has immediate effect without call
 - QuestMapFrame translations never require Blizzard refresh calls; post-layout ticker handles reapply.
 - Escape closes standalone panel.
 
-### Phase 11 — Project memory updates
+### Phase 11 — Project documentation updates
 
-- Append an entry to [`.cursor/memory/journal.md`](.cursor/memory/journal.md) describing what changed + key files.
-- If we uncover any non-obvious issue while porting (e.g., a WoW texture format gotcha, Settings API behavior change), add a new entry to [`.cursor/memory/lessons.md`](.cursor/memory/lessons.md).
+- Update [`Docs/Architecture.md`](../../Docs/Architecture.md) if the port changes runtime ownership or load-order contracts.
+- Record durable implementation rules in [`Docs/EngineeringGuidelines.md`](../../Docs/EngineeringGuidelines.md) and validation requirements in [`Docs/RegressionTesting.md`](../../Docs/RegressionTesting.md).
 
 ## Architecture/data-flow diagram
 
