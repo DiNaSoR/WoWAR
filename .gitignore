@@ -17,7 +17,11 @@ lua_modules/
 
 .vscode/settings.json
 
-Docs/
+Docs/DialogueUI/
+Docs/Immersion/
+Docs/Plumber/
+Docs/Storyline/
+Docs/WoWUkrainDoc/
 Tools/
 
 # Cursor Memory System (generated)
