@@ -1,102 +1,223 @@
-# WoWAR
+<p align="center" dir="rtl">
+  <img src=".github/assets/wowar-readme-hero.png" alt="شعار WoWAR: بوصلة وكتاب بزخارف عربية خيالية" width="100%">
+</p>
 
-WoWAR is an open-source World of Warcraft addon that localizes large parts of the game into Arabic. It focuses on readable right-to-left rendering, Arabic-capable fonts, and in-game capture of untranslated text so the translation database can keep growing over time.
+<h1 align="center">WoWAR</h1>
 
-The addon currently targets English game clients (`enUS` / `enGB`) and supports modern retail interface builds declared in [`WoWAR.toc`](WoWAR.toc): `110205`, `110207`, `120000`, and `120001`.
+<p align="center" dir="rtl">
+  <strong>عِش عالم ووركرافت بالعربية — من الحوارات والمهام إلى الواجهات والترجمة السينمائية.</strong>
+</p>
 
-## What It Covers
+<p align="center" dir="rtl">
+  إضافة عربية مجتمعية تهتم بجودة القراءة من اليمين إلى اليسار، وسلامة النصوص المختلطة، وتقديم تجربة لعب عربية متكاملة قدر الإمكان.
+</p>
 
-- Quest text, quest details, gossip, and objective tracker text
-- Tooltip translation for items, spells, talents, and selected UI surfaces
-- NPC chat bubbles and talking-head text
-- Movies, cinematics, and subtitle capture
-- In-game books and tutorials
-- Arabic chat helpers and font overrides
-- Optional integrations for addons and alternate quest UIs such as Immersion, Storyline, DialogueUI, and Classic Quest Log
-- A Control Center settings UI plus debug tooling for capture and troubleshooting
+<p align="center" dir="rtl">
+  <a href="https://github.com/DiNaSoR/WoWAR/releases">
+    <img src="https://img.shields.io/github/v/tag/DiNaSoR/WoWAR?sort=semver&amp;style=for-the-badge&amp;label=Release&amp;color=c28b36" alt="أحدث إصدار">
+  </a>
+  <a href="https://github.com/DiNaSoR/WoWAR/stargazers">
+    <img src="https://img.shields.io/github/stars/DiNaSoR/WoWAR?style=for-the-badge&amp;logo=github&amp;color=1f6feb" alt="نجوم GitHub">
+  </a>
+  <img src="https://img.shields.io/badge/Arabic-RTL-0f766e?style=for-the-badge" alt="دعم العربية من اليمين إلى اليسار">
+  <img src="https://img.shields.io/badge/WoW-AddOn-6f42c1?style=for-the-badge" alt="إضافة لـ World of Warcraft">
+</p>
 
-## How It Works
+<p align="center" dir="rtl">
+  <a href="https://www.wowar.co">الموقع الرسمي</a>
+  ·
+  <a href="https://github.com/DiNaSoR/WoWAR/releases">التنزيل من GitHub</a>
+  ·
+  <a href="https://www.curseforge.com/wow/addons/wowar-arabic">CurseForge</a>
+  ·
+  <a href="https://discord.gg/uW5NJ6y">Discord</a>
+</p>
 
-Runtime code lives under [`common/`](common). Translation databases live under [`Translations/`](Translations) as Lua tables that are loaded by the addon manifest. The addon also saves untranslated text into SavedVariables like `QTR_SAVED`, `QTR_GOSSIP`, `BB_PS`, `MF_PS`, `TT_TUTORIALS`, `BT_SAVED`, and `ST_PH` so contributors can collect missing strings while playing.
+---
 
-There are two main configuration layers:
+<div dir="rtl" lang="ar">
 
-- Modern profile-backed settings in `WOWTR_DB` via AceDB
-- Legacy global tables such as `QTR_PS`, `TT_PS`, `BB_PM`, and `MF_PM` that runtime modules still read
+## ما هي WoWAR؟
 
-The sync bridge between those systems lives in [`common/Config/Core.lua`](common/Config/Core.lua) and [`common/Core/LegacyBridge.lua`](common/Core/LegacyBridge.lua).
+**WoWAR** إضافة لـ World of Warcraft تنقل أجزاء واسعة من تجربة اللعبة إلى العربية، مع محرك مخصص لمعالجة اتجاه النص وتشكيل الحروف والمحافظة على الأرقام والأسماء الإنجليزية وروابط الأدوات والأيقونات وألوان اللعبة.
 
-## Repository Layout
+ليست الفكرة مجرد استبدال النص الإنجليزي بترجمة عربية؛ بل جعل النص العربي قابلاً للقراءة داخل واجهة صُممت أصلاً للغات من اليسار إلى اليمين.
 
-- [`WoWAR.toc`](WoWAR.toc): addon manifest, load order, metadata, SavedVariables
-- [`common/Core/`](common/Core): bootstrap, events, compatibility, debug system
-- [`common/Config/`](common/Config): AceDB defaults, settings sync, Control Center UI
-- [`common/Quests/`](common/Quests): quest, gossip, tracker, and quest UI behavior
-- [`common/Tooltips/`](common/Tooltips): tooltip translation and capture
-- [`common/Bubbles/`](common/Bubbles): NPC bubble/chat translation flow
-- [`common/Movies/`](common/Movies): movie and cinematic subtitle handling
-- [`common/Books/`](common/Books): readable books translation
-- [`common/UI/`](common/UI): UI-specific translation patches and welcome/config screens
-- [`common/Text/`](common/Text) and [`common/RTL.lua`](common/RTL.lua): Arabic shaping and RTL helpers
-- [`Translations/`](Translations): shipped Arabic translation data
-- [`Images/`](Images) and [`Fonts/`](Fonts): bundled assets
-- [`Docs/`](Docs): maintained architecture, configuration, RTL, and testing documentation
-- [`.github/workflows/release.yml`](.github/workflows/release.yml): packaging and GitHub release automation
+> [!IMPORTANT]
+> تعمل الإضافة حالياً عند تشغيل اللعبة بواجهة إنجليزية `enUS` أو `enGB`. بعد تثبيتها، تتولى WoWAR عرض المحتوى المدعوم بالعربية داخل اللعبة.
 
-## Documentation
+## لماذا WoWAR مختلفة؟
 
-Start at [`Docs/README.md`](Docs/README.md). It links the maintained architecture, engineering guidelines, configuration mapping, Arabic text-rendering contract, and manual regression plan.
+| | الميزة | ما الذي تقدمه؟ |
+| ---: | --- | --- |
+| 🧭 | **محرك RTL مخصص** | تشكيل عربي، التفاف أسطر بحسب عرض الواجهة، ومحاذاة مناسبة للنصوص الطويلة |
+| 🔀 | **نصوص مختلطة مستقرة** | الحفاظ على ترتيب الأرقام والأسماء الإنجليزية داخل الجمل العربية |
+| 🧩 | **حماية أكواد WoW** | عدم كسر الألوان والأيقونات والأطالس والروابط والمتغيرات أثناء المعالجة |
+| 📚 | **تغطية واسعة** | مهام، حوارات، فقاعات، تلميحات، كتب، دروس، أفلام، واجهات ودردشة |
+| 🎛️ | **مركز تحكم حديث** | إعدادات منظمة مع بحث ومعاينات وخيارات منفصلة لكل نظام |
+| 📝 | **التقاط النصوص الناقصة** | حفظ المحتوى غير المترجم داخل SavedVariables للمساعدة في توسيع قاعدة الترجمة |
+| 🔌 | **تكاملات اختيارية** | دعم Immersion وStoryline وDialogueUI وClassic Quest Log |
 
-Large ignored subdirectories under `Docs/` are local upstream references for optional integrations. They are not runtime dependencies or substitutes for the maintained Markdown files.
+## قاعدة ترجمة ضخمة
 
-## Installation
+تتضمن النسخة الحالية أكثر من **238 ألف سجل ترجمة** موزعة على قواعد بيانات متخصصة:
 
-1. Download the latest release from [GitHub Releases](https://github.com/DiNaSoR/WoWAR/releases) or [CurseForge](https://www.curseforge.com/wow/addons/wowar-arabic).
-2. Extract the `WoWAR` folder into your WoW addons directory:
-   `World of Warcraft\_retail_\Interface\AddOns\WoWAR`
-3. Start the game on an English client (`enUS` or `enGB`).
-4. Open settings with `/wowtr` or the minimap icon.
+<!-- Keep these counts synchronized with the *_base metadata in Translations/*.lua. Last verified 2026-07-31. -->
 
-## Local Development
+| المحتوى | عدد السجلات |
+| --- | ---: |
+| [فقاعات وحديث الشخصيات](Translations/Bubbles_AR_1.lua) | 132,350 |
+| [حوارات الشخصيات](Translations/Gossip_AR.lua) | 58,244 |
+| [المهام](Translations/QuestData_AR.lua) | 35,881 |
+| [الأفلام والمشاهد السينمائية](Translations/Subtitles_AR.lua) | 5,351 |
+| [الكتب](Translations/Books_AR.lua) | 4,425 |
+| [الدروس والإرشادات](Translations/TutorialsData_AR.lua) | 2,363 |
+| [تلميحات الأدوات](Translations/Tooltips_AR.lua) | 94 |
+| **الإجمالي** | **238,708** |
 
-The repo has no standalone build step for normal development. WoW loads the Lua/XML/asset files directly from the addon folder.
+## لمحة من داخل اللعبة
 
-Typical workflow:
+</div>
 
-1. Clone this repository.
-2. Place it in your WoW addons directory, or create a symlink/junction named `WoWAR` that points at the repo.
-3. Launch the game, test changes, and use `/reload` between iterations.
-4. Open the settings panel with `/wowtr`.
-5. Use `/wowardebug` for debug presets and capture when investigating rendering issues.
+<table dir="rtl">
+  <tr>
+    <td align="center" width="33%">
+      <img src="Images/ControlCenter/Preview_WOWTR_Quests.jpg" alt="ترجمة المهام إلى العربية" width="100%">
+      <br><strong>المهام والأهداف</strong>
+    </td>
+    <td align="center" width="33%">
+      <img src="Images/ControlCenter/Preview_WOWTR_Bubbles.jpg" alt="ترجمة حديث الشخصيات وفقاعات الحوار" width="100%">
+      <br><strong>الحوارات وفقاعات الحديث</strong>
+    </td>
+    <td align="center" width="33%">
+      <img src="Images/ControlCenter/Preview_WOWTR_Tooltips.jpg" alt="ترجمة تلميحات الأدوات" width="100%">
+      <br><strong>تلميحات الأدوات</strong>
+    </td>
+  </tr>
+</table>
 
-Release packaging is automated by [`.github/workflows/release.yml`](.github/workflows/release.yml). It validates version tags, packages the addon, and publishes GitHub releases from `v*` tags.
+<div dir="rtl" lang="ar">
 
-## Contributing
+## التثبيت
 
-Start with [`CONTRIBUTING.md`](CONTRIBUTING.md). The highest-value contribution areas today are:
+### الطريقة الأسرع
 
-- Filling missing Arabic translations in `Translations/*.lua`
-- Fixing RTL layout, shaping, and mixed Arabic/Latin rendering edge cases
-- Validating quest/gossip behavior against Blizzard UI changes
-- Improving compatibility with Immersion, Storyline, DialogueUI, ElvUI, and other UI addons
-- Improving contributor tooling and export/documentation workflows
+1. نزّل أحدث نسخة من [صفحة الإصدارات](https://github.com/DiNaSoR/WoWAR/releases) أو من [CurseForge](https://www.curseforge.com/wow/addons/wowar-arabic).
+2. فك الضغط وانقل مجلد `WoWAR` إلى:
 
-## Current Open-Source Gaps
+   ```text
+   World of Warcraft\_retail_\Interface\AddOns\WoWAR
+   ```
 
-This README and the contributing guide cover the basics, but there are still a few project-level gaps that make outside contributions harder than they should be:
+3. شغّل اللعبة باستخدام الواجهة الإنجليزية `enUS` أو `enGB`.
+4. تأكد من تفعيل **WoWAR** من قائمة AddOns.
+5. اكتب `/wowtr` أو اضغط أيقونة الخريطة المصغرة لفتح مركز التحكم.
 
-- No root `LICENSE` file. Contributors need an explicit project license before reuse and redistribution are fully clear.
-- No issue templates or pull request template yet.
-- No `CODE_OF_CONDUCT.md` or `SECURITY.md` yet.
-- No automated regression suite or CI checks for Lua formatting, static analysis, or gameplay smoke tests.
-- Some local upstream reference trees and helper tools remain intentionally ignored, so contributor workflows must not depend on them.
-- Most validation is still manual inside the WoW client.
+> [!TIP]
+> إذا لم تظهر الإضافة، تأكد أن المسار لا يحتوي على مجلد متداخل مثل `WoWAR\WoWAR\WoWAR.toc`، وأن ملف `WoWAR.toc` موجود مباشرة داخل مجلد الإضافة.
 
-Those are good next additions if you want the project to feel fully contributor-ready.
+إذا كنت تستخدم نسخة أخرى معلنة في سطر `Interface` داخل ملف TOC، استبدل `_retail_` بمجلد نسخة اللعبة المقابل.
 
-## Useful References
+## أوامر مفيدة
 
-- Project site: [wowar.co](https://www.wowar.co)
-- GitHub: [DiNaSoR/WoWAR](https://github.com/DiNaSoR/WoWAR)
-- CurseForge: [WoWAR Arabic](https://www.curseforge.com/wow/addons/wowar-arabic)
-- Discord: <https://discord.gg/uW5NJ6y>
+| الأمر | الاستخدام |
+| --- | --- |
+| `/wowtr` | فتح مركز التحكم |
+| `/reload` | إعادة تحميل واجهة اللعبة بعد التعديلات |
+| `/wowardebug` | فتح أدوات التشخيص وجمع المعلومات عند الإبلاغ عن مشكلة |
+| `/wowardebug preset <name>` | تشغيل إعداد تشخيصي قابل للتكرار |
+
+## ما الذي تتم ترجمته؟
+
+- نصوص المهام والعناوين والأهداف والمكافآت ومتعقب المهام.
+- حوارات الشخصيات وخيارات Gossip.
+- تلميحات الأدوات والعناصر والتعاويذ والمواهب وأجزاء مختارة من الواجهة.
+- فقاعات الحديث وTalking Head ورسائل الشخصيات.
+- الأفلام والمشاهد السينمائية والترجمات المصاحبة.
+- الكتب والدروس والإرشادات داخل اللعبة.
+- الدردشة العربية والخطوط المناسبة للنص العربي.
+- واجهات إضافية اختيارية مثل Immersion وStoryline وDialogueUI وClassic Quest Log.
+
+## كيف تعمل الإضافة؟
+
+1. تُحمّل قواعد الترجمة من [`Translations/`](Translations) وفق ترتيب [`WoWAR.toc`](WoWAR.toc).
+2. يبحث كل نظام عن الترجمة الموافقة للنص أو المعرّف الظاهر في اللعبة.
+3. يوسّع [`common/Text.lua`](common/Text.lua) متغيرات اللاعب والجنس والعرق والفئة ويحمي أكواد WoW الخاصة.
+4. يشكّل [`common/Text/Reshaper.lua`](common/Text/Reshaper.lua) النص العربي ويجهزه للعرض حسب عرض العنصر.
+5. تطبق الوحدة المالكة الخط والمحاذاة والتخطيط المناسب، أو تعود إلى النص الإنجليزي الأصلي عند غياب الترجمة.
+6. يمكن حفظ النصوص المفقودة في SavedVariables لتجهيزها للترجمة لاحقاً.
+
+يحفظ AceDB الإعدادات الحديثة في `WOWTR_DB`، بينما يزامن [`LegacyBridge.lua`](common/Core/LegacyBridge.lua) القيم مع جداول التوافق القديمة التي ما زالت بعض الأنظمة تقرؤها.
+
+## التوافق والإصدارات
+
+- نسخة التطوير الحالية في [`WoWAR.toc`](WoWAR.toc): **12.04**.
+- أرقام واجهات WoW المدعومة موثقة دائماً في سطر `Interface` داخل ملف TOC.
+- الإضافة فعالة حالياً على عميل إنجليزي `enUS` أو `enGB`.
+- البناء المعتاد لا يحتاج إلى مترجم أو حزمة JavaScript؛ يحمّل WoW ملفات Lua وXML والأصول مباشرة.
+
+## للمطورين والمساهمين
+
+```text
+WoWAR.toc               بيان الإضافة وترتيب التحميل
+common/Core/            التهيئة والأحداث والتوافق والتشخيص
+common/Config/          الإعدادات وAceDB ومركز التحكم
+common/Quests/          المهام والحوارات والمتعقب
+common/Tooltips/        التلميحات والخطوط والخطافات
+common/Text.lua         توسيع النص وحماية أكواد WoW
+common/Text/Reshaper.lua تشكيل العربية وتجهيز أسطر RTL
+common/RTL.lua          اتجاه الواجهة ومساعدات المحاذاة
+Translations/          قواعد بيانات الترجمة العربية
+Docs/                  التوثيق الهندسي وخطط الاختبار
+```
+
+ابدأ من [دليل المساهمة](CONTRIBUTING.md)، ثم راجع [فهرس التوثيق](Docs/README.md). أكثر المساهمات فائدة:
+
+- إضافة ترجمات عربية أو تصحيحها.
+- معالجة حالات RTL والنصوص المختلطة والأرقام والرموز.
+- اختبار تغييرات واجهة Blizzard بعد تحديثات اللعبة.
+- تحسين تكاملات Immersion وStoryline وDialogueUI وغيرها.
+- توثيق خطوات قابلة للتكرار وإضافة أدلة مرئية للمشكلات.
+
+### التوثيق التقني
+
+- [معمارية المشروع](Docs/Architecture.md)
+- [إرشادات التطوير](Docs/EngineeringGuidelines.md)
+- [الإعدادات وLegacyBridge](Docs/ConfigSettingsAudit.md)
+- [محرك النص العربي وQTR_ExpandUnitInfo](Docs/QTR_ExpandUnitInfo_RTL_Bidi_Implementation_Prompt.md)
+- [خطة اختبارات الانحدار](Docs/RegressionTesting.md)
+- [سجل التغييرات](CHANGELOG.md)
+
+## الإبلاغ عن مشكلة
+
+عند فتح بلاغ، أرفق:
+
+- إصدار WoW ورقم `Interface`.
+- إصدار WoWAR.
+- اللغة المستخدمة: `enUS` أو `enGB`.
+- أسماء إضافات الواجهة الأخرى المفعلة.
+- الشاشة أو المهمة أو الشخصية التي ظهرت فيها المشكلة.
+- لقطة شاشة، ورسالة الخطأ أو ناتج `/wowardebug` إن توفر.
+
+يمكنك استخدام [GitHub Issues](https://github.com/DiNaSoR/WoWAR/issues) أو الانضمام إلى [Discord](https://discord.gg/uW5NJ6y).
+
+## الفريق
+
+صُنعت WoWAR وجرى تطويرها بواسطة:
+
+- **Dragonarab (DiNaSoR)**
+- **Platine**
+- وكل من ساهم بترجمة أو اختبار أو بلاغ مفيد.
+
+إذا أفادتك الإضافة، يمكنك دعم المشروع بنجمة ⭐، مشاركة رابطها، أو المساهمة في تحسين الترجمة.
+
+> [!NOTE]
+> WoWAR مشروع مجتمعي غير رسمي. لا يوجد ملف `LICENSE` في المستودع حتى الآن؛ إتاحة المصدر للمشاهدة لا تمنح تلقائياً حقوق إعادة الاستخدام أو إعادة التوزيع. تواصل مع أصحاب المشروع عند الحاجة إلى إذن واضح.
+
+</div>
+
+---
+
+<p align="center" dir="rtl">
+  <strong>من أزيروث إلى العالم العربي — كلمةً كلمة.</strong>
+</p>
