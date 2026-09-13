@@ -53,10 +53,11 @@ The order is deliberate:
 5. Discover the target font, size, and flags. The function tries the target itself and then a FontString region.
 6. Replace WoW markup, dynamic placeholders, protected substituted values, and numeric runs with indexed sentinels.
 7. Normalize internal newline and legacy curly-marker forms used by the reshaper.
-8. Call the normal or right-mode width-aware line preparer with `AR_obj:GetWidth() + AR_corr`.
-9. Adjust line spacing when the selected Arabic font has smaller metrics than the source font.
-10. Restore all protected values, including sentinels whose delimiters and multi-digit indexes were reversed.
-11. Reattach the optional `UE_COLOR:` prefix.
+8. Detect the source representation once. Logical Arabic is contextually shaped while each visual line is reversed; legacy text containing Arabic Presentation Forms is reversed without a second shaping pass.
+9. Call the normal or right-mode width-aware line preparer with `AR_obj:GetWidth() + AR_corr`.
+10. Adjust line spacing when the selected Arabic font has smaller metrics than the source font.
+11. Restore all protected values, including sentinels whose delimiters and multi-digit indexes were reversed.
+12. Reattach the optional `UE_COLOR:` prefix.
 
 Changing this order can corrupt links, icons, format tokens, numbers, or color ownership.
 
@@ -112,12 +113,14 @@ Visible sentinel characters or missing icons usually indicate one of these failu
 
 The safe behavior on inspection failure is “not Arabic.” Do not replace this with a raw locale-only check: pure English content in an Arabic session must remain LTR and readable.
 
+`Text.ContainsArabicPresentationForms` separates legacy pre-shaped content from logical Arabic source. Logical source goes through `AS_UTF8reverseRS`; legacy presentation-form strings stay on `AS_UTF8reverse` so they are not shaped twice. New player-facing copy should remain logical Arabic in source files; Presentation Forms are compatibility data, not an authoring format.
+
 ## Choosing the Rendering Helper
 
 | Surface | Preferred helper | Reason |
 | --- | --- | --- |
 | Wrapped quest, gossip, tutorial, tooltip, book, or bubble body | `QTR_ExpandUnitInfo` | Uses the measured width to prepare visual lines |
-| Short, single-line label or button | `QTR_ReverseIfAR` | Avoids paragraph wrapping and short-label truncation |
+| Short, single-line label or button | `QTR_ReverseIfAR` | Contextually shapes logical Arabic, preserves legacy presentation forms, and avoids paragraph wrapping |
 | Pure English or untranslated fallback | Raw/expanded logical text | Arabic shaping is unnecessary |
 | Hashing, storage, or lookup keys | Logical normalization helpers only | Display-time shaping must never enter persisted data |
 

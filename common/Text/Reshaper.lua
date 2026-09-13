@@ -586,20 +586,17 @@ function AS_UTF8sub(s, i, j)
    return strsub(s, startByte, endByte);
 end
 
--------------------------------------------------------------------------------------------------------
--- Reverses the order of UTF-8 letters with ReShaping
+-- Reverses the order of UTF-8 characters without changing their glyph forms.
 -- Function: AS_UTF8reverse
--- Description: Reverses the order of characters in a UTF-8 encoded string, while applying Arabic reshaping rules.
+-- Description: Reverses the order of characters in a UTF-8 encoded string.
 -- Parameters:
 --   - s: The UTF-8 encoded string to be reversed.
 -- Returns:
---   - newstr: The reversed string with applied Arabic reshaping rules.
+--   - newstr: The reversed string.
 -- Notes:
---   - This function assumes that the input string follows UTF-8 encoding and contains Arabic characters.
---   - It applies reshaping rules to each character based on its position in the string (isolated, initial, middle, final).
---   - It also handles special cases for specific characters like Hamza and numeric sequences.
---   - The resulting string may not be valid UTF-8 if the input string contains invalid UTF-8 sequences.
--- Reverses the order of UTF-8 letters with ReShaping; Parameters: s=arabic UTF8 text
+--   - Contextual Arabic shaping is provided by AS_UTF8reverseRS.
+--   - This helper remains the compatibility path for legacy text that already
+--     contains Arabic Presentation Forms.
 -------------------------------------------------------------------------------------------------------
 function AS_UTF8reverse(s)
    if not s or #s == 0 then return "" end -- Check if string is empty or nil
@@ -1102,6 +1099,18 @@ local function AS_GetWrapLineHeight(Afont, AfontSize)
    return measuredHeight
 end
 
+-- Reverse a prepared visual line. Logical Arabic source needs contextual
+-- shaping; legacy strings that already contain Presentation Forms only need
+-- UTF-8 reversal. Number runs are protected by Text.HandleWoWSpecialCodes
+-- before this helper runs, so disabling the digit fixer preserves sentinel
+-- indexes for Text.RestoreWoWSpecialCodes.
+local function AS_ReversePreparedLine(s, reshapeLogicalArabic)
+   if reshapeLogicalArabic then
+      return AS_UTF8reverseRS(s, false);
+   end
+   return AS_UTF8reverse(s);
+end
+
 -------------------------------------------------------------------------------------------------------
 -- This function prepares Arabic text to be displayed in a specific window width;
 -- Parameters: Atext=arabic UTF8 text, Awidth=frame width to the text, AfontSize=size of current font
@@ -1114,7 +1123,7 @@ end
 -- Returns:
 --    - retstr (string): The processed text ready for display.
 -------------------------------------------------------------------------------------------------------
-function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
+function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize, reshapeLogicalArabic)
    local retstr = "";
    if (Atext and Awidth and AfontSize) then
       if (AS_TestLine == nil) then
@@ -1159,12 +1168,12 @@ function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
          if (link_start_stop == false) then
             AS_TestLine.text:SetWidth(Awidth);
             AS_TestLine.text:SetFont(Afont, AfontSize);
-            AS_TestLine.text:SetText(AS_UTF8reverse(newstr));
+            AS_TestLine.text:SetText(AS_ReversePreparedLine(newstr, reshapeLogicalArabic));
             if ((char1 == '#') or (AS_TestLine.text:GetHeight() > wrapLineHeight + 1)) then
                newstr = string.sub(newstr, 1, strlen(newstr) - last_space);
                newstr = string.gsub(newstr, "#", "");
                -- *** MODIFICATION: Remove call to AS_AddSpaces ***
-               retstr = retstr .. AS_UTF8reverse(newstr) .. "\n";
+               retstr = retstr .. AS_ReversePreparedLine(newstr, reshapeLogicalArabic) .. "\n";
                newstr = nextstr;
                nextstr = "";
                --counter = 0; -- Removed counter reset
@@ -1175,7 +1184,7 @@ function AS_ReverseAndPrepareLineText(Atext, Awidth, Afont, AfontSize)
       end
 
       -- *** MODIFICATION: Remove call to AS_AddSpaces for the last line ***
-      retstr = retstr .. AS_UTF8reverse(newstr);
+      retstr = retstr .. AS_ReversePreparedLine(newstr, reshapeLogicalArabic);
       retstr = string.gsub(retstr, "#", "");
       retstr = string.gsub(retstr, " \n", "\n");
       retstr = string.gsub(retstr, "\n ", "\n");
@@ -1191,7 +1200,7 @@ comment...
 ]]
 --------------------------------------------------------------------------------------------------------
 
-function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
+function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize, reshapeLogicalArabic)
    local retstr = "";
    if (Atext and Awidth and AfontSize) then
       if (AS_TestLine == nil) then -- a separate frame for displaying the translation of texts and determining the length
@@ -1233,11 +1242,11 @@ function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
          if (link_start_stop == false) then    -- we are not inside a link - can check
             AS_TestLine.text:SetWidth(Awidth); -- set the frame width to the text
             AS_TestLine.text:SetFont(Afont, AfontSize);
-            AS_TestLine.text:SetText(AS_UTF8reverse(newstr));
+            AS_TestLine.text:SetText(AS_ReversePreparedLine(newstr, reshapeLogicalArabic));
             if ((char1 == '#') or (AS_TestLine.text:GetHeight() > wrapLineHeight + 1)) then -- text no longer fits in one line
                newstr = string.sub(newstr, 1, strlen(newstr) - last_space);              -- text up to the last space
                newstr = string.gsub(newstr, "#", "");
-               retstr = retstr .. AS_AddSpaces(AS_UTF8reverse(newstr), Awidth, Afont, AfontSize) .. "\n";
+               retstr = retstr .. AS_AddSpaces(AS_ReversePreparedLine(newstr, reshapeLogicalArabic), Awidth, Afont, AfontSize) .. "\n";
                newstr = nextstr;
                nextstr = "";
                counter = 0;
@@ -1246,7 +1255,7 @@ function AS_ReverseAndPrepareLineText_RIGHT(Atext, Awidth, Afont, AfontSize)
          char2 = char1; -- remember the character, needed in the next loop
          pos = pos + charbytes;
       end
-      retstr = retstr .. AS_AddSpaces(AS_UTF8reverse(newstr), Awidth, Afont, AfontSize);
+      retstr = retstr .. AS_AddSpaces(AS_ReversePreparedLine(newstr, reshapeLogicalArabic), Awidth, Afont, AfontSize);
       retstr = string.gsub(retstr, "#", "");
       retstr = string.gsub(retstr, " \n", "\n"); -- space before newline code is useless
       retstr = string.gsub(retstr, "\n ", "\n"); -- space after newline code is useless

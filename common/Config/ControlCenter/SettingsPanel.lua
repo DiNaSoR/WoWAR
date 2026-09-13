@@ -1802,6 +1802,22 @@ do  --ChangelogTab
         ["p"] = "GameFontNormal",   --GameFontNormal 
     };
 
+    local function PrepareChangelogText(text, fontString)
+        if not IsArabicUI() then
+            return text
+        end
+
+        local expander = _G.QTR_ExpandUnitInfo
+        if type(expander) == "function" and fontString then
+            local ok, prepared = pcall(expander, text, false, fontString, nil, 0, true)
+            if ok and type(prepared) == "string" then
+                return prepared
+            end
+        end
+
+        return ShapeTextIfArabic(text)
+    end
+
     function Formatter:GetTextHeight(fontTag, text, textWidthShrink)
         if not self.UtilityFontString then
             local UtilityFontString = MainFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal");
@@ -1823,7 +1839,7 @@ do  --ChangelogTab
         else
             ApplyChangelogBodyFont(self.UtilityFontString, self.TagFonts[fontTag]);
         end
-        self.UtilityFontString:SetText(ShapeTextIfArabic(text));
+        self.UtilityFontString:SetText(PrepareChangelogText(text, self.UtilityFontString));
         local height = self.UtilityFontString:GetHeight();
         self.UtilityFontString:SetText(nil);
         return height
@@ -2073,7 +2089,6 @@ do  --ChangelogTab
                         obj:SetWidth(textWidth);
                         obj:SetFontObject(Formatter.TagFonts[info.type]);
                         obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
-                        obj:SetText(ShapeTextIfArabic(text));
                         SetTextColor(obj, entryTextColor);
                         ApplyArabicFonts(obj);
                         if info.type == "h1" then
@@ -2081,6 +2096,7 @@ do  --ChangelogTab
                         else
                             ApplyChangelogBodyFont(obj, Formatter.TagFonts[info.type]);
                         end
+                        obj:SetText(PrepareChangelogText(text, obj));
 
                         if redacted then
                             local redactor = self.redactorPool:Acquire();
@@ -2099,7 +2115,7 @@ do  --ChangelogTab
                         local text = ControlCenter:GetModuleCategoryName(info.dbKey);
                         if text then
                             text = L["Category Colon"]..text;
-                            objectHeight = Formatter:GetTextHeight(info.type, text);
+                            objectHeight = Formatter:GetTextHeight("p", text);
                             top = bottom + Def.ChangelogLineSpacing;
                             bottom = top + objectHeight;
                             n = n + 1;
@@ -2107,11 +2123,12 @@ do  --ChangelogTab
                                 dataIndex = n,
                                 templateKey = "FontString",
                                 setupFunc = function(obj)
+                                    obj:SetWidth(objectWidth);
                                     obj:SetFontObject(Formatter.TagFonts["p"]);
                                     obj:SetJustifyH(rtl and "RIGHT" or "LEFT")
-                                    obj:SetText(ShapeTextIfArabic(text));
                                     SetTextColor(obj, Def.TextColorNonInteractable);
                                     ApplyArabicFonts(obj);
+                                    obj:SetText(PrepareChangelogText(text, obj));
 
                                     if redacted then
                                         local redactor = self.redactorPool:Acquire();

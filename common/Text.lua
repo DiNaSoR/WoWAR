@@ -265,6 +265,39 @@ function Text.RestoreWoWSpecialCodes(msg, specialCodes)
   return msg
 end
 
+-- Detect legacy Arabic Presentation Forms-A/B. Logical Arabic source should
+-- receive contextual shaping; presentation-form text must only be reversed or
+-- it can be shaped a second time and become unreadable.
+local function containsArabicPresentationForms(txt)
+  if type(txt) ~= "string" then return false end
+
+  local ok, hasPresentationForms = pcall(function()
+    local length = #txt
+    for index = 1, length - 2 do
+      if txt:byte(index) == 239 then
+        local secondByte = txt:byte(index + 1)
+        local thirdByte = txt:byte(index + 2)
+        local inFormsA = (secondByte == 173 and thirdByte and thirdByte >= 144)
+          or (secondByte and secondByte >= 174 and secondByte <= 183)
+        local inFormsB = (secondByte == 185 and thirdByte and thirdByte >= 176)
+          or secondByte == 186
+          or secondByte == 187
+        if inFormsA or inFormsB then
+          return true
+        end
+      end
+    end
+    return false
+  end)
+
+  if ok then return hasPresentationForms end
+  return false
+end
+
+function Text.ContainsArabicPresentationForms(txt)
+  return containsArabicPresentationForms(txt)
+end
+
 -- Detect Arabic script in a UTF-8 string (base Arabic + Presentation Forms).
 -- Used to avoid reversing pure English strings when running in AR locale.
 function Text.ContainsArabic(txt)
@@ -274,13 +307,7 @@ function Text.ContainsArabic(txt)
   local ok, hasArabic = pcall(function()
     if txt == "" then return false end
 
-    -- Fast path: Arabic Presentation Forms-A/B live in UTF-8 sequences starting with 0xEF 0xAD..0xBB
-    if (string.find(txt, "\239\173") ~= nil)
-        or (string.find(txt, "\239\174") ~= nil)
-        or (string.find(txt, "\239\175") ~= nil)
-        or (string.find(txt, "\239\185") ~= nil)
-        or (string.find(txt, "\239\186") ~= nil)
-        or (string.find(txt, "\239\187") ~= nil) then
+    if containsArabicPresentationForms(txt) then
       return true
     end
 
@@ -642,6 +669,7 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
   msg = Text.WOW_ZmienKody(msg)
 
   if ((WOWTR_Localization and WOWTR_Localization.lang == 'AR') and (AR_obj) and Text.ContainsArabic(msg)) then
+    local reshapeLogicalArabic = not Text.ContainsArabicPresentationForms(msg)
     msg = FixCurlyColorSpansForRTL(msg)
     local _font = WOWTR_Font2
     local AR_size = 13
@@ -696,9 +724,9 @@ function Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIG
     msg = string.gsub(msg, "{h}", "h|")
 
     if AR_RIGHT then
-      msg = AS_ReverseAndPrepareLineText_RIGHT(msg, AR_obj:GetWidth() + _corr, AR_font or _font, AR_size)
+      msg = AS_ReverseAndPrepareLineText_RIGHT(msg, AR_obj:GetWidth() + _corr, AR_font or _font, AR_size, reshapeLogicalArabic)
     else
-      msg = AS_ReverseAndPrepareLineText(msg, AR_obj:GetWidth() + _corr, AR_font or _font, AR_size)
+      msg = AS_ReverseAndPrepareLineText(msg, AR_obj:GetWidth() + _corr, AR_font or _font, AR_size, reshapeLogicalArabic)
     end
 
     applyDynamicFontSpacing(AR_obj, _font, AR_font or _font, AR_size, _flags)
@@ -716,6 +744,7 @@ function Text.ReverseIfAR(txt)
     if not Text.ContainsArabic(msg) then
       return msg
     end
+    local reshapeLogicalArabic = not Text.ContainsArabicPresentationForms(msg)
     msg = FixCurlyColorSpansForRTL(msg)
     local specialCodes, prefix
     msg, specialCodes, prefix = Text.HandleWoWSpecialCodes(msg)
@@ -750,7 +779,13 @@ function Text.ReverseIfAR(txt)
     msg = string.gsub(msg, "{a}", "a|")
     msg = string.gsub(msg, "{h}", "h|")
 
-    msg = AS_UTF8reverse(msg)
+    if reshapeLogicalArabic then
+      -- Numeric runs and other dynamic content are already protected as
+      -- sentinels, so keep the reshaper's digit fixer disabled here.
+      msg = AS_UTF8reverseRS(msg, false)
+    else
+      msg = AS_UTF8reverse(msg)
+    end
     msg = Text.RestoreWoWSpecialCodes(msg, specialCodes)
     if prefix and prefix ~= "" then msg = prefix .. msg end
     return msg
@@ -952,6 +987,7 @@ function WOW_ZmienKody(message, target) return Text.WOW_ZmienKody(message, targe
 function QTR_ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) return Text.ExpandUnitInfo(msg, OnObjectives, AR_obj, AR_font, AR_corr, AR_RIGHT) end
 function QTR_ReverseIfAR(txt) return Text.ReverseIfAR(txt) end
 function WOWTR_ContainsArabic(txt) return Text.ContainsArabic(txt) end
+function WOWTR_ContainsArabicPresentationForms(txt) return Text.ContainsArabicPresentationForms(txt) end
 function WOWTR_AnsiReverse(txt) return Text.AnsiReverse(txt) end
 function WOWTR_ReplaceOnlyWholeWords(txt, f, r) return Text.ReplaceOnlyWholeWords(txt, f, r) end
 function WOWTR_DetectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part) return Text.DetectAndReplacePlayerIdentity(txt, playerName, playerRace, playerClass, target, part) end

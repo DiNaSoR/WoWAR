@@ -68,6 +68,7 @@ Render each applicable case in a short label and a wrapped text block:
 
 | Case | Pass criteria |
 | --- | --- |
+| Logical Arabic and legacy Presentation Forms | Logical source gains contextual joining; legacy pre-shaped text is not shaped twice |
 | Arabic with an English name | Arabic is shaped; the English segment remains readable |
 | `20`, `1,234.56`, `12:34`, `10/10`, and Arabic-Indic digits | Digit and separator order is unchanged |
 | `{1}`, `{12}` | Placeholders restore completely; no sentinel characters appear |
@@ -85,6 +86,10 @@ For `QTR_ExpandUnitInfo`, also test:
 - first-show behavior when width is initially zero;
 - both normal and `AR_RIGHT` line preparation;
 - repeated RTL -> LTR -> RTL transitions.
+
+For Control Center Release Notes, open both the newest logical-Arabic entry and
+an older presentation-form entry. Confirm their titles, paragraphs, and wrapped
+bullets are joined, readable, right-aligned, and measured without overlap.
 
 See [Arabic Text Rendering](QTR_ExpandUnitInfo_RTL_Bidi_Implementation_Prompt.md) for the caller contract.
 
